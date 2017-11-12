@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">LuanVanNew</string>
+
+    <string name="action_user">User</string>
+    <string name="action_category">Categories</string>
+    <string name="action_search">Search</string>
+    <string name="action_style">Style</string>
+    <string name="action_playlist">Playlist</string>
+    <string name="action_setting">Setting</string>
+    <string name="action_music">Music</string>
+
+    <string name="category_button">Categories</string>
+    <string name="style_button">Styles</string>
+    <string name="category_tab_title_song">Songs</string>
+    <string name="category_tab_title_album">Albums</string>
+    <string name="category_tab_title_hot">Hot</string>
+</resources>
