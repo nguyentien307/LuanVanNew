@@ -314,6 +314,7 @@ public class MusicHotFm extends Fragment implements View.OnClickListener {
     public void transaction(int idLayout, Fragment fragment){
         getActivity().getSupportFragmentManager()
                 .beginTransaction()
+                .setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_left, R.anim.slide_out_left, R.anim.slide_in_left)
                 .replace(idLayout, fragment)
                 .commit();
     }

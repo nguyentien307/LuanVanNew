@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         bottomNavigation = (BottomNavigationView) findViewById(R.id.bottom_navigation);
         BottomNavigationViewHelper.disableShiftMode(bottomNavigation);
 
-        fragment = UserFm.newInstance("new");
+        fragment = MusicFm.newInstance(Constants.TAB_HOT);
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.fragment_container, fragment)
@@ -100,6 +100,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         }
         getSupportFragmentManager()
                 .beginTransaction()
+                .setCustomAnimations( R.anim.slide_in_up , R.anim.slide_out_up)
                 .replace(R.id.fragment_container, fragment)
                 .commit();
         return false;
@@ -126,7 +127,14 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         if(fragment instanceof UserFm) id = R.id.action_user;
         else if (fragment instanceof PlaylistFm){
             id = R.id.action_playlist;
-        }else return;
+        }
+        else if (fragment instanceof MusicFm){
+            id = R.id.action_music;}
+        else if (fragment instanceof SearchFm){
+            id = R.id.action_search;}
+        else if (fragment instanceof SettingFm){
+            id = R.id.action_setting;}
+        else return;
         BottomNavigationView navigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
         navigationView.getMenu().findItem(id).setChecked(true);
     }
