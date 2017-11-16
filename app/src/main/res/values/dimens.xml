@@ -3,8 +3,35 @@
     <dimen name="dimen_16dp">16dp</dimen>
     <dimen name="dimen_8dp">8dp</dimen>
     <dimen name="dimen_10dp">10dp</dimen>
+    <dimen name="dimen_50dp">50dp</dimen>
+    <dimen name="dimen_60dp">60dp</dimen>
+    <dimen name="dimen_10sp">10sp</dimen>
+    <dimen name="dimen_4dp">4dp</dimen>
+    <dimen name="dimen_2dp">2dp</dimen>
     <dimen name="toolbar_height_40dp">40dp</dimen>
     <dimen name="tab_title_width">180dp</dimen>
     <dimen name="tab_title_text_size">12sp</dimen>
     <dimen name="tab_title_radius">3dp</dimen>
+    <dimen name="title_text_size">15sp</dimen>
+    <dimen name="view_pager_height">130dp</dimen>
+    <dimen name="album_text_size">11sp</dimen>
+    <dimen name="album_text_size_2">10sp</dimen>
+    <dimen name="album_horizontal_width">88dp</dimen>
+    <dimen name="scroll_bar_size">4dip</dimen>
+    <dimen name="top_title_size">16sp</dimen>
+    <dimen name="album_card_text_size2">10sp</dimen>
+    <dimen name="album_card_text_size1">12sp</dimen>
+    <dimen name="category_name_size">14sp</dimen>
+
+    <dimen name="card_margin">5dp</dimen>
+    <dimen name="card_album_radius">0dp</dimen>
+    <dimen name="album_cover_height">130dp</dimen>
+    <dimen name="album_title_padding">8dp</dimen>
+    <dimen name="album_title">10sp</dimen>
+    <dimen name="singers_padding_bottom">5dp</dimen>
+    <dimen name="album_singers_name">10sp</dimen>
+    <dimen name="ic_album_overflow_width">20dp</dimen>
+    <dimen name="ic_album_overflow_height">30dp</dimen>
+    <dimen name="ic_album_overflow_margin_top">10dp</dimen>
+
 </resources>

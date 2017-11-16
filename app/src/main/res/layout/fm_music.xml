@@ -21,7 +21,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/category_button"
                 android:textColor="@drawable/categories_button_text"
-                android:textSize="10sp"
+                android:textSize="@dimen/dimen_10sp"
                 />
         </LinearLayout>
         <LinearLayout
@@ -94,13 +94,15 @@
                 android:layout_height="wrap_content"
                 android:text="@string/style_button"
                 android:textColor="@drawable/categories_button_text"
-                android:textSize="10sp"
+                android:textSize="@dimen/dimen_10sp"
                 />
         </LinearLayout>
     </RelativeLayout>
     <LinearLayout
+        android:id="@+id/music_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/lightBlack">
+        android:background="@color/lightBlack"
+        android:orientation="vertical">
     </LinearLayout>
 </LinearLayout>

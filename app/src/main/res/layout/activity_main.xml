@@ -4,19 +4,37 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/black">
+    >
+    <LinearLayout
+        android:id="@+id/full_screen_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        android:orientation="vertical">
+    </LinearLayout>
 
-    <FrameLayout
+
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1">
 
-        <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@+id/fragment_container"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:orientation="vertical" />
+        <LinearLayout
+            android:id="@+id/fragment_container_second"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:visibility="gone">
+        </LinearLayout>
 
-    </FrameLayout>
+
+    </RelativeLayout>
 
 
     <LinearLayout

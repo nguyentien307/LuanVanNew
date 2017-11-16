@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="fill_vertical"
+    tools:context="com.example.tiennguyen.luanvannew.MainActivity"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    style="@style/NestedScrollBarStyle"
+    >
+    <LinearLayout
+        android:orientation="vertical" android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/lightBlack">
+
+        <RelativeLayout
+            android:id="@+id/rl_header"
+            android:layout_width="match_parent"
+            android:layout_height="160dp">
+            <ImageView
+                android:id="@+id/iv_bg_avatar"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/hot_slider3" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:background="@color/trans_white"
+                android:padding="@dimen/dimen_8dp">
+                <TextView
+                    android:id="@+id/tv_song_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="ten bai hat"
+                    android:textSize="14sp"
+                    android:textColor="@color/white"/>
+            </LinearLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:layout_alignParentBottom="true"
+                android:background="@color/trans_white">
+                <ImageView
+                    android:id="@+id/iv_add"
+                    android:layout_width="fill_parent"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/add_icon"
+                    android:layout_toStartOf="@+id/border"/>
+                <LinearLayout
+                    android:id="@+id/border"
+                    android:layout_centerHorizontal="true"
+                    android:layout_width="1dp"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:background="@color/darkWhite">
+                </LinearLayout>
+                <ImageView
+                    android:id="@+id/iv_play"
+                    android:layout_width="fill_parent"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/icon_play"
+                    android:layout_toEndOf="@+id/border"/>
+            </RelativeLayout>
+        </RelativeLayout>
+
+        <include layout="@layout/infor_title_name"
+            android:id="@+id/title_singers"/>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rc_singers"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clipToPadding="false"
+            android:scrollbarSize="@dimen/scroll_bar_size"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            >
+        </android.support.v7.widget.RecyclerView>
+
+        <include layout="@layout/infor_title_name"
+            android:id="@+id/title_composers"/>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rc_composers"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="vertical"
+            android:clipToPadding="false"
+            >
+        </android.support.v7.widget.RecyclerView>
+    </LinearLayout>
+</android.support.v4.widget.NestedScrollView>

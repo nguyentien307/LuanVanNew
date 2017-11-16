@@ -14,4 +14,13 @@
     <string name="category_tab_title_song">Songs</string>
     <string name="category_tab_title_album">Albums</string>
     <string name="category_tab_title_hot">Hot</string>
+    <string name="category_header_title">Categories</string>
+    <string name="style_header_title">Styles</string>
+
+    <string name="hot_albums_title_bar">Hot Albums</string>
+    <string name="hot_songs_title_bar">Hot Songs</string>
+    <string name="view_all">view all</string>
+
+    <string name="action_play_all">Play All</string>
+    <string name="action_delete">Delete</string>
 </resources>

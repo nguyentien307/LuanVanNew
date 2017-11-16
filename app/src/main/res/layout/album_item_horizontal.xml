@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="@dimen/album_horizontal_width"
+    android:layout_height="wrap_content"
+    android:paddingStart="@dimen/dimen_10dp"
+    >
+
+    <ImageView
+        android:id="@+id/iv_bg_cover"
+        android:layout_width="match_parent"
+        android:layout_height="80dp" />
+
+    <TextView
+        android:id="@+id/tv_album_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:maxLines = "2"
+        android:ellipsize="end"
+        android:textSize="@dimen/album_text_size"
+        android:textColor="@color/white"
+        android:paddingTop="@dimen/dimen_4dp"/>
+    <TextView
+        android:id="@+id/tv_artist_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:textSize="@dimen/album_text_size_2"
+        android:paddingTop="@dimen/dimen_2dp"
+        android:textColor="@color/darkWhite"/>
+    <TextView
+        android:id="@+id/tv_views"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:textSize="@dimen/album_text_size_2"
+        android:paddingTop="@dimen/dimen_2dp"
+        android:textColor="@color/darkWhite"/>
+
+</LinearLayout>

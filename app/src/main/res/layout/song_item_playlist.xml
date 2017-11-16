@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="60dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:paddingStart="@dimen/dimen_10dp"
+    android:paddingEnd="@dimen/dimen_10dp">
+    <RelativeLayout
+        android:id="@+id/rl_img_index"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true">
+        <ImageView
+            android:id="@+id/iv_avatar"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            />
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@+id/rl_img_index"
+        android:paddingStart="@dimen/dimen_10dp"
+        android:paddingEnd="@dimen/dimen_10dp"
+        android:layout_centerVertical="true"
+        android:layout_toStartOf="@+id/ll_add">
+        <TextView
+            android:id="@+id/tv_song_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:text="ten bai hat"
+            android:textSize="@dimen/album_text_size"
+            android:textColor="@color/white"
+            />
+        <TextView
+            android:id="@+id/tv_artist_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:text="vu cat tuong"
+            android:layout_below="@+id/tv_song_name"
+            android:textSize="@dimen/album_text_size_2"
+            android:paddingTop="@dimen/dimen_2dp"
+            android:textColor="@color/darkWhite"/>
+        <TextView
+            android:id="@+id/tv_views"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:text="200"
+            android:layout_below="@+id/tv_artist_name"
+            android:textSize="@dimen/album_text_size_2"
+            android:paddingTop="@dimen/dimen_2dp"
+            android:textColor="@color/darkWhite"/>
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_about"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true">
+        <ImageView
+            android:id="@+id/iv_about"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:src="@drawable/ic_about"
+            />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_add"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_toStartOf="@id/ll_about"
+        android:layout_marginEnd="@dimen/dimen_10dp"
+        android:layout_centerVertical="true">
+
+        <ImageView
+            android:id="@+id/iv_delete"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:src="@drawable/delete_icon"
+            />
+    </LinearLayout>
+
+</RelativeLayout>

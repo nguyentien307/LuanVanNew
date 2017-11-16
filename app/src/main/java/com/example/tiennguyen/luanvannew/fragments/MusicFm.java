@@ -9,7 +9,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.tiennguyen.luanvannew.R;
+import com.example.tiennguyen.luanvannew.models.CategoryItem;
 import com.example.tiennguyen.luanvannew.models.TabTilte;
+import com.example.tiennguyen.luanvannew.utils.Constants;
 
 import java.util.ArrayList;
 
@@ -24,11 +26,12 @@ public class MusicFm extends Fragment implements View.OnClickListener {
 
     private ArrayList<TabTilte> arrTabTitle;
     private String res = "";
+    private String tabName;
 
-    public static MusicFm newInstance(String name) {
+    public static MusicFm newInstance(String tabName) {
         MusicFm contentFragment = new MusicFm();
         Bundle bundle = new Bundle();
-        bundle.putString("name", name);
+        bundle.putString("tabName", tabName);
         contentFragment.setArguments(bundle);
 
         return contentFragment;
@@ -38,7 +41,7 @@ public class MusicFm extends Fragment implements View.OnClickListener {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments()!= null)
-            res = getArguments().getString("name");
+            tabName = getArguments().getString("tabName");
     }
 
     @Override
@@ -48,9 +51,11 @@ public class MusicFm extends Fragment implements View.OnClickListener {
         categoriesButton = (LinearLayout) view.findViewById(R.id.ll_category_button);
         tvCategories = (TextView) view.findViewById(R.id.tvCategoriesButton);
         tvCategories.setOnClickListener(this);
+        categoriesButton.setOnClickListener(this);
         stylesButton = (LinearLayout) view.findViewById(R.id.ll_styles_button);
         tvStyles = (TextView) view.findViewById(R.id.tvStylesButton);
         tvStyles.setOnClickListener(this);
+        stylesButton.setOnClickListener(this);
 
         tabSongs = (LinearLayout) view.findViewById(R.id.tabSongs);
         tabHot = (LinearLayout) view.findViewById(R.id.tabHot);
@@ -68,9 +73,21 @@ public class MusicFm extends Fragment implements View.OnClickListener {
 
     public void createTabArray() {
         arrTabTitle = new ArrayList<>();
-        arrTabTitle.add(new TabTilte(tabSongs, tvTabSongs, false));
-        arrTabTitle.add(new TabTilte(tabHot, tvTabHot, true));
-        arrTabTitle.add(new TabTilte(tabAlbums, tvTabAlbums, false));
+        if(tabName == Constants.TAB_HOT) {
+            arrTabTitle.add(new TabTilte(tabSongs, tvTabSongs, false));
+            arrTabTitle.add(new TabTilte(tabHot, tvTabHot, true));
+            arrTabTitle.add(new TabTilte(tabAlbums, tvTabAlbums, false));
+        }
+        else if (tabName == Constants.TAB_SONGS ){
+            arrTabTitle.add(new TabTilte(tabSongs, tvTabSongs, true));
+            arrTabTitle.add(new TabTilte(tabHot, tvTabHot, false));
+            arrTabTitle.add(new TabTilte(tabAlbums, tvTabAlbums, false));
+        }
+        else {
+            arrTabTitle.add(new TabTilte(tabSongs, tvTabSongs, false));
+            arrTabTitle.add(new TabTilte(tabHot, tvTabHot, false));
+            arrTabTitle.add(new TabTilte(tabAlbums, tvTabAlbums, true));
+        }
         setItemState();
     }
 
@@ -85,11 +102,14 @@ public class MusicFm extends Fragment implements View.OnClickListener {
     }
 
     public void setItemState(){
+        Fragment fragment = new Fragment();
         if(arrTabTitle.get(0).isChecked()){
             tabSongs.setBackground(getResources().getDrawable(R.drawable.tab_title_left_pressed));
             tvTabSongs.setTextColor(getResources().getColor(R.color.black));
             categoriesButton.setVisibility(View.VISIBLE);
             stylesButton.setVisibility(View.VISIBLE);
+
+            fragment = MusicSongsFm.newInstance(new CategoryItem("Hot Songs", "", R.drawable.style1));
         }
         else {
             tabSongs.setBackground(getResources().getDrawable(R.drawable.tab_title_left_normal));
@@ -101,6 +121,9 @@ public class MusicFm extends Fragment implements View.OnClickListener {
             tvTabHot.setTextColor(getResources().getColor(R.color.black));
             categoriesButton.setVisibility(View.INVISIBLE);
             stylesButton.setVisibility(View.INVISIBLE);
+
+            fragment = MusicHotFm.newInstance("new");
+
         }
         else {
             tabHot.setBackground(getResources().getDrawable(R.drawable.tab_title_center_normal));
@@ -112,11 +135,15 @@ public class MusicFm extends Fragment implements View.OnClickListener {
             tvTabAlbums.setTextColor(getResources().getColor(R.color.black));
             categoriesButton.setVisibility(View.VISIBLE);
             stylesButton.setVisibility(View.INVISIBLE);
+
+            fragment = MusicAlbumsFm.newInstance(new CategoryItem("Hot Albums", "", R.drawable.style1));
         }
         else {
             tabAlbums.setBackground(getResources().getDrawable(R.drawable.tab_title_right_normal));
             tvTabAlbums.setTextColor(getResources().getColor(R.color.lightBlue));
         }
+
+        transaction(R.id.music_content, fragment);
     }
 
     @Override
@@ -133,6 +160,33 @@ public class MusicFm extends Fragment implements View.OnClickListener {
             case R.id.tabAlbums:{
                 checkedItem(R.id.tabAlbums);
             } break;
+            case R.id.tvCategoriesButton:
+            case R.id.ll_category_button:{
+                LinearLayout fullScreen  = (LinearLayout) getActivity().findViewById(R.id.full_screen_content);
+                fullScreen.setVisibility(View.VISIBLE);
+                Fragment frag;
+                if(arrTabTitle.get(0).isChecked()){
+                    frag = CategoryFm.newInstance("songs");
+                }
+                else {
+                    frag = CategoryFm.newInstance("albums");
+                }
+                transaction(R.id.full_screen_content, frag);
+            } break;
+            case R.id.tvStylesButton:
+            case R.id.ll_styles_button:{
+                LinearLayout fullScreen  = (LinearLayout) getActivity().findViewById(R.id.full_screen_content);
+                fullScreen.setVisibility(View.VISIBLE);
+                Fragment frag = CategoryFm.newInstance("styles");
+                transaction(R.id.full_screen_content, frag);
+            } break;
         }
+    }
+
+    public void transaction(int idLayout, Fragment fragment){
+        getActivity().getSupportFragmentManager()
+                .beginTransaction()
+                .replace(idLayout, fragment)
+                .commit();
     }
 }

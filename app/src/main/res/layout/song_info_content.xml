@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:scrollbars="none"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <RelativeLayout
+            android:id="@+id/rl_header"
+            android:layout_width="match_parent"
+            android:layout_height="160dp">
+            <ImageView
+                android:id="@+id/iv_bg_avatar"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/hot_slider3" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:background="@color/trans_white"
+                android:padding="@dimen/dimen_8dp">
+                <TextView
+                    android:id="@+id/tv_song_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="ten bai hat"
+                    android:textSize="14sp"
+                    android:textColor="@color/white"/>
+            </LinearLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:layout_alignParentBottom="true"
+                android:background="@color/trans_white">
+                <ImageView
+                    android:id="@+id/iv_add"
+                    android:layout_width="fill_parent"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/ic_add"
+                    android:layout_toStartOf="@+id/border"/>
+                <LinearLayout
+                    android:id="@+id/border"
+                    android:layout_centerHorizontal="true"
+                    android:layout_width="1dp"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:background="@color/darkWhite">
+                </LinearLayout>
+                <ImageView
+                    android:id="@+id/iv_play"
+                    android:layout_width="fill_parent"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/ic_play"
+                    android:layout_toEndOf="@+id/border"/>
+            </RelativeLayout>
+        </RelativeLayout>
+        <LinearLayout
+            android:id="@+id/ll_singer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_below="@+id/rl_header">
+
+            <include layout="@layout/infor_title_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/title_singers"
+                />
+
+            <ListView
+                android:id="@+id/lv_singers"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_below="@+id/ll_singer"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <include layout="@layout/infor_title_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/title_composers" />
+            <ListView
+                android:id="@+id/lv_composers"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clipToPadding="false"
+                android:scrollbars="vertical"
+                />
+
+        </LinearLayout>
+    </RelativeLayout>
+</ScrollView>

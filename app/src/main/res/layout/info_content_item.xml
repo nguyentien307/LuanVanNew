@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:id="@+id/rl_title"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        android:background="@color/lightBlack"
+        >
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="match_parent"
+            android:layout_centerVertical="true"
+            android:layout_alignParentStart="true"
+            >
+            <TextView
+                android:paddingLeft="@dimen/dimen_16dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/tv_person_title"
+                android:text="Topic title"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                android:layout_centerVertical="true"
+                android:layout_toStartOf="@+id/rl_button"
+                />
+
+            <RelativeLayout
+                android:layout_width="48dp"
+                android:layout_height="match_parent"
+                android:layout_alignParentEnd="true"
+                android:id="@+id/rl_button">
+                <RelativeLayout
+                    android:id="@+id/button"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_centerInParent="true"
+                    >
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/ic_keyboard_arrow_down_black_24dp" />
+                </RelativeLayout>
+            </RelativeLayout>
+
+        </RelativeLayout>
+
+
+    </RelativeLayout>
+
+
+    <com.github.aakira.expandablelayout.ExpandableLinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/expandableLayout"
+        android:layout_below="@+id/rl_title"
+        android:orientation="vertical"
+        app:ael_duration = "400"
+        app:ael_expanded = "true"
+        app:ael_interpolator = "bounce"
+        android:padding="@dimen/dimen_16dp"
+        android:background="@drawable/expandable_layout_background">
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_gravity="fill_vertical"
+            tools:context="com.example.tiennguyen.luanvannew.MainActivity"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            style="@style/NestedScrollBarStyle"
+            >
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <RelativeLayout
+                    android:id="@+id/row"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp">
+                    <ImageView
+                        android:id="@+id/iv_avatar"
+                        android:layout_width="@dimen/dimen_60dp"
+                        android:layout_height="@dimen/dimen_60dp" />
+                    <TextView
+                        android:id="@+id/tv_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Adele"
+                        android:layout_toEndOf="@+id/iv_avatar"
+                        android:layout_marginStart="@dimen/dimen_16dp"
+                        android:textSize="16sp"
+                        android:textColor="@color/white"/>
+                    <TextView
+                        android:id="@+id/tv_views"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Lượt views: 200"
+                        android:layout_toEndOf="@+id/iv_avatar"
+                        android:layout_marginStart="@dimen/dimen_16dp"
+                        android:textSize="12sp"
+                        android:textColor="@color/white"
+                        android:layout_alignParentBottom="true"/>
+                    <TextView
+                        android:id="@+id/tv_link"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentBottom="true"
+                        android:text="Âm nhạc >>"
+                        android:textColor="@drawable/view_all_color"/>
+
+                </RelativeLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="@dimen/dimen_8dp"
+                    android:id="@+id/tv_detail"
+                    android:text="Thông tin ca sĩ"
+                    android:layout_below="@+id/row"
+                    android:textSize="10sp"
+                    android:textColor="@color/white"/>
+
+            </RelativeLayout>
+        </ScrollView>
+    </com.github.aakira.expandablelayout.ExpandableLinearLayout>
+
+</RelativeLayout>

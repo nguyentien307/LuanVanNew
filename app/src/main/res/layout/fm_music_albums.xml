@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+    <include layout="@layout/top_title_name"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rc_albums"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:scrollbars="vertical"
+        >
+    </android.support.v7.widget.RecyclerView>
+</LinearLayout>

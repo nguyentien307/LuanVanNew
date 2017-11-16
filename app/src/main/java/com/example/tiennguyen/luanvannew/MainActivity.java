@@ -11,6 +11,8 @@ import android.text.SpannableString;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
+import android.view.View;
+import android.widget.LinearLayout;
 
 import com.example.tiennguyen.luanvannew.fragments.MusicFm;
 import com.example.tiennguyen.luanvannew.fragments.PlaylistFm;
@@ -19,6 +21,7 @@ import com.example.tiennguyen.luanvannew.fragments.SettingFm;
 import com.example.tiennguyen.luanvannew.fragments.UserFm;
 import com.example.tiennguyen.luanvannew.helpers.BottomNavigationViewHelper;
 import com.example.tiennguyen.luanvannew.helpers.CustomTypefaceSpan;
+import com.example.tiennguyen.luanvannew.utils.Constants;
 
 public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
 
@@ -74,12 +77,16 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         item.setChecked(true);
+        LinearLayout secondScreen  = (LinearLayout) findViewById(R.id.fragment_container_second);
+        secondScreen.setVisibility(View.GONE);
+        LinearLayout fullScreen  = (LinearLayout) findViewById(R.id.full_screen_content);
+        fullScreen.setVisibility(View.GONE);
         switch (item.getItemId()){
             case R.id.action_user:{
                 fragment = UserFm.newInstance("new");
             }break;
             case R.id.action_music:{
-                fragment = MusicFm.newInstance("new");
+                fragment = MusicFm.newInstance(Constants.TAB_HOT);
             }break;
             case R.id.action_search:{
                 fragment = SearchFm.newInstance("new");
@@ -96,5 +103,31 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 .replace(R.id.fragment_container, fragment)
                 .commit();
         return false;
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        int count = getFragmentManager().getBackStackEntryCount();
+
+        if (count == 0) {
+            super.onBackPressed();
+            //additional code
+        } else {
+            getFragmentManager().popBackStack();
+        }
+
+    }
+
+    @Override
+    public void onAttachFragment(Fragment fragment) {
+        super.onAttachFragment(fragment);
+        int id;
+        if(fragment instanceof UserFm) id = R.id.action_user;
+        else if (fragment instanceof PlaylistFm){
+            id = R.id.action_playlist;
+        }else return;
+        BottomNavigationView navigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
+        navigationView.getMenu().findItem(id).setChecked(true);
     }
 }
