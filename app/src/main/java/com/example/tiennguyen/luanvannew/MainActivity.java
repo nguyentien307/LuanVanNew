@@ -89,7 +89,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 fragment = MusicFm.newInstance(Constants.TAB_HOT);
             }break;
             case R.id.action_search:{
-                fragment = SearchFm.newInstance("new");
+                fragment = new SearchFm();
             }break;
             case R.id.action_playlist:{
                 fragment = PlaylistFm.newInstance("new");

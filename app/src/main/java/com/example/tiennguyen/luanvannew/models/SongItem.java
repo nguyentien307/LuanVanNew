@@ -1,13 +1,15 @@
 package com.example.tiennguyen.luanvannew.models;
 
 import java.io.Serializable;
+import android.os.Parcel;
+import android.os.Parcelable;
 import java.util.ArrayList;
 
 /**
  * Created by Quyen Hua on 11/4/2017.
  */
 
-public class SongItem implements Serializable {
+public class SongItem implements Serializable, Parcelable {
     private String title;
     private int views;
     private String link;
@@ -33,6 +35,26 @@ public class SongItem implements Serializable {
         this.artist = artist;
         this.link = link;
     }
+
+    protected SongItem(Parcel in) {
+        title = in.readString();
+        views = in.readInt();
+        link = in.readString();
+        linkLyric = in.readString();
+        linkImg = in.readString();
+    }
+
+    public static final Creator<SongItem> CREATOR = new Creator<SongItem>() {
+        @Override
+        public SongItem createFromParcel(Parcel in) {
+            return new SongItem(in);
+        }
+
+        @Override
+        public SongItem[] newArray(int size) {
+            return new SongItem[size];
+        }
+    };
 
     public String getTitle() {
         return title;
@@ -84,5 +106,19 @@ public class SongItem implements Serializable {
 
     public void setLinkImg(String linkImg) {
         this.linkImg = linkImg;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(title);
+        dest.writeInt(views);
+        dest.writeString(link);
+        dest.writeString(linkLyric);
+        dest.writeString(linkImg);
     }
 }

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/song_card"
+    >
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/cvSongPlayer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/margin_5dp"
+        >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@color/black"
+            android:paddingBottom="@dimen/padding_8dp"
+            android:paddingLeft="@dimen/padding_16dp"
+            android:paddingRight="@dimen/padding_16dp"
+            android:paddingTop="@dimen/padding_8dp">
+
+            <ImageView
+                android:id="@+id/imgSongPlayer"
+                android:layout_width="@dimen/search_result_image_size_40dp"
+                android:layout_height="@dimen/search_result_image_size_40dp"
+                android:background="@color/lightBlue"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentStart="true" />
+
+            <TextView
+                android:id="@+id/tvSongTitlePlayer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_8dp"
+                android:layout_toEndOf="@+id/imgSongPlayer"
+                android:layout_toStartOf="@+id/btnAddPlayer"
+                android:text="ten bai hat"
+                android:textSize="@dimen/text_size_13sp"
+                android:textColor="@color/white"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvSongSingerPlayer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/tvSongTitlePlayer"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="@dimen/margin_8dp"
+                android:layout_toEndOf="@+id/imgSongPlayer"
+                android:layout_toStartOf="@+id/btnAddPlayer"
+                android:ellipsize="marquee"
+                android:lines="1"
+                android:maxLines="1"
+                android:text="Ten ca si"
+                android:textColor="@color/lightgray"
+                android:textSize="@dimen/text_size_11sp" />
+
+            <ImageView
+                android:id="@+id/btnPlayPlayer"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:layout_alignParentRight="true"
+                android:src="@drawable/ic_play_arrow_black_24dp" />
+
+            <ImageView
+                android:id="@+id/btnAddPlayer"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:layout_toLeftOf="@id/btnPlayPlayer"
+                android:src="@drawable/ic_add_black" />
+        </RelativeLayout>
+
+
+    </android.support.v7.widget.CardView>
+
+</RelativeLayout>

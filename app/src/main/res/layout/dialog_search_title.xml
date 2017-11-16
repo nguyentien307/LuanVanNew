@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <RadioGroup
+        android:id="@+id/rgSearch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/margin_20dp"
+        android:checkedButton="@+id/rb_song">
+
+        <RadioButton
+            android:id="@+id/rbSongs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/songs_title"
+            android:textSize="@dimen/search_title_text_size_14sp" />
+
+        <RadioButton
+            android:id="@+id/rbALbums"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/albums_title"
+            android:textSize="@dimen/search_title_text_size_14sp" />
+
+        <RadioButton
+            android:id="@+id/rbArtists"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/artists_title"
+            android:textSize="@dimen/search_title_text_size_14sp" />
+
+        <RadioButton
+            android:id="@+id/rbComposers"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/composers_title"
+            android:textSize="@dimen/search_title_text_size_14sp" />
+
+    </RadioGroup>
+
+</LinearLayout>

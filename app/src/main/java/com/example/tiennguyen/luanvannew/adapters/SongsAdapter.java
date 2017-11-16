@@ -3,8 +3,12 @@ package com.example.tiennguyen.luanvannew.adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -19,6 +23,9 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.tiennguyen.luanvannew.MyApplication;
 import com.example.tiennguyen.luanvannew.R;
+import com.example.tiennguyen.luanvannew.activities.PlayerActivity;
+import com.example.tiennguyen.luanvannew.commons.StringUtils;
+import com.example.tiennguyen.luanvannew.fragments.PlayerCollapseFm;
 import com.example.tiennguyen.luanvannew.fragments.SongInfoFm;
 import com.example.tiennguyen.luanvannew.models.PersonItem;
 import com.example.tiennguyen.luanvannew.models.PlaylistItem;
@@ -100,7 +107,23 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.ViewHolder> 
                     diaBox.show();
                 }; break;
 
-                default: Toast.makeText(context, getAdapterPosition() + "", Toast.LENGTH_SHORT).show();break;
+                default: {
+                    LinearLayout llPlayerCol = (LinearLayout) activity.findViewById(R.id.llPlayerCollapse);
+                    llPlayerCol.setVisibility(View.VISIBLE);
+                    PlayerCollapseFm playerCollapseFm = new PlayerCollapseFm();
+                    String title = arrSongs.get(getAdapterPosition()).getTitle();
+                    String artist = StringUtils.getArtists(arrSongs.get(getAdapterPosition()).getArtist());
+                    playerCollapseFm = playerCollapseFm.newInstance(title, artist);
+                    FragmentTransaction ft = ((FragmentActivity)context).getSupportFragmentManager().beginTransaction();
+                    ft.add(R.id.llPlayerCollapse, playerCollapseFm).commit();
+
+                    Bundle bundle = new Bundle();
+                    bundle.putParcelableArrayList("arrSong", arrSongs);
+                    bundle.putInt("index", getAdapterPosition());
+                    Intent intent = new Intent(activity, PlayerActivity.class);
+                    intent.putExtra("data", bundle);
+                    activity.startActivity(intent);
+                }break;
             }
 
         }

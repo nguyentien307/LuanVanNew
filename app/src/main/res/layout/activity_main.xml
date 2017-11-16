@@ -24,14 +24,24 @@
             android:id="@+id/fragment_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical" />
+            android:orientation="vertical"
+            android:layout_above="@+id/llPlayerCollapse" />
         <LinearLayout
             android:id="@+id/fragment_container_second"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            android:visibility="gone">
+            android:visibility="gone"
+            android:layout_above="@+id/llPlayerCollapse">
         </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llPlayerCollapse"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/player_collapse_height_50dp"
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:layout_alignParentBottom="true"/>
 
 
     </RelativeLayout>
