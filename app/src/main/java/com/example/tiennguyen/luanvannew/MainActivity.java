@@ -1,5 +1,6 @@
 package com.example.tiennguyen.luanvannew;
 
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -14,25 +15,31 @@ import android.view.SubMenu;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import com.example.tiennguyen.luanvannew.commons.Constants;
 import com.example.tiennguyen.luanvannew.fragments.MusicFm;
 import com.example.tiennguyen.luanvannew.fragments.PlaylistFm;
 import com.example.tiennguyen.luanvannew.fragments.SearchFm;
 import com.example.tiennguyen.luanvannew.fragments.SettingFm;
+import com.example.tiennguyen.luanvannew.fragments.SongInfoFm;
 import com.example.tiennguyen.luanvannew.fragments.UserFm;
 import com.example.tiennguyen.luanvannew.helpers.BottomNavigationViewHelper;
 import com.example.tiennguyen.luanvannew.helpers.CustomTypefaceSpan;
-import com.example.tiennguyen.luanvannew.utils.Constants;
+import com.example.tiennguyen.luanvannew.models.PersonItem;
+import com.example.tiennguyen.luanvannew.models.SongItem;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
 
     private BottomNavigationView bottomNavigation ;
     private Fragment fragment;
+    private Boolean isPlayerCall = false;
+    private SongItem songItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         setBottomNavigation();
 
     }
@@ -137,5 +144,28 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         else return;
         BottomNavigationView navigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
         navigationView.getMenu().findItem(id).setChecked(true);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == com.example.tiennguyen.luanvannew.commons.Constants.REQUEST_CODE) {
+            if (resultCode == com.example.tiennguyen.luanvannew.commons.Constants.RESULT_OK) {
+                Bundle bundle = data.getBundleExtra("data");
+                if (bundle != null) {
+                    songItem = (SongItem) bundle.getSerializable("songItem");
+                    ArrayList<PersonItem> arrArtist = bundle.getParcelableArrayList("arrArtist");
+                    ArrayList<PersonItem> arrComposer = bundle.getParcelableArrayList("arrComposer");
+                    songItem.setArtist(arrArtist);
+                    songItem.setComposer(arrComposer);
+
+                    fragment = SongInfoFm.newInstance(songItem);
+                    getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.fragment_container, fragment)
+                            .commit();
+                }
+            }
+        }
     }
 }

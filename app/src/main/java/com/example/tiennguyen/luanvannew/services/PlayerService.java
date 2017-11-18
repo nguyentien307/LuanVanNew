@@ -9,6 +9,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Handler;
@@ -20,8 +21,10 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.example.tiennguyen.luanvannew.R;
 import com.example.tiennguyen.luanvannew.activities.PlayerActivity;
 import com.example.tiennguyen.luanvannew.commons.StringUtils;
@@ -47,14 +50,18 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
         View.OnClickListener, View.OnTouchListener, MediaPlayer.OnErrorListener, MediaPlayer.OnPreparedListener,
         MediaPlayer.OnBufferingUpdateListener, MediaPlayer.OnSeekCompleteListener, MediaPlayer.OnInfoListener {
 
+    String URL_TEMPLATE = "http://mp3.zing.vn/html5/song/";
+
     // Player Music
     private WeakReference<TextView> musicTitle, artistName;
     private WeakReference<InteractivePlayerView> interactivePlayerViewWeakReference;
+    private WeakReference<LinearLayout> llNextward, llBackward, llShuffle, llReplay;
     private WeakReference<ImageView> icNext, icPrevious, icControlPlayPause, icShuffle, icReplay, icNextward, icBackward;
     private ArrayList<SongItem> songArr = new ArrayList<>();
 
     // Player Collapse
     private WeakReference<TextView> tvTitleCol, tvArtistCol;
+    private WeakReference<LinearLayout> llNextCol, llPreviousCol, llPlayCol;
     private WeakReference<ImageView> imgTitleCol, btnNextCol, btnPreviousCol, btnPlayCol;
 
     private Handler mHandler = new Handler();
@@ -129,10 +136,11 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
         initUI();
         songArr = PlayerActivity.songArr;
         int songIndex = intent.getIntExtra("songIndex", 0);
+        boolean playNew = intent.getBooleanExtra("playNew", false);
         interactivePlayerViewWeakReference.get().setMax(100);
         interactivePlayerViewWeakReference.get().setProgress(0);
         Log.v(TAG, String.valueOf(songIndex));
-        if (songIndex != currentSongIndex) {
+        if (songIndex != currentSongIndex || playNew) {
             playSong(songIndex);
 //            initNotification(songIndex);
             currentSongIndex = songIndex;
@@ -196,6 +204,10 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
         icReplay = new WeakReference<>(PlayerActivity.icReplay);
         icNextward = new WeakReference<>(PlayerActivity.icNextward);
         icBackward = new WeakReference<>(PlayerActivity.icBackward);
+        llNextward = new WeakReference<>(PlayerActivity.llNextward);
+        llBackward = new WeakReference<>(PlayerActivity.llBackward);
+        llShuffle = new WeakReference<>(PlayerActivity.llShuffle);
+        llReplay = new WeakReference<>(PlayerActivity.llReplay);
 
         icNext.get().setOnClickListener(this);
         icPrevious.get().setOnClickListener(this);
@@ -204,16 +216,26 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
         icReplay.get().setOnClickListener(this);
         icNextward.get().setOnClickListener(this);
         icBackward.get().setOnClickListener(this);
+        llNextward.get().setOnClickListener(this);
+        llBackward.get().setOnClickListener(this);
+        llShuffle.get().setOnClickListener(this);
+        llReplay.get().setOnClickListener(this);
         interactivePlayerViewWeakReference.get().setOnActionClickedListener(this);
 
         // Player Collapse
         tvTitleCol = new WeakReference<>(PlayerCollapseFm.tvTitleCol);
         tvArtistCol = new WeakReference<>(PlayerCollapseFm.tvArtistCol);
 
+        llNextCol = new WeakReference<>(PlayerCollapseFm.llNextCol);
+        llPreviousCol = new WeakReference<>(PlayerCollapseFm.llPreCol);
+        llPlayCol = new WeakReference<>(PlayerCollapseFm.llPlayCol);
         btnNextCol = new WeakReference<>(PlayerCollapseFm.btnNextCol);
         btnPreviousCol = new WeakReference<>(PlayerCollapseFm.btnPreviousCol);
         btnPlayCol = new WeakReference<>(PlayerCollapseFm.btnPlayCol);
 
+        llNextCol.get().setOnClickListener(this);
+        llPreviousCol.get().setOnClickListener(this);
+        llPlayCol.get().setOnClickListener(this);
         btnPlayCol.get().setOnClickListener(this);
         btnPreviousCol.get().setOnClickListener(this);
         btnNextCol.get().setOnClickListener(this);
@@ -236,11 +258,9 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
         mHandler.removeCallbacks(mUpdateTimeTask);
         try {
             mp.reset();
-            mp.setDataSource(songArr.get(songIndex).getLink());
+            mp.setDataSource(URL_TEMPLATE + songArr.get(songIndex).getLink());
             //gửi tin nhắn đến MainActivity để hiển thị đồng bộ
 //                sendBufferingBroadcast();
-            mp.prepare();
-            mp.start();
             musicTitle.get().setText(songArr.get(songIndex).getTitle());
             artistName.get().setText(StringUtils.getArtists(songArr.get(songIndex).getArtist()));
 
@@ -248,6 +268,9 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
             tvArtistCol.get().setText(StringUtils.getArtists(songArr.get(songIndex).getArtist()));
 
             icControlPlayPause.get().setBackgroundResource(R.drawable.ic_action_pause);
+            interactivePlayerViewWeakReference.get().setCoverURL(songArr.get(songIndex).getLinkImg());
+            mp.prepare();
+            mp.start();
             interactivePlayerViewWeakReference.get().setMax(mp.getDuration() / 1000);
             interactivePlayerViewWeakReference.get().setProgress(0);
             updateProgressBar();
@@ -396,6 +419,8 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.control:
+            case R.id.imgPlayCol:
+            case R.id.llPlayCol:
                 if (currentSongIndex != -1) {
                     if (mp.isPlaying()) {
                         pauseMedia();
@@ -408,6 +433,8 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
                 }
                 break;
             case R.id.imgNext:
+            case R.id.imgNextCol:
+            case R.id.llNextCol:
                 if (currentSongIndex < (songArr.size() - 1)) {
                     playSong(currentSongIndex + 1);
                     currentSongIndex = currentSongIndex + 1;
@@ -418,6 +445,8 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
                 }
                 break;
             case R.id.imgPrevious:
+            case R.id.imgPreCol:
+            case R.id.llPreCol:
                 if (currentSongIndex > 0) {
                     playSong(currentSongIndex - 1);
                     currentSongIndex = currentSongIndex - 1;
@@ -428,6 +457,7 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
                 }
                 break;
             case R.id.btnShuffle:
+            case R.id.llShuffle:
                 if (isShuffle) {
                     isShuffle = false;
                     icShuffle.get().setImageResource(R.drawable.shuffle_unselected);
@@ -437,6 +467,7 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
                 }
                 break;
             case R.id.btnReplay:
+            case R.id.llReplay:
                 if (isRepeat) {
                     isRepeat = false;
                     icReplay.get().setImageResource(R.drawable.replay_unselected);
@@ -446,6 +477,7 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
                 }
                 break;
             case R.id.btnNextward:
+            case R.id.llNextward:
 
                 // get current song position
                 int currentPosition = mp.getCurrentPosition();
@@ -459,6 +491,7 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
                 }
                 break;
             case R.id.btnBackward:
+            case R.id.llBackward:
                 // get current song position
                 int currentPosition2 = mp.getCurrentPosition();
                 // check if seekBackward time is greater than 0 sec
@@ -468,38 +501,6 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
                 } else {
                     // backward to starting position
                     mp.seekTo(0);
-                }
-                break;
-            case R.id.imgPlayCol:
-                if (currentSongIndex != -1) {
-                    if (mp.isPlaying()) {
-                        pauseMedia();
-                    } else {
-                        // Resume song
-                        if (mp != null) {
-                            playMedia();
-                        }
-                    }
-                }
-                break;
-            case R.id.imgNextCol:
-                if (currentSongIndex < (songArr.size() - 1)) {
-                    playSong(currentSongIndex + 1);
-                    currentSongIndex = currentSongIndex + 1;
-                } else {
-                    // play first song
-                    playSong(0);
-                    currentSongIndex = 0;
-                }
-                break;
-            case R.id.imgPreCol:
-                if (currentSongIndex > 0) {
-                    playSong(currentSongIndex - 1);
-                    currentSongIndex = currentSongIndex - 1;
-                } else {
-                    // play last song
-                    playSong(songArr.size() - 1);
-                    currentSongIndex = songArr.size() - 1;
                 }
                 break;
             default:

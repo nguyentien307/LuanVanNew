@@ -1,18 +1,30 @@
 package com.example.tiennguyen.luanvannew.adapters;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.example.tiennguyen.luanvannew.MainActivity;
+import com.example.tiennguyen.luanvannew.MyApplication;
 import com.example.tiennguyen.luanvannew.R;
+import com.example.tiennguyen.luanvannew.commons.Constants;
+import com.example.tiennguyen.luanvannew.dialogs.MyAlertDialogFragment;
+import com.example.tiennguyen.luanvannew.fragments.SongInfoFm;
+import com.example.tiennguyen.luanvannew.models.PlaylistItem;
 import com.example.tiennguyen.luanvannew.models.SongItem;
 import com.example.tiennguyen.luanvannew.services.PlayerService;
 import com.example.tiennguyen.luanvannew.commons.StringUtils;
@@ -25,11 +37,13 @@ import java.util.ArrayList;
 
 public class PlayerAdapter extends RecyclerView.Adapter<PlayerAdapter.PlayerViewHolder>{
     ArrayList<SongItem> arrSongs;
-    private Context ctx;
+    Context context;
+    Activity activity;
 
-    public PlayerAdapter(ArrayList<SongItem> arrSongs, Context ctx){
+    public PlayerAdapter(ArrayList<SongItem> arrSongs, Context context, Activity activity){
         this.arrSongs = arrSongs;
-        this.ctx = ctx;
+        this.context = context;
+        this.activity = activity;
     }
 
     @Override
@@ -43,18 +57,9 @@ public class PlayerAdapter extends RecyclerView.Adapter<PlayerAdapter.PlayerView
 
     @Override
     public void onBindViewHolder(PlayerViewHolder holder, int position) {
-        Typeface typeface = Typeface.createFromAsset(ctx.getAssets(), "mystical.ttf");
-        holder.tvSongTitle.setTypeface(typeface);
-        holder.tvSongTitle.setText(arrSongs.get(position).getTitle());
-        holder.tvSongSingers.setText(StringUtils.getArtists(arrSongs.get(position).getArtist()));
-        if (arrSongs.get(position).getLinkImg() != "") {
-            Glide.with(ctx)
-                    .load(arrSongs.get(position).getLinkImg())
-                    .centerCrop()
-                    .placeholder(R.drawable.item_down)
-                    .error(R.drawable.item_up)
-                    .into(holder.imgSong);
-        }
+        holder.tvSongName.setText(arrSongs.get(position).getTitle());
+        holder.tvArtistName.setText(StringUtils.getArtists(arrSongs.get(position).getArtist()));
+        holder.tvIndex.setText(position + 1 +"");
     }
 
     @Override
@@ -68,33 +73,55 @@ public class PlayerAdapter extends RecyclerView.Adapter<PlayerAdapter.PlayerView
     }
 
     public class PlayerViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        TextView tvSongTitle;
-        TextView tvIndex;
-
-        CardView cvSong;
-        TextView tvSongSingers;
-        ImageView imgSong;
-        ImageView btnAdd;
-        ImageView btnPlay;
+        public TextView tvSongName, tvArtistName, tvIndex;
+        public LinearLayout llAdd, llAbout;
+        public LinearLayout llIndex;
 
         PlayerViewHolder(View itemView) {
             super(itemView);
-            cvSong = (CardView) itemView.findViewById(R.id.cvSongPlayer);
-            tvSongTitle = (TextView) itemView.findViewById(R.id.tvSongTitlePlayer);
-            tvSongSingers = (TextView) itemView.findViewById(R.id.tvSongSingerPlayer);
-            imgSong = (ImageView) itemView.findViewById(R.id.imgSongPlayer);
+            tvSongName = (TextView) itemView.findViewById(R.id.tv_song_name);
+            tvArtistName = (TextView) itemView.findViewById(R.id.tv_artist_name);
+            llAbout = (LinearLayout) itemView.findViewById(R.id.ll_about);
+            llAdd = (LinearLayout) itemView.findViewById(R.id.ll_add);
+            tvIndex = (TextView) itemView.findViewById(R.id.tv_index);
+
+            llAdd.setOnClickListener(this);
+            llAbout.setOnClickListener(this);
             itemView.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View v) {
             switch (v.getId()){
+                case R.id.ll_add: {
+                    showDialog();
+                }; break;
+                case R.id.ll_about:{
+                    Intent intent = new Intent(activity, MainActivity.class);
+                    Bundle bundle = new Bundle();
+                    bundle.putBoolean("player", true);
+                    bundle.putSerializable("songItem", arrSongs.get(getAdapterPosition()));
+                    bundle.putParcelableArrayList("arrArtist", arrSongs.get(getAdapterPosition()).getArtist());
+                    bundle.putParcelableArrayList("arrComposer", arrSongs.get(getAdapterPosition()).getComposer());
+                    intent.putExtra("data", bundle);
+                    activity.setResult(Constants.RESULT_OK, intent);
+                    activity.finish();
+                }; break;
                 default:
-                    Intent playerService = new Intent(ctx, PlayerService.class);
+                    Intent playerService = new Intent(context, PlayerService.class);
                     playerService.putExtra("songIndex", getAdapterPosition());
-                    ctx.startService(playerService);
+                    playerService.putExtra("playNew", true);
+                    context.startService(playerService);
                     break;
             }
+
+        }
+
+        private void showDialog(){
+            ArrayList<PlaylistItem> arrPlaylists = ((MyApplication) activity.getApplication()).getArrPlaylists();
+            MyAlertDialogFragment dialog = MyAlertDialogFragment.newInstance(arrPlaylists);
+            FragmentManager manager = ((AppCompatActivity)context).getSupportFragmentManager();
+            dialog.show(manager, "fragment_alert");
 
         }
     }

@@ -1,38 +1,27 @@
 package com.example.tiennguyen.luanvannew.activities;
 
-import android.app.ProgressDialog;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.media.MediaPlayer;
-import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.text.Html;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.tiennguyen.luanvannew.MyApplication;
 import com.example.tiennguyen.luanvannew.R;
 import com.example.tiennguyen.luanvannew.adapters.PlayerAdapter;
+import com.example.tiennguyen.luanvannew.commons.Constants;
 import com.example.tiennguyen.luanvannew.models.PersonItem;
-import com.example.tiennguyen.luanvannew.models.PlaylistItem;
 import com.example.tiennguyen.luanvannew.models.SongItem;
 import com.example.tiennguyen.luanvannew.services.PlayerService;
-import com.example.tiennguyen.luanvannew.utils.Constants;
 
 import java.util.ArrayList;
 
@@ -46,6 +35,7 @@ public class PlayerActivity extends AppCompatActivity implements OnActionClicked
     public static TextView musicTitle;
     public static TextView artistName;
     private LinearLayout llBack;
+    public static LinearLayout llBackward, llNextward, llShuffle, llReplay;
     public static ImageView icNext;
     public static ImageView icPrevious;
     public static ImageView controlPlayPause;
@@ -55,9 +45,11 @@ public class PlayerActivity extends AppCompatActivity implements OnActionClicked
 
     private RecyclerView rcPlayerList;
     private LinearLayoutManager llm;
+    private SongItem songItem;
     private int index;
     private String type = "";
     private ArrayList<SongItem> arrayListSong = new ArrayList<>();
+    ArrayList<PersonItem> arrArtist = new ArrayList<>();
 
     ImageView img_bg;
 
@@ -72,44 +64,55 @@ public class PlayerActivity extends AppCompatActivity implements OnActionClicked
         Intent intent = getIntent();
         Bundle bundle = intent.getBundleExtra("data");
         if (bundle != null) {
-            index = bundle.getInt("index", 0);
             type = bundle.getString("type");
-            arrayListSong = bundle.getParcelableArrayList("arrSong");
+            if (type.equals(Constants.SONG_CATEGORIES)) {
+                songItem = (SongItem) bundle.getSerializable("songItem");
+                ArrayList<PersonItem> arrArtist = bundle.getParcelableArrayList("arrArtist");
+                ArrayList<PersonItem> arrComposer = bundle.getParcelableArrayList("arrComposer");
+                songItem.setArtist(arrArtist);
+                songItem.setComposer(arrComposer);
+            } else if (type.equals(Constants.PLAYER_COLLAPSE)) {
+            } else {
+                index = bundle.getInt("index", 0);
+                arrayListSong = bundle.getParcelableArrayList("arrSong");
+                for (int i = 0; i <arrayListSong.size(); i++) {
+                    ArrayList<PersonItem> arrArtist = bundle.getParcelableArrayList("arrArtist" + i);
+                    ArrayList<PersonItem> arrComposer = bundle.getParcelableArrayList("arrComposer" + i);
+                    arrayListSong.get(i).setArtist(arrArtist);
+                    arrayListSong.get(i).setComposer(arrComposer);
+                }
+            }
         }
         initViews();
-        createArray();
-            playerService = new Intent(this, PlayerService.class);
-            playerService.putExtra("songIndex", index);
-            startService(playerService);
+        displayList();
+        playerService = new Intent(this, PlayerService.class);
+        playerService.putExtra("songIndex", index);
+        if (!type.equals(Constants.PLAYER_COLLAPSE)) {
+            playerService.putExtra("playNew", true);
+        }
+        startService(playerService);
     }
 
-    private void createArray() {
+    private void displayList() {
         songArr = new ArrayList<>();
         if (type.equals(CONSTANTS.SONG_CATEGORIES)) {
-            songArr = ((MyApplication) getApplication()).getArrayPlayer();
-            ArrayList<PersonItem> artistArr = new ArrayList<>();
-            artistArr.add(new PersonItem("Khánh Linh", "link", 1111));
-//            songArr.add(new SongItem("Nếu em được lựa chọn", artistArr, "http://mp3.zing.vn/html5/song/LnJnyZGNllELNELTtbmkH"));
-//            songArr.add(new SongItem("Hạnh Phúc Mong Manh", artistArr, "http://mp3.zing.vn/html5/song/ZmcntLHNXZvmWVLymyFHZmtkpkGkhBXXC"));
-//            songArr.add(new SongItem("Em Không Là Duy Nhất", artistArr, "http://mp3.zing.vn/html5/song/ZHcmtLnapxhDdCXtmyFmZHykWkGkCvdac"));
-//            songArr.add(new SongItem("Ta Còn Thuộc Về Nhau", artistArr, "http://mp3.zing.vn/html5/song/ZmxntLmNpJaCJHLtnyvnZmtZpLHZXbVCH"));
-            if (arrayListSong.size() > 0) {
-                songArr = new ArrayList<>();
-                songArr.add(new SongItem(arrayListSong.get(index).getTitle(), artistArr, "http://mp3.zing.vn/html5/song/ZHcmtLnapxhDdCXtmyFmZHykWkGkCvdac"));
+            if (((MyApplication) getApplication()).getAlbumOrCategory()) {
+                songArr.add(songItem);
+            } else {
+                songArr = ((MyApplication) getApplication()).getArrayPlayer();
+                songArr.add(songItem);
                 index = songArr.size() - 1;
             }
+            ((MyApplication) getApplication()).setAlbumOrCategory(false);
         } else if (type.equals(CONSTANTS.PLAYER_COLLAPSE)) {
             songArr = ((MyApplication) getApplication()).getArrayPlayer();
-        }
-        else {
-            for (int i = 0; i < arrayListSong.size(); i++) {
-                ArrayList<PersonItem> artistArr = new ArrayList<>();
-                artistArr.add(new PersonItem("Khánh Linh", "link", 1111));
-                songArr.add(new SongItem(arrayListSong.get(i).getTitle(), artistArr, "http://mp3.zing.vn/html5/song/ZHcmtLnapxhDdCXtmyFmZHykWkGkCvdac"));
-            }
+            index = songArr.size() - 1;
+        } else {
+            songArr = arrayListSong;
+            ((MyApplication) getApplication()).setAlbumOrCategory(true);
         }
         ((MyApplication) getApplication()).setArrayPlayer(songArr);
-        PlayerAdapter adapter = new PlayerAdapter(songArr, this);
+        PlayerAdapter adapter = new PlayerAdapter(songArr, this, this);
         rcPlayerList.setAdapter(adapter);
         rcPlayerList.scrollToPosition(index);
     }
@@ -126,6 +129,10 @@ public class PlayerActivity extends AppCompatActivity implements OnActionClicked
         icReplay = (ImageView) findViewById(R.id.btnReplay);
         icNextward = (ImageView) findViewById(R.id.btnNextward);
         icBackward = (ImageView) findViewById(R.id.btnBackward);
+        llBackward = (LinearLayout) findViewById(R.id.llBackward);
+        llNextward = (LinearLayout) findViewById(R.id.llNextward);
+        llShuffle = (LinearLayout) findViewById(R.id.llShuffle);
+        llReplay = (LinearLayout) findViewById(R.id.llReplay);
 
         img_bg = (ImageView) findViewById(R.id.img_bg);
         Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.bg_player);

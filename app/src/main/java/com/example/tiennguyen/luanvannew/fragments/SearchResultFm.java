@@ -1,13 +1,9 @@
 package com.example.tiennguyen.luanvannew.fragments;
 
-import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,9 +13,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.tiennguyen.luanvannew.R;
-import com.example.tiennguyen.luanvannew.adapters.SongAdapter;
 import com.example.tiennguyen.luanvannew.adapters.SongsAdapter;
-import com.example.tiennguyen.luanvannew.utils.Constants;
+import com.example.tiennguyen.luanvannew.commons.Constants;
 import com.example.tiennguyen.luanvannew.commons.StringUtils;
 import com.example.tiennguyen.luanvannew.models.PersonItem;
 import com.example.tiennguyen.luanvannew.models.SongItem;

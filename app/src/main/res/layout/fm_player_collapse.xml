@@ -39,39 +39,60 @@
             android:textColor="@color/white"
             android:textSize="@dimen/text_size_12sp" />
 
-        <TextView
-            android:id="@+id/tvArtistCol"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="@dimen/padding_2dp"
-            android:text="TextView"
-            android:textColor="@color/lightgray"
-            android:textSize="@dimen/text_size_10sp" />
+            <TextView
+                android:id="@+id/tvArtistCol"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/padding_2dp"
+                android:text="TextView"
+                android:textColor="@color/lightgray"
+                android:textSize="@dimen/text_size_10sp" />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1.5"
-            android:layout_gravity="center">
+            android:gravity="center">
 
-            <ImageView
-                android:id="@+id/imgPreCol"
+            <LinearLayout
+                android:id="@+id/llPreCol"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@android:drawable/ic_media_previous" />
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:gravity="center">
+                <ImageView
+                    android:id="@+id/imgPreCol"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@android:drawable/ic_media_previous" />
+            </LinearLayout>
 
-            <ImageView
-                android:id="@+id/imgPlayCol"
+            <LinearLayout
+                android:id="@+id/llPlayCol"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@android:drawable/ic_media_pause" />
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:gravity="center">
+                <ImageView
+                    android:id="@+id/imgPlayCol"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@android:drawable/ic_media_pause" />
+            </LinearLayout>
 
-            <ImageView
-                android:id="@+id/imgNextCol"
+            <LinearLayout
+                android:id="@+id/llNextCol"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@android:drawable/ic_media_next" />
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:gravity="center">
+                <ImageView
+                    android:id="@+id/imgNextCol"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@android:drawable/ic_media_next" />
+                </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>

@@ -17,10 +17,14 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.tiennguyen.luanvannew.MyApplication;
 import com.example.tiennguyen.luanvannew.R;
 import com.example.tiennguyen.luanvannew.commons.Constants;
 import com.example.tiennguyen.luanvannew.dialogs.AlertDialogManagement;
+import com.example.tiennguyen.luanvannew.models.PlaylistItem;
 import com.example.tiennguyen.luanvannew.sessions.SessionManagement;
+
+import java.util.ArrayList;
 
 /**
  * Created by TIENNGUYEN on 11/11/2017.
@@ -58,8 +62,21 @@ public class UserFm extends Fragment implements View.OnClickListener {
         View view = inflater.inflate(R.layout.fm_user, viewGroup, false);
         checkLogin();
         initViews(view);
+        preparePlaylist();
         viewUserProfile();
         return view;
+    }
+
+    private void preparePlaylist() {
+        ArrayList<PlaylistItem> arrPlaylists = new ArrayList<>();
+        PlaylistItem item0 = new PlaylistItem("Nhạc yêu thích", "", R.drawable.hot_slider1, 19);
+        arrPlaylists.add(item0);
+        PlaylistItem item1 = new PlaylistItem("Nhạc buồn", "", R.drawable.hot_slider2, 10);
+        arrPlaylists.add(item1);
+        PlaylistItem item2 = new PlaylistItem("Nhạc sôi động", "", R.drawable.hot_slider3, 15);
+        arrPlaylists.add(item2);
+
+        ((MyApplication) getActivity().getApplication()).setArrPlaylists(arrPlaylists);
     }
 
     private void checkLogin() {

@@ -13,8 +13,8 @@ import android.widget.TextView;
 
 import com.example.tiennguyen.luanvannew.R;
 import com.example.tiennguyen.luanvannew.adapters.CategoriesAdapter;
+import com.example.tiennguyen.luanvannew.commons.Constants;
 import com.example.tiennguyen.luanvannew.models.CategoryItem;
-import com.example.tiennguyen.luanvannew.utils.Constants;
 
 import java.util.ArrayList;
 

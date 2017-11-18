@@ -19,6 +19,16 @@ public class MyApplication extends Application {
 
     private ArrayList<SongItem> arrayPlayer;
 
+    private Boolean isAlbumOrCategory = true;
+
+    public Boolean getAlbumOrCategory() {
+        return isAlbumOrCategory;
+    }
+
+    public void setAlbumOrCategory(Boolean albumOrCategory) {
+        isAlbumOrCategory = albumOrCategory;
+    }
+
     public Boolean getLogin() {
         return isLogin;
     }

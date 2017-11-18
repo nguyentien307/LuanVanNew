@@ -18,19 +18,17 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.tiennguyen.luanvannew.MyApplication;
 import com.example.tiennguyen.luanvannew.R;
 import com.example.tiennguyen.luanvannew.activities.PlayerActivity;
-import com.example.tiennguyen.luanvannew.commons.StringUtils;
+import com.example.tiennguyen.luanvannew.commons.Constants;
 import com.example.tiennguyen.luanvannew.fragments.PlayerCollapseFm;
 import com.example.tiennguyen.luanvannew.fragments.SongInfoFm;
 import com.example.tiennguyen.luanvannew.models.PersonItem;
 import com.example.tiennguyen.luanvannew.models.PlaylistItem;
 import com.example.tiennguyen.luanvannew.models.SongItem;
-import com.example.tiennguyen.luanvannew.utils.Constants;
 import com.example.tiennguyen.luanvannew.dialogs.MyAlertDialogFragment;
 
 import java.util.ArrayList;
@@ -94,7 +92,7 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.ViewHolder> 
         public void onClick(View v) {
             switch (v.getId()){
                 case R.id.ll_add:
-                    case R.id.iv_add: {
+                case R.id.iv_add: {
                     showDialog();
                 }; break;
 
@@ -117,20 +115,28 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.ViewHolder> 
                 default: {
                     LinearLayout llPlayerCol = (LinearLayout) activity.findViewById(R.id.llPlayerCollapse);
                     llPlayerCol.setVisibility(View.VISIBLE);
-                    PlayerCollapseFm playerCollapseFm = new PlayerCollapseFm();
-                    String title = arrSongs.get(getAdapterPosition()).getTitle();
-                    String artist = StringUtils.getArtists(arrSongs.get(getAdapterPosition()).getArtist());
-                    playerCollapseFm = playerCollapseFm.newInstance(title, artist, getAdapterPosition());
+                    PlayerCollapseFm playerCollapseFm = PlayerCollapseFm.newInstance(arrSongs.get(getAdapterPosition()));
                     FragmentTransaction ft = ((FragmentActivity)context).getSupportFragmentManager().beginTransaction();
                     ft.add(R.id.llPlayerCollapse, playerCollapseFm).commit();
 
                     Bundle bundle = new Bundle();
-                    bundle.putParcelableArrayList("arrSong", arrSongs);
+                    if (style.equals(Constants.SONG_CATEGORIES)) {
+                        bundle.putSerializable("songItem", arrSongs.get(getAdapterPosition()));
+                        bundle.putParcelableArrayList("arrArtist", arrSongs.get(getAdapterPosition()).getArtist());
+                        bundle.putParcelableArrayList("arrComposer", arrSongs.get(getAdapterPosition()).getComposer());
+                    } else {
+                        bundle.putParcelableArrayList("arrSong", arrSongs);
+                        ArrayList<ArrayList<PersonItem>> listArtist = new ArrayList<>();
+                        for (int i = 0; i < arrSongs.size(); i++) {
+                            bundle.putParcelableArrayList("arrArtist" + i, arrSongs.get(i).getArtist());
+                            bundle.putParcelableArrayList("arrComposer" + i, arrSongs.get(i).getComposer());
+                        }
+                        bundle.putInt("index", getAdapterPosition());
+                    }
                     bundle.putString("type", style);
-                    bundle.putInt("index", getAdapterPosition());
                     Intent intent = new Intent(activity, PlayerActivity.class);
                     intent.putExtra("data", bundle);
-                    activity.startActivity(intent);
+                    activity.startActivityForResult(intent, com.example.tiennguyen.luanvannew.commons.Constants.REQUEST_CODE);
                 }break;
             }
 
@@ -179,7 +185,7 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.ViewHolder> 
                         .into(holder.ivAvatar);
             }
         }
-        else if (style == Constants.ALBUM_CATEGORIES){
+        else if (style == Constants.ALBUM_CATEGORIES || style.equals(Constants.PLAYER_ACTIVITY)){
             holder.tvIndex.setText(position + 1 +"");
         }
 
