@@ -31,7 +31,7 @@ import com.example.tiennguyen.luanvannew.models.PersonItem;
 import com.example.tiennguyen.luanvannew.models.PlaylistItem;
 import com.example.tiennguyen.luanvannew.models.SongItem;
 import com.example.tiennguyen.luanvannew.utils.Constants;
-import com.example.tiennguyen.luanvannew.utils.MyAlertDialogFragment;
+import com.example.tiennguyen.luanvannew.dialogs.MyAlertDialogFragment;
 
 import java.util.ArrayList;
 
@@ -56,6 +56,7 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.ViewHolder> 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public TextView tvSongName, tvArtistName, tvViews, tvIndex;
         public ImageView ivAvatar, ivAdd, ivAbout, ivDelete ;
+        public LinearLayout llAdd, llAbout;
         public LinearLayout llIndex;
 
         ViewHolder(View itemView) {
@@ -65,22 +66,26 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.ViewHolder> 
             tvViews = (TextView) itemView.findViewById(R.id.tv_views);
             ivAvatar = (ImageView) itemView.findViewById(R.id.iv_avatar);
             ivAbout = (ImageView) itemView.findViewById(R.id.iv_about);
-            if(style == Constants.SONGS_LIST_IN_PLAYLIST){
+            llAbout = (LinearLayout) itemView.findViewById(R.id.ll_about);
+            if (style == Constants.SONGS_LIST_IN_PLAYLIST){
                 ivDelete = (ImageView) itemView.findViewById(R.id.iv_delete);
                 ivDelete.setOnClickListener(this);
-            }else {
+            } else {
                 ivAdd = (ImageView) itemView.findViewById(R.id.iv_add);
+                llAdd = (LinearLayout) itemView.findViewById(R.id.ll_add);
                 llIndex = (LinearLayout) itemView.findViewById(R.id.ll_index);
                 tvIndex = (TextView) itemView.findViewById(R.id.tv_index);
-                if (style == Constants.SONGS_LIST_WITH_IMAGE) {
-                    llIndex.setVisibility(View.GONE);
-                } else {
+                if (style == Constants.ALBUM_CATEGORIES) {
                     ivAvatar.setVisibility(View.GONE);
+                } else {
+                    llIndex.setVisibility(View.GONE);
                 }
                 ivAdd.setOnClickListener(this);
+                llAdd.setOnClickListener(this);
             }
 
             ivAbout.setOnClickListener(this);
+            llAbout.setOnClickListener(this);
 
             itemView.setOnClickListener(this);
         }
@@ -88,11 +93,13 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.ViewHolder> 
         @Override
         public void onClick(View v) {
             switch (v.getId()){
-                case R.id.iv_add: {
+                case R.id.ll_add:
+                    case R.id.iv_add: {
                     showDialog();
                 }; break;
 
-                case R.id.iv_about: {
+                case R.id.ll_about:
+                case R.id.iv_about:{
                     //Toast.makeText(context,"About", Toast.LENGTH_SHORT).show();
                     LinearLayout secondScreen  = (LinearLayout) activity.findViewById(R.id.fragment_container_second);
                     secondScreen.setVisibility(View.VISIBLE);
@@ -113,12 +120,13 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.ViewHolder> 
                     PlayerCollapseFm playerCollapseFm = new PlayerCollapseFm();
                     String title = arrSongs.get(getAdapterPosition()).getTitle();
                     String artist = StringUtils.getArtists(arrSongs.get(getAdapterPosition()).getArtist());
-                    playerCollapseFm = playerCollapseFm.newInstance(title, artist);
+                    playerCollapseFm = playerCollapseFm.newInstance(title, artist, getAdapterPosition());
                     FragmentTransaction ft = ((FragmentActivity)context).getSupportFragmentManager().beginTransaction();
                     ft.add(R.id.llPlayerCollapse, playerCollapseFm).commit();
 
                     Bundle bundle = new Bundle();
                     bundle.putParcelableArrayList("arrSong", arrSongs);
+                    bundle.putString("type", style);
                     bundle.putInt("index", getAdapterPosition());
                     Intent intent = new Intent(activity, PlayerActivity.class);
                     intent.putExtra("data", bundle);
@@ -161,7 +169,7 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.ViewHolder> 
             holder.tvArtistName.setText(singerName);
         } else holder.tvArtistName.setText("khong co");
 
-        if(style == Constants.SONGS_LIST_WITH_IMAGE || style == Constants.SONGS_LIST_IN_PLAYLIST) {
+        if(style == Constants.SONG_CATEGORIES || style == Constants.SONGS_LIST_IN_PLAYLIST) {
             if (arrSongs.get(position).getLinkImg() != "") {
                 Glide.with(context)
                         .load(arrSongs.get(position).getLinkImg())
@@ -171,7 +179,7 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.ViewHolder> 
                         .into(holder.ivAvatar);
             }
         }
-        else if (style == Constants.SONGS_LIST_WITHOUT_IMAGE){
+        else if (style == Constants.ALBUM_CATEGORIES){
             holder.tvIndex.setText(position + 1 +"");
         }
 

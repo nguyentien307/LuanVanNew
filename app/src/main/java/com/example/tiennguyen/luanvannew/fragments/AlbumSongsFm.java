@@ -115,7 +115,7 @@ public class AlbumSongsFm extends Fragment implements View.OnClickListener {
         rcSongs.setNestedScrollingEnabled(false);
         songsLayoutManager = new LinearLayoutManager(getContext());
         rcSongs.setLayoutManager(songsLayoutManager);
-        songsAdapter = new SongsAdapter(getContext(), getActivity(), arrSongs, Constants.SONGS_LIST_WITHOUT_IMAGE);
+        songsAdapter = new SongsAdapter(getContext(), getActivity(), arrSongs, Constants.ALBUM_CATEGORIES);
         rcSongs.setAdapter(songsAdapter);
         prepareSongs();
 

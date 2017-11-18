@@ -7,6 +7,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +21,7 @@ import com.example.tiennguyen.luanvannew.R;
 import com.example.tiennguyen.luanvannew.adapters.AlbumsAdapter;
 import com.example.tiennguyen.luanvannew.adapters.PlaylistsAdapter;
 import com.example.tiennguyen.luanvannew.models.PlaylistItem;
+import com.example.tiennguyen.luanvannew.sessions.SessionManagement;
 
 import java.util.ArrayList;
 
@@ -53,7 +55,17 @@ public class PlaylistFm extends Fragment implements View.OnClickListener {
         if (getArguments()!= null)
             res = getArguments().getString("name");
 
-        isLogin = ((MyApplication) getActivity().getApplication()).getLogin();
+        isLogin = checkLogin();
+    }
+
+    private Boolean checkLogin() {
+        SessionManagement session = new SessionManagement(getContext(), new SessionManagement.CheckLogin() {
+            @Override
+            public void checkLogin() {
+
+            }
+        });
+        return session.isLoggedIn();
     }
 
     @Override
@@ -101,7 +113,7 @@ public class PlaylistFm extends Fragment implements View.OnClickListener {
             case R.id.btn_login: {
                 //((MyApplication) getActivity().getApplication()).setLogin(true);
 
-                UserFm frag = UserFm.newInstance("new");
+                LoginFm frag = LoginFm.newInstance("Playlist");
                 getActivity().getSupportFragmentManager()
                         .beginTransaction()
                         .replace(R.id.fragment_container, frag)

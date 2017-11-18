@@ -13,6 +13,7 @@ public class Constants {
     public static final String SONG_CATEGORIES = "song categories";
     public static final String ALBUM_CATEGORIES = "album categories";
     public static final String SONG_STYLES = "song styles";
+    public static final String PLAYER_COLLAPSE = "player collapse";
     public static final String TAB_SONGS = "songs";
     public static final String TAB_HOT = "hot";
     public static final String TAB_ALBUMS = "albums";

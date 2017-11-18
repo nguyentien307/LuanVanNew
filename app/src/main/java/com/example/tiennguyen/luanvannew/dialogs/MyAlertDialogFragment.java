@@ -1,4 +1,4 @@
-package com.example.tiennguyen.luanvannew.utils;
+package com.example.tiennguyen.luanvannew.dialogs;
 
 import android.app.Dialog;
 import android.graphics.Color;

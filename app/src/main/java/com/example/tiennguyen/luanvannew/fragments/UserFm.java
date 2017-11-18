@@ -1,13 +1,21 @@
 package com.example.tiennguyen.luanvannew.fragments;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.tiennguyen.luanvannew.R;
 import com.example.tiennguyen.luanvannew.commons.Constants;
@@ -89,6 +97,7 @@ public class UserFm extends Fragment implements View.OnClickListener {
                 AlertDialogManagement dialog = new AlertDialogManagement(new AlertDialogManagement.ConfirmLogout() {
                     @Override
                     public void confirmLogout() {
+                        session.logoutUser();
                         replaceFragment("Login");
                     }
                 });
@@ -106,7 +115,7 @@ public class UserFm extends Fragment implements View.OnClickListener {
         Fragment fragment = new Fragment();
         switch (page) {
             case "Login":
-                fragment = new LoginFm();
+                fragment = LoginFm.newInstance(page);
                 break;
             case "Playlist":
                 fragment = new PlaylistFm();

@@ -25,11 +25,14 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.example.tiennguyen.luanvannew.MyApplication;
 import com.example.tiennguyen.luanvannew.R;
 import com.example.tiennguyen.luanvannew.adapters.PlayerAdapter;
 import com.example.tiennguyen.luanvannew.models.PersonItem;
+import com.example.tiennguyen.luanvannew.models.PlaylistItem;
 import com.example.tiennguyen.luanvannew.models.SongItem;
 import com.example.tiennguyen.luanvannew.services.PlayerService;
+import com.example.tiennguyen.luanvannew.utils.Constants;
 
 import java.util.ArrayList;
 
@@ -39,6 +42,7 @@ import co.mobiwise.library.OnActionClickedListener;
 public class PlayerActivity extends AppCompatActivity implements OnActionClickedListener, View.OnClickListener,
         Toolbar.OnMenuItemClickListener {
 
+    Constants CONSTANTS = new Constants();
     public static TextView musicTitle;
     public static TextView artistName;
     private LinearLayout llBack;
@@ -52,6 +56,7 @@ public class PlayerActivity extends AppCompatActivity implements OnActionClicked
     private RecyclerView rcPlayerList;
     private LinearLayoutManager llm;
     private int index;
+    private String type = "";
     private ArrayList<SongItem> arrayListSong = new ArrayList<>();
 
     ImageView img_bg;
@@ -68,29 +73,45 @@ public class PlayerActivity extends AppCompatActivity implements OnActionClicked
         Bundle bundle = intent.getBundleExtra("data");
         if (bundle != null) {
             index = bundle.getInt("index", 0);
+            type = bundle.getString("type");
             arrayListSong = bundle.getParcelableArrayList("arrSong");
         }
         initViews();
         createArray();
-        playerService = new Intent(this, PlayerService.class);
-        playerService.putExtra("songIndex", songArr.size() - 1);
-        startService(playerService);
+            playerService = new Intent(this, PlayerService.class);
+            playerService.putExtra("songIndex", index);
+            startService(playerService);
     }
 
     private void createArray() {
         songArr = new ArrayList<>();
-        ArrayList<PersonItem> artistArr = new ArrayList<>();
-        artistArr.add(new PersonItem("Khánh Linh", "link", 1111));
-        songArr.add(new SongItem("Nếu em được lựa chọn", artistArr, "http://mp3.zing.vn/html5/song/LnJnyZGNllELNELTtbmkH"));
-        songArr.add(new SongItem("Hạnh Phúc Mong Manh", artistArr, "http://mp3.zing.vn/html5/song/ZmcntLHNXZvmWVLymyFHZmtkpkGkhBXXC"));
-        songArr.add(new SongItem("Em Không Là Duy Nhất", artistArr, "http://mp3.zing.vn/html5/song/ZHcmtLnapxhDdCXtmyFmZHykWkGkCvdac"));
-        songArr.add(new SongItem("Ta Còn Thuộc Về Nhau", artistArr, "http://mp3.zing.vn/html5/song/ZmxntLmNpJaCJHLtnyvnZmtZpLHZXbVCH"));
-        if (arrayListSong.size() > 0) {
-            songArr.add(new SongItem(arrayListSong.get(index).getTitle(), artistArr, "http://mp3.zing.vn/html5/song/ZHcmtLnapxhDdCXtmyFmZHykWkGkCvdac"));
+        if (type.equals(CONSTANTS.SONG_CATEGORIES)) {
+            songArr = ((MyApplication) getApplication()).getArrayPlayer();
+            ArrayList<PersonItem> artistArr = new ArrayList<>();
+            artistArr.add(new PersonItem("Khánh Linh", "link", 1111));
+//            songArr.add(new SongItem("Nếu em được lựa chọn", artistArr, "http://mp3.zing.vn/html5/song/LnJnyZGNllELNELTtbmkH"));
+//            songArr.add(new SongItem("Hạnh Phúc Mong Manh", artistArr, "http://mp3.zing.vn/html5/song/ZmcntLHNXZvmWVLymyFHZmtkpkGkhBXXC"));
+//            songArr.add(new SongItem("Em Không Là Duy Nhất", artistArr, "http://mp3.zing.vn/html5/song/ZHcmtLnapxhDdCXtmyFmZHykWkGkCvdac"));
+//            songArr.add(new SongItem("Ta Còn Thuộc Về Nhau", artistArr, "http://mp3.zing.vn/html5/song/ZmxntLmNpJaCJHLtnyvnZmtZpLHZXbVCH"));
+            if (arrayListSong.size() > 0) {
+                songArr = new ArrayList<>();
+                songArr.add(new SongItem(arrayListSong.get(index).getTitle(), artistArr, "http://mp3.zing.vn/html5/song/ZHcmtLnapxhDdCXtmyFmZHykWkGkCvdac"));
+                index = songArr.size() - 1;
+            }
+        } else if (type.equals(CONSTANTS.PLAYER_COLLAPSE)) {
+            songArr = ((MyApplication) getApplication()).getArrayPlayer();
         }
+        else {
+            for (int i = 0; i < arrayListSong.size(); i++) {
+                ArrayList<PersonItem> artistArr = new ArrayList<>();
+                artistArr.add(new PersonItem("Khánh Linh", "link", 1111));
+                songArr.add(new SongItem(arrayListSong.get(i).getTitle(), artistArr, "http://mp3.zing.vn/html5/song/ZHcmtLnapxhDdCXtmyFmZHykWkGkCvdac"));
+            }
+        }
+        ((MyApplication) getApplication()).setArrayPlayer(songArr);
         PlayerAdapter adapter = new PlayerAdapter(songArr, this);
         rcPlayerList.setAdapter(adapter);
-        rcPlayerList.scrollToPosition(adapter.getItemCount() - 1);
+        rcPlayerList.scrollToPosition(index);
     }
 
     private void initViews() {

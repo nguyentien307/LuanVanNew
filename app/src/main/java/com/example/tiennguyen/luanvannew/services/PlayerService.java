@@ -121,13 +121,13 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
         //Đăng ký nhận tai nge
         registerReceiver(headsetReceiver, new IntentFilter(Intent.ACTION_HEADSET_PLUG));
 //        songArr = PlayerCollapseFm.songArr;
-        songArr = PlayerActivity.songArr;
         super.onCreate();
     }
 
     @Override
     public int onStartCommand(@Nullable Intent intent, int flags, int startId) {
         initUI();
+        songArr = PlayerActivity.songArr;
         int songIndex = intent.getIntExtra("songIndex", 0);
         interactivePlayerViewWeakReference.get().setMax(100);
         interactivePlayerViewWeakReference.get().setProgress(0);

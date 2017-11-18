@@ -11,7 +11,7 @@ import android.widget.Toast;
 
 import com.example.tiennguyen.luanvannew.R;
 import com.example.tiennguyen.luanvannew.models.PlaylistItem;
-import com.example.tiennguyen.luanvannew.utils.MyAlertDialogFragment;
+import com.example.tiennguyen.luanvannew.dialogs.MyAlertDialogFragment;
 
 import java.util.ArrayList;
 

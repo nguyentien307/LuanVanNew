@@ -15,10 +15,14 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.tiennguyen.luanvannew.MyApplication;
 import com.example.tiennguyen.luanvannew.R;
 import com.example.tiennguyen.luanvannew.commons.Constants;
 import com.example.tiennguyen.luanvannew.dialogs.AlertDialogManagement;
+import com.example.tiennguyen.luanvannew.models.PlaylistItem;
 import com.example.tiennguyen.luanvannew.sessions.SessionManagement;
+
+import java.util.ArrayList;
 
 /**
  * Created by TIENNGUYEN on 11/11/2017.
@@ -35,10 +39,10 @@ public class LoginFm extends Fragment implements TextWatcher, View.OnKeyListener
     private TextView tvEmailInvalid, tvPasswordInvalid;
     private Button btnLogin;
 
-    public static UserFm newInstance(String name) {
-        UserFm contentFragment = new UserFm();
+    public static LoginFm newInstance(String name) {
+        LoginFm contentFragment = new LoginFm();
         Bundle bundle = new Bundle();
-        bundle.putString("name", name);
+        bundle.putString("page", name);
         contentFragment.setArguments(bundle);
 
         return contentFragment;
@@ -48,7 +52,7 @@ public class LoginFm extends Fragment implements TextWatcher, View.OnKeyListener
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments()!= null)
-            res = getArguments().getString("name");
+            res = getArguments().getString("page");
     }
 
     @Override
@@ -150,17 +154,26 @@ public class LoginFm extends Fragment implements TextWatcher, View.OnKeyListener
             // For testing puspose username, password is checked with sample data
             // username = test
             // password = test
-            if(email.equals("test") && password.equals("test")){
+            if(email.equals("123@gmail.com") && password.equals("1111")){
 
                 // Creating user login session
                 // For testing i am stroing name, email as follow
                 // Use user real data
-                session.createLoginSession("Android Hive", "anroidhive@gmail.com");
+                session.createLoginSession("123@gmail.com", "1111");
 
-                UserFm userFm = new UserFm();
+                Fragment fragment = new Fragment();
+                switch (res) {
+                    case "Playlist":
+                        fragment = new PlaylistFm();
+                        break;
+                    case "Login":
+                        fragment = new UserFm();
+                        break;
+                }
+                preparePlaylist();
                 getActivity().getSupportFragmentManager()
                         .beginTransaction()
-                        .replace(R.id.fragment_container, userFm)
+                        .replace(R.id.fragment_container, fragment)
                         .commit();
 
             }else{
@@ -172,5 +185,17 @@ public class LoginFm extends Fragment implements TextWatcher, View.OnKeyListener
             // Show alert asking him to enter the details
             alert.showAlertDialog(getActivity(), "Login failed..", "Please enter email and password", false);
         }
+    }
+
+    private void preparePlaylist() {
+        ArrayList<PlaylistItem> arrPlaylists = new ArrayList<>();
+        PlaylistItem item0 = new PlaylistItem("Nhạc yêu thích", "", R.drawable.hot_slider1, 19);
+        arrPlaylists.add(item0);
+        PlaylistItem item1 = new PlaylistItem("Nhạc buồn", "", R.drawable.hot_slider2, 10);
+        arrPlaylists.add(item1);
+        PlaylistItem item2 = new PlaylistItem("Nhạc sôi động", "", R.drawable.hot_slider3, 15);
+        arrPlaylists.add(item2);
+
+        ((MyApplication) getActivity().getApplication()).setArrPlaylists(arrPlaylists);
     }
 }

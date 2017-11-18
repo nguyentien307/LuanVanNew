@@ -36,7 +36,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/margin_8dp"
                 android:layout_toEndOf="@+id/imgSongPlayer"
-                android:layout_toStartOf="@+id/btnAddPlayer"
                 android:text="ten bai hat"
                 android:textSize="@dimen/text_size_13sp"
                 android:textColor="@color/white"
@@ -50,27 +49,12 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="@dimen/margin_8dp"
                 android:layout_toEndOf="@+id/imgSongPlayer"
-                android:layout_toStartOf="@+id/btnAddPlayer"
                 android:ellipsize="marquee"
                 android:lines="1"
                 android:maxLines="1"
                 android:text="Ten ca si"
                 android:textColor="@color/lightgray"
                 android:textSize="@dimen/text_size_11sp" />
-
-            <ImageView
-                android:id="@+id/btnPlayPlayer"
-                android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
-                android:layout_alignParentRight="true"
-                android:src="@drawable/ic_play_arrow_black_24dp" />
-
-            <ImageView
-                android:id="@+id/btnAddPlayer"
-                android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
-                android:layout_toLeftOf="@id/btnPlayPlayer"
-                android:src="@drawable/ic_add_black" />
         </RelativeLayout>
 
 

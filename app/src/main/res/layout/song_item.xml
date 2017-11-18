@@ -35,7 +35,6 @@
         android:layout_height="wrap_content"
         android:layout_toEndOf="@+id/rl_img_index"
         android:paddingStart="@dimen/dimen_10dp"
-        android:paddingEnd="@dimen/dimen_10dp"
         android:layout_centerVertical="true"
         android:layout_toStartOf="@+id/ll_add">
         <TextView
@@ -74,25 +73,26 @@
 
     <LinearLayout
         android:id="@+id/ll_about"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
+        android:layout_width="40dp"
+        android:layout_height="match_parent"
         android:layout_alignParentEnd="true"
-        android:layout_centerVertical="true">
+        android:layout_centerVertical="true"
+        android:gravity="center">
+
         <ImageView
             android:id="@+id/iv_about"
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"
-            android:src="@drawable/ic_about"
-            />
+            android:src="@drawable/ic_about" />
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/ll_add"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
+        android:layout_width="40dp"
+        android:layout_height="match_parent"
         android:layout_toStartOf="@id/ll_about"
-        android:layout_marginEnd="@dimen/dimen_10dp"
-        android:layout_centerVertical="true">
+        android:layout_centerVertical="true"
+        android:gravity="center">
 
         <ImageView
             android:id="@+id/iv_add"

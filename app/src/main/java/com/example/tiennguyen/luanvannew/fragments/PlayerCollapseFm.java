@@ -17,6 +17,7 @@ import com.example.tiennguyen.luanvannew.activities.PlayerActivity;
 import com.example.tiennguyen.luanvannew.models.PersonItem;
 import com.example.tiennguyen.luanvannew.models.SongItem;
 import com.example.tiennguyen.luanvannew.services.PlayerService;
+import com.example.tiennguyen.luanvannew.utils.Constants;
 
 import java.util.ArrayList;
 
@@ -26,19 +27,22 @@ import java.util.ArrayList;
 
 public class PlayerCollapseFm extends Fragment implements View.OnClickListener {
 
+    private Constants CONSTANTS;
     Context ctx;
     private String songTitle;
     private String songArtist;
+    private int songIndex;
     Intent playerService;
 
     public static LinearLayout rlPlayerCollapse;
     public static TextView tvTitleCol, tvArtistCol;
     public static ImageView imgTitleCol, btnPreviousCol, btnNextCol, btnPlayCol;
-    public static PlayerCollapseFm newInstance(String title, String artist) {
+    public static PlayerCollapseFm newInstance(String title, String artist, int index) {
         PlayerCollapseFm contentFragment = new PlayerCollapseFm();
         Bundle bundle = new Bundle();
         bundle.putString("title", title);
         bundle.putString("artist", artist);
+        bundle.putInt("index", index);
         contentFragment.setArguments(bundle);
 
         return contentFragment;
@@ -55,6 +59,7 @@ public class PlayerCollapseFm extends Fragment implements View.OnClickListener {
         if (getArguments()!= null) {
             songTitle = getArguments().getString("title");
             songArtist = getArguments().getString("artist");
+            songIndex = getArguments().getInt("index");
         }
     }
 
@@ -87,6 +92,10 @@ public class PlayerCollapseFm extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         if (v.getId() == R.id.rlPlayerCollapse) {
             Intent intent = new Intent(getActivity(), PlayerActivity.class);
+            Bundle bundle = new Bundle();
+            bundle.putInt("index", songIndex);
+            bundle.putString("type", CONSTANTS.PLAYER_COLLAPSE);
+            intent.putExtra("data", bundle);
             getActivity().startActivity(intent);
         }
     }

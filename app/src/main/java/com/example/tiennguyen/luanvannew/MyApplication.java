@@ -3,6 +3,7 @@ package com.example.tiennguyen.luanvannew;
 import android.app.Application;
 
 import com.example.tiennguyen.luanvannew.models.PlaylistItem;
+import com.example.tiennguyen.luanvannew.models.SongItem;
 
 import java.util.ArrayList;
 
@@ -15,6 +16,8 @@ public class MyApplication extends Application {
     private Boolean isLogin = false;
 
     private ArrayList<PlaylistItem> arrPlaylists;
+
+    private ArrayList<SongItem> arrayPlayer;
 
     public Boolean getLogin() {
         return isLogin;
@@ -30,5 +33,13 @@ public class MyApplication extends Application {
 
     public void setArrPlaylists(ArrayList<PlaylistItem> arrPlaylists) {
         this.arrPlaylists = arrPlaylists;
+    }
+
+    public ArrayList<SongItem> getArrayPlayer() {
+        return arrayPlayer;
+    }
+
+    public void setArrayPlayer(ArrayList<SongItem> arrayPlayer) {
+        this.arrayPlayer = arrayPlayer;
     }
 }

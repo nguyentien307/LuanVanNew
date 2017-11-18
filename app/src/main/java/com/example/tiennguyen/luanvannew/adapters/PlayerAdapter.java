@@ -83,23 +83,12 @@ public class PlayerAdapter extends RecyclerView.Adapter<PlayerAdapter.PlayerView
             tvSongTitle = (TextView) itemView.findViewById(R.id.tvSongTitlePlayer);
             tvSongSingers = (TextView) itemView.findViewById(R.id.tvSongSingerPlayer);
             imgSong = (ImageView) itemView.findViewById(R.id.imgSongPlayer);
-            btnAdd = (ImageView) itemView.findViewById(R.id.btnAddPlayer);
-            btnPlay = (ImageView) itemView.findViewById(R.id.btnPlayPlayer);
-
-            btnPlay.setOnClickListener(this);
-            btnAdd.setOnClickListener(this);
             itemView.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View v) {
             switch (v.getId()){
-                case R.id.btnAdd: {
-                }; break;
-
-                case R.id.btnPlay: {
-                }; break;
-
                 default:
                     Intent playerService = new Intent(ctx, PlayerService.class);
                     playerService.putExtra("songIndex", getAdapterPosition());

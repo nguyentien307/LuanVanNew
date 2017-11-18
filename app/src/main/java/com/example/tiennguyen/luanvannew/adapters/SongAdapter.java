@@ -122,7 +122,7 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.SongViewHolder
                     PlayerCollapseFm playerCollapseFm = new PlayerCollapseFm();
                     String title = arrSongs.get(getAdapterPosition()).getTitle();
                     String artist = StringUtils.getArtists(arrSongs.get(getAdapterPosition()).getArtist());
-                    playerCollapseFm = playerCollapseFm.newInstance(title, artist);
+                    playerCollapseFm = playerCollapseFm.newInstance(title, artist, getAdapterPosition());
                     FragmentTransaction ft = ((FragmentActivity)ctx).getSupportFragmentManager().beginTransaction();
                     ft.add(R.id.llPlayerCollapse, playerCollapseFm).commit();
 
