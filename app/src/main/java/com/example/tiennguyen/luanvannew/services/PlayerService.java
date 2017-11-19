@@ -435,25 +435,29 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
             case R.id.imgNext:
             case R.id.imgNextCol:
             case R.id.llNextCol:
-                if (currentSongIndex < (songArr.size() - 1)) {
-                    playSong(currentSongIndex + 1);
-                    currentSongIndex = currentSongIndex + 1;
-                } else {
-                    // play first song
-                    playSong(0);
-                    currentSongIndex = 0;
+                if (currentSongIndex != -1) {
+                    if (currentSongIndex < (songArr.size() - 1)) {
+                        playSong(currentSongIndex + 1);
+                        currentSongIndex = currentSongIndex + 1;
+                    } else {
+                        // play first song
+                        playSong(0);
+                        currentSongIndex = 0;
+                    }
                 }
                 break;
             case R.id.imgPrevious:
             case R.id.imgPreCol:
             case R.id.llPreCol:
-                if (currentSongIndex > 0) {
-                    playSong(currentSongIndex - 1);
-                    currentSongIndex = currentSongIndex - 1;
-                } else {
-                    // play last song
-                    playSong(songArr.size() - 1);
-                    currentSongIndex = songArr.size() - 1;
+                if (currentSongIndex != -1) {
+                    if (currentSongIndex > 0) {
+                        playSong(currentSongIndex - 1);
+                        currentSongIndex = currentSongIndex - 1;
+                    } else {
+                        // play last song
+                        playSong(songArr.size() - 1);
+                        currentSongIndex = songArr.size() - 1;
+                    }
                 }
                 break;
             case R.id.btnShuffle:

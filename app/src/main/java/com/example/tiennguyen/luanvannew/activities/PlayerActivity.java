@@ -72,6 +72,7 @@ public class PlayerActivity extends AppCompatActivity implements OnActionClicked
                 songItem.setArtist(arrArtist);
                 songItem.setComposer(arrComposer);
             } else if (type.equals(Constants.PLAYER_COLLAPSE)) {
+                index = bundle.getInt("index", 0);
             } else {
                 index = bundle.getInt("index", 0);
                 arrayListSong = bundle.getParcelableArrayList("arrSong");
@@ -106,7 +107,6 @@ public class PlayerActivity extends AppCompatActivity implements OnActionClicked
             ((MyApplication) getApplication()).setAlbumOrCategory(false);
         } else if (type.equals(CONSTANTS.PLAYER_COLLAPSE)) {
             songArr = ((MyApplication) getApplication()).getArrayPlayer();
-            index = songArr.size() - 1;
         } else {
             songArr = arrayListSong;
             ((MyApplication) getApplication()).setAlbumOrCategory(true);

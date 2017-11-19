@@ -19,6 +19,7 @@ import com.example.tiennguyen.luanvannew.activities.PlayerActivity;
 import com.example.tiennguyen.luanvannew.commons.Constants;
 import com.example.tiennguyen.luanvannew.commons.StringUtils;
 import com.example.tiennguyen.luanvannew.models.SongItem;
+import com.example.tiennguyen.luanvannew.services.PlayerService;
 
 /**
  * Created by Quyen Hua on 11/9/2017.
@@ -103,6 +104,7 @@ public class PlayerCollapseFm extends Fragment implements View.OnClickListener {
             Intent intent = new Intent(getActivity(), PlayerActivity.class);
             Bundle bundle = new Bundle();
             bundle.putString("type", CONSTANTS.PLAYER_COLLAPSE);
+            bundle.putInt("index", PlayerService.currentSongIndex);
             intent.putExtra("data", bundle);
             getActivity().startActivity(intent);
         }
