@@ -1,5 +1,7 @@
 package com.example.tiennguyen.luanvannew.commons;
 
+import android.app.Activity;
+
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -11,6 +13,7 @@ import java.io.IOException;
 public class WriteData {
 
     GetFileOutputStream getFileOutputStream;
+    Constants constants;
 
     public WriteData(GetFileOutputStream getFileOutputStream) {
         this.getFileOutputStream = getFileOutputStream;

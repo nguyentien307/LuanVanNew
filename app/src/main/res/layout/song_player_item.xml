@@ -65,7 +65,7 @@
 
         <ImageView
             android:id="@+id/iv_about"
-            android:layout_width="wrap_content"
+            android:layout_width="@dimen/item_width_20dp"
             android:layout_height="fill_parent"
             android:src="@drawable/ic_about" />
     </LinearLayout>
@@ -80,7 +80,7 @@
 
         <ImageView
             android:id="@+id/iv_add"
-            android:layout_width="wrap_content"
+            android:layout_width="@dimen/item_width_25dp"
             android:layout_height="fill_parent"
             android:src="@drawable/ic_add"
             />

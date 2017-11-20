@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal"
     android:layout_height="@dimen/toolbar_height_40dp"
     android:layout_width="match_parent"
     android:id="@+id/llHistory">
 
     <LinearLayout
+        android:id="@+id/llHistoryIcon"
         android:layout_width="@dimen/toolbar_height_40dp"
         android:layout_height="match_parent"
         android:gravity="center">
@@ -19,9 +20,13 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/llHistoryTitle"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center_vertical">
+        android:gravity="center_vertical"
+        android:layout_toRightOf="@+id/llHistoryIcon"
+        android:layout_marginRight="@dimen/toolbar_height_40dp"
+        android:layout_marginEnd="@dimen/toolbar_height_40dp">
 
         <TextView
             android:id="@+id/tvHistory"
@@ -35,4 +40,17 @@
 
     </LinearLayout>
 
-</LinearLayout>
+    <LinearLayout
+        android:id="@+id/llClearItem"
+        android:layout_width="@dimen/toolbar_height_40dp"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:layout_alignParentRight="true">
+
+        <ImageView
+            android:layout_width="@dimen/icon_control_player_image_size_20dp"
+            android:layout_height="@dimen/icon_control_player_image_size_20dp"
+            android:src="@drawable/clear"/>
+    </LinearLayout>
+
+</RelativeLayout>

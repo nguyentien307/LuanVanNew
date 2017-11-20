@@ -3,6 +3,7 @@ package com.example.tiennguyen.luanvannew.dialogs;
 import android.app.Dialog;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
@@ -14,7 +15,9 @@ import android.view.View;
 import com.example.tiennguyen.luanvannew.MyApplication;
 import com.example.tiennguyen.luanvannew.R;
 import com.example.tiennguyen.luanvannew.adapters.PlaylistsNameAdapter;
+import com.example.tiennguyen.luanvannew.commons.Constants;
 import com.example.tiennguyen.luanvannew.models.PlaylistItem;
+import com.example.tiennguyen.luanvannew.sessions.SessionManagement;
 
 import java.util.ArrayList;
 
@@ -56,13 +59,14 @@ public class MyAlertDialogFragment extends DialogFragment {
         playlistsAdapter = new PlaylistsNameAdapter(getContext(), getActivity(), arrPlaylists, MyAlertDialogFragment.this);
         rcPlaylists.setAdapter(playlistsAdapter);
 
-        setCancelable(false);
-
+        setCancelable(true);
         builder.setView(view);
+        builder.setTitle(Constants.ADD_PLAYLIST_TITLE);
         Dialog dialog = builder.create();
 
-        dialog.getWindow().setBackgroundDrawable(
-                new ColorDrawable(Color.TRANSPARENT));
+//        dialog.getWindow().setBackgroundDrawable(
+//                new ColorDrawable(Color.rgb(60, 50, 50)));
+//        dialog.getWindow().setTitleColor(Color.rgb(255, 255, 255));
 
         return dialog;
 

@@ -2,6 +2,8 @@ package com.example.tiennguyen.luanvannew.adapters;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,13 +41,15 @@ public class PlaylistsNameAdapter extends RecyclerView.Adapter<PlaylistsNameAdap
         public ViewHolder(View view) {
             super(view);
             tvPlaylistName = (TextView) view.findViewById(R.id.tvTitle);
+            tvPlaylistName.setTextColor(Color.rgb(0, 0, 0));
+            tvPlaylistName.setTextSize(13);
             view.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View v) {
             dialog.dismiss();
-            Toast.makeText(context, arrPlaylists.get(getAdapterPosition()).getName(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(context,"Added to " + arrPlaylists.get(getAdapterPosition()).getName(), Toast.LENGTH_SHORT).show();
 
         }
     }

@@ -3,5 +3,5 @@
     <item android:state_pressed="true" android:drawable="@drawable/ic_add_press"/>
     <item android:state_selected="true" android:drawable="@drawable/ic_add_press"/>
     <item android:state_focused="true" android:drawable="@drawable/ic_add_press"/>
-    <item android:drawable="@drawable/ic_add"/>
+    <item android:drawable="@drawable/icon_add"/>
 </selector>

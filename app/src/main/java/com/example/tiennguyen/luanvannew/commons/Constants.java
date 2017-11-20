@@ -16,7 +16,7 @@ public class Constants {
     public final String SEARCH_TITLE = "Search title";
 
     // File name
-    public final String SUGGESTION_FILE = "suggestion.txt";
+    public static final String SUGGESTION_FILE = "suggestion.txt";
 
     // Session
     public final String SESSION_FILE = "MyPref";
@@ -60,4 +60,11 @@ public class Constants {
 
     public static final int REQUEST_CODE = 1995;
     public static final int RESULT_OK = 200;
+
+    public static final String CLEAR_ALL = "Clear all";
+    public static final String CLEAR_MESSAGE = "Do you want to clear history?";
+    public static final String NO_KEY = "Don't have history's keyword suggestion.";
+    public static final String ADD_PLAYLIST_TITLE = "Add playlist";
+    public static final String DELETE_CONFIRM = "Do you want to delete?";
+    public static final String REQUEST_LOGIN = "You still haven't logged in.";
 }

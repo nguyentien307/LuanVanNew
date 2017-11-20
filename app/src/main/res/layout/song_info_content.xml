@@ -43,7 +43,7 @@
                     android:id="@+id/iv_add"
                     android:layout_width="fill_parent"
                     android:layout_height="match_parent"
-                    android:src="@drawable/ic_add"
+                    android:src="@drawable/icon_add"
                     android:layout_toStartOf="@+id/border"/>
                 <LinearLayout
                     android:id="@+id/border"

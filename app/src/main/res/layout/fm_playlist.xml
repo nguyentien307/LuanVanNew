@@ -14,7 +14,7 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:text="Playlist"
-            android:textColor="@color/white"/>
+            android:textColor="@color/lightBlue"/>
     </RelativeLayout>
     <LinearLayout
         android:layout_below="@+id/header_bar"

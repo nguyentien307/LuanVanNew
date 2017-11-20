@@ -26,12 +26,13 @@
 
     <!--Search-->
     <string name="search_history">Search history</string>
-    <string name="clear_history">Clear</string>
+    <string name="clear_history">Clear all</string>
     <string name="searching_for_songs">Searching for songs</string>
     <string name="songs_title">Songs</string>
     <string name="albums_title">Albums</string>
     <string name="artists_title">Artists</string>
     <string name="composers_title">Composers</string>
+    <string name="top_song_view">Top songs</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

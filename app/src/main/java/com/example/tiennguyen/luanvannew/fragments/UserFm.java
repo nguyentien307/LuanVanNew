@@ -62,27 +62,14 @@ public class UserFm extends Fragment implements View.OnClickListener {
         View view = inflater.inflate(R.layout.fm_user, viewGroup, false);
         checkLogin();
         initViews(view);
-        preparePlaylist();
         viewUserProfile();
         return view;
     }
 
-    private void preparePlaylist() {
-        ArrayList<PlaylistItem> arrPlaylists = new ArrayList<>();
-        PlaylistItem item0 = new PlaylistItem("Nhạc yêu thích", "", R.drawable.hot_slider1, 19);
-        arrPlaylists.add(item0);
-        PlaylistItem item1 = new PlaylistItem("Nhạc buồn", "", R.drawable.hot_slider2, 10);
-        arrPlaylists.add(item1);
-        PlaylistItem item2 = new PlaylistItem("Nhạc sôi động", "", R.drawable.hot_slider3, 15);
-        arrPlaylists.add(item2);
-
-        ((MyApplication) getActivity().getApplication()).setArrPlaylists(arrPlaylists);
-    }
-
     private void checkLogin() {
-        session = new SessionManagement(getContext(), new SessionManagement.CheckLogin() {
+        session = new SessionManagement(getContext(), new SessionManagement.HaveNotLoggedIn() {
             @Override
-            public void checkLogin() {
+            public void haveNotLoggedIn() {
                 replaceFragment("Login");
             }
         });

@@ -24,12 +24,14 @@ import com.example.tiennguyen.luanvannew.MyApplication;
 import com.example.tiennguyen.luanvannew.R;
 import com.example.tiennguyen.luanvannew.activities.PlayerActivity;
 import com.example.tiennguyen.luanvannew.commons.Constants;
+import com.example.tiennguyen.luanvannew.dialogs.AlertDialogManagement;
 import com.example.tiennguyen.luanvannew.fragments.PlayerCollapseFm;
 import com.example.tiennguyen.luanvannew.fragments.SongInfoFm;
 import com.example.tiennguyen.luanvannew.models.PersonItem;
 import com.example.tiennguyen.luanvannew.models.PlaylistItem;
 import com.example.tiennguyen.luanvannew.models.SongItem;
 import com.example.tiennguyen.luanvannew.dialogs.MyAlertDialogFragment;
+import com.example.tiennguyen.luanvannew.sessions.SessionManagement;
 
 import java.util.ArrayList;
 
@@ -214,7 +216,7 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.ViewHolder> 
         AlertDialog myQuittingDialogBox =new AlertDialog.Builder(context)
                 //set message, title, and icon
                 .setTitle("Delete")
-                .setMessage("Do you want to Delete")
+                .setMessage(Constants.DELETE_CONFIRM)
                 .setIcon(R.drawable.ic_delete)
 
                 .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
@@ -241,11 +243,27 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.ViewHolder> 
     }
 
     private void showDialog(){
-        ArrayList<PlaylistItem> arrPlaylists = ((MyApplication) activity.getApplication()).getArrPlaylists();
-        MyAlertDialogFragment dialog = MyAlertDialogFragment.newInstance(arrPlaylists);
-        FragmentManager manager = ((AppCompatActivity) context).getSupportFragmentManager();
-        dialog.show(manager, "fragment_alert");
+        SessionManagement session = new SessionManagement(context, new SessionManagement.HaveNotLoggedIn() {
+            @Override
+            public void haveNotLoggedIn() {
+                AlertDialogManagement alertDialod = new AlertDialogManagement(new AlertDialogManagement.ConfirmLogout() {
+                    @Override
+                    public void confirmLogout() {
 
+                    }
+                });
+                alertDialod.showAlertDialog(context, Constants.ADD_PLAYLIST_TITLE, Constants.REQUEST_LOGIN, false);
+            }
+        });
+        if (session.isLoggedIn()) {
+            ArrayList<PlaylistItem> arrPlaylists = ((MyApplication) activity.getApplication()).getArrPlaylists();
+            MyAlertDialogFragment dialog = MyAlertDialogFragment.newInstance(arrPlaylists);
+            FragmentManager manager = ((AppCompatActivity) context).getSupportFragmentManager();
+            dialog.show(manager, "fragment_alert");
+        }
+        else {
+            session.checkLogin();
+        }
     }
 
 

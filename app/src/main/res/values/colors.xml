@@ -21,5 +21,6 @@
     <color name="red">#ff0000</color>
     <color name="dardGray">#5d5858</color>
     <color name="progressBarLightBlue">#a3d9ff</color>
+    <color name="titleColorDark">#111213</color>
 
 </resources>

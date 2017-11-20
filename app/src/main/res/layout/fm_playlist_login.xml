@@ -14,15 +14,23 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:text="Playlist"
-            android:textColor="@color/white"/>
-        <ImageView
-            android:id="@+id/iv_add"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/add_icon"
+            android:textColor="@color/lightBlue"
+            android:textSize="@dimen/text_size_13sp"/>
+        <LinearLayout
+            android:id="@+id/llAddPlaylist"
+            android:layout_width="@dimen/toolbar_height_40dp"
+            android:layout_height="match_parent"
             android:layout_centerVertical="true"
             android:layout_alignParentEnd="true"
-            android:layout_marginEnd="@dimen/dimen_16dp"/>
+            android:gravity="center">
+
+            <ImageView
+                android:id="@+id/iv_add"
+                android:layout_width="@dimen/item_width_20dp"
+                android:layout_height="@dimen/item_width_20dp"
+                android:src="@drawable/icon_add"/>
+
+        </LinearLayout>
     </RelativeLayout>
     <LinearLayout
         android:layout_below="@+id/header_bar"

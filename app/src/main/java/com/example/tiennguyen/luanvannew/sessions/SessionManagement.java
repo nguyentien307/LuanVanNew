@@ -43,12 +43,12 @@ public class SessionManagement {
     // Email address (make variable public to access from outside)
     public static final String KEY_PASSWORD = "password";
 
-    CheckLogin checkLogin;
+    HaveNotLoggedIn haveNotLoggedIn;
 
     // Constructor
-    public SessionManagement(Context context, CheckLogin checkLogin){
+    public SessionManagement(Context context, HaveNotLoggedIn haveNotLoggedIn){
         this._context = context;
-        this.checkLogin = checkLogin;
+        this.haveNotLoggedIn = haveNotLoggedIn;
         pref = _context.getSharedPreferences(PREF_NAME, PRIVATE_MODE);
         editor = pref.edit();
     }
@@ -78,7 +78,7 @@ public class SessionManagement {
     public void checkLogin(){
         // Check login status
         if(!this.isLoggedIn()){
-            checkLogin.checkLogin();
+            haveNotLoggedIn.haveNotLoggedIn();
         }
     }
 
@@ -116,7 +116,7 @@ public class SessionManagement {
         return pref.getBoolean(IS_LOGIN, false);
     }
 
-    public interface CheckLogin {
-        void checkLogin();
+    public interface HaveNotLoggedIn {
+        void haveNotLoggedIn();
     }
 }

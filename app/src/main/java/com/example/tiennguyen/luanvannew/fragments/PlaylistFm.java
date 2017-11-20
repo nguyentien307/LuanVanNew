@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.example.tiennguyen.luanvannew.MyApplication;
@@ -36,6 +37,7 @@ public class PlaylistFm extends Fragment implements View.OnClickListener {
     private PlaylistsAdapter playlistsAdapter;
     private ArrayList<PlaylistItem> arrPlaylists = new ArrayList<>();
     private RecyclerView.LayoutManager layoutManager;
+    private LinearLayout llAddPlaylist;
 
     private String res = "";
     private Boolean isLogin;
@@ -59,9 +61,9 @@ public class PlaylistFm extends Fragment implements View.OnClickListener {
     }
 
     private Boolean checkLogin() {
-        SessionManagement session = new SessionManagement(getContext(), new SessionManagement.CheckLogin() {
+        SessionManagement session = new SessionManagement(getContext(), new SessionManagement.HaveNotLoggedIn() {
             @Override
-            public void checkLogin() {
+            public void haveNotLoggedIn() {
 
             }
         });
@@ -74,7 +76,9 @@ public class PlaylistFm extends Fragment implements View.OnClickListener {
         if(isLogin){
             view = inflater.inflate(R.layout.fm_playlist_login, viewGroup, false);
             ivAdd = (ImageView) view.findViewById(R.id.iv_add);
-            ivAdd.setOnClickListener(this);
+            llAddPlaylist = (LinearLayout) view.findViewById(R.id.llAddPlaylist);
+//            ivAdd.setOnClickListener(this);
+            llAddPlaylist.setOnClickListener(this);
 
             //recycler
             rcPlaylists = (RecyclerView) view.findViewById(R.id.rc_playlists);
@@ -120,7 +124,7 @@ public class PlaylistFm extends Fragment implements View.OnClickListener {
                         .commit();
             }; break;
 
-            case R.id.iv_add: {
+            case R.id.llAddPlaylist: {
                 LayoutInflater inflater = getActivity().getLayoutInflater();
                 View alertLayout = inflater.inflate(R.layout.create_playlist_box, null);
                 final EditText etName = (EditText) alertLayout.findViewById(R.id.et_name);

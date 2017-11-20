@@ -19,6 +19,7 @@
     <dimen name="padding_16dp">16dp</dimen>
 
         <!--Margin-->
+    <dimen name="margin_3dp">3dp</dimen>
     <dimen name="margin_5dp">5dp</dimen>
     <dimen name="margin_8dp">8dp</dimen>
     <dimen name="margin_14dp">14dp</dimen>
@@ -44,15 +45,16 @@
 
     <!--Music UI-->
     <dimen name="tab_title_width">180dp</dimen>
-    <dimen name="tab_title_text_size">12sp</dimen>
+    <dimen name="tab_title_text_size">13sp</dimen>
     <dimen name="tab_title_radius">3dp</dimen>
     <dimen name="title_text_size_16dp">16dp</dimen>
     <dimen name="player_collapse_image_size_40dp">40dp</dimen>
     <dimen name="player_collapse_height_50dp">50dp</dimen>
     <dimen name="player_list_song_layout_height_250dp">250dp</dimen>
-    <dimen name="player_ic_back_image_size_20dp">20dp</dimen>
+    <dimen name="player_ic_back_image_size_25dp">20dp</dimen>
     <dimen name="icon_control_player_image_size_20dp">20dp</dimen>
     <dimen name="layout_control_player_size_30dp">30dp</dimen>
+    <dimen name="player_ic_player_image_size_20dp">20dp</dimen>
 
 
     <dimen name="title_text_size">15sp</dimen>
@@ -93,10 +95,13 @@
 
     <!--Search-->
     <dimen name="image_category_size_20dp">20dp</dimen>
-    <dimen name="search_title_text_size_14sp">14sp</dimen>
+    <dimen name="search_title_text_size_14sp">13sp</dimen>
     <dimen name="search_result_image_size_40dp">40dp</dimen>
 
     <!--User Profile-->
     <dimen name="avatar_image_height_180dp">180dp</dimen>
     <dimen name="logout_playlist_title_text_size_13dp">12dp</dimen>
+
+    <dimen name="item_width_20dp">20dp</dimen>
+    <dimen name="item_width_25dp">25dp</dimen>
 </resources>

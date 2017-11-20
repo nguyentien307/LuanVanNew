@@ -2,28 +2,31 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="wrap_content">
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/toolbar_height_40dp"
         android:background="@drawable/bg_header">
+
         <TextView
             android:id="@+id/tv_header_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="@dimen/title_text_size"
-            android:textColor="@color/white"
-            android:layout_centerInParent="true"/>
+            android:layout_centerInParent="true"
+            android:textColor="@color/lightBlue"
+            android:textSize="@dimen/title_text_size" />
+
         <LinearLayout
             android:id="@+id/ll_btn_back"
-            android:layout_width="@dimen/dimen_60dp"
+            android:layout_width="@dimen/toolbar_height_40dp"
             android:layout_height="match_parent"
             android:gravity="center">
+
             <ImageView
                 android:id="@+id/iv_btn_back"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                android:src="@drawable/ic_back_handle"
-                />
+                android:layout_width="@dimen/player_ic_back_image_size_25dp"
+                android:layout_height="@dimen/player_ic_back_image_size_25dp"
+                android:src="@drawable/ic_back_handle" />
         </LinearLayout>
     </RelativeLayout>
 

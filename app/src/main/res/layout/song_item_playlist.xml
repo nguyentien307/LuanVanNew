@@ -59,26 +59,12 @@
     </RelativeLayout>
 
     <LinearLayout
-        android:id="@+id/ll_about"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        android:layout_alignParentEnd="true"
-        android:layout_centerVertical="true">
-        <ImageView
-            android:id="@+id/iv_about"
-            android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:src="@drawable/ic_about"
-            />
-    </LinearLayout>
-
-    <LinearLayout
         android:id="@+id/ll_add"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
+        android:layout_width="40dp"
+        android:layout_height="match_parent"
         android:layout_toStartOf="@id/ll_about"
-        android:layout_marginEnd="@dimen/dimen_10dp"
-        android:layout_centerVertical="true">
+        android:layout_centerVertical="true"
+        android:gravity="center">
 
         <ImageView
             android:id="@+id/iv_delete"
@@ -86,6 +72,21 @@
             android:layout_height="fill_parent"
             android:src="@drawable/delete_icon"
             />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_about"
+        android:layout_width="40dp"
+        android:layout_height="match_parent"
+        android:layout_centerVertical="true"
+        android:gravity="center"
+        android:layout_alignParentEnd="true">
+
+        <ImageView
+            android:id="@+id/iv_about"
+            android:layout_width="@dimen/item_width_20dp"
+            android:layout_height="fill_parent"
+            android:src="@drawable/ic_about" />
     </LinearLayout>
 
 </RelativeLayout>

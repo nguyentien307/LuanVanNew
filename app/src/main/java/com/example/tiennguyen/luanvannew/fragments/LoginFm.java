@@ -38,6 +38,7 @@ public class LoginFm extends Fragment implements TextWatcher, View.OnKeyListener
     private EditText edEmail, edPassword;
     private TextView tvEmailInvalid, tvPasswordInvalid;
     private Button btnLogin;
+    private boolean isInvalid = false;
 
     public static LoginFm newInstance(String name) {
         LoginFm contentFragment = new LoginFm();
@@ -63,9 +64,9 @@ public class LoginFm extends Fragment implements TextWatcher, View.OnKeyListener
     }
 
     private void initViews(View view) {
-        session = new SessionManagement(getContext(), new SessionManagement.CheckLogin() {
+        session = new SessionManagement(getContext(), new SessionManagement.HaveNotLoggedIn() {
             @Override
-            public void checkLogin() {
+            public void haveNotLoggedIn() {
 
             }
         });
@@ -101,13 +102,16 @@ public class LoginFm extends Fragment implements TextWatcher, View.OnKeyListener
             edEmail.setBackgroundResource(R.drawable.edittext_login_invalid_selector);
             tvEmailInvalid.setText(Constants.FIELD_REQUIRED);
             tvEmailInvalid.setVisibility(View.VISIBLE);
+            isInvalid = true;
         }else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             edEmail.setBackgroundResource(R.drawable.edittext_login_invalid_selector);
             tvEmailInvalid.setText(Constants.EMAIL_INVALID_TYPE);
             tvEmailInvalid.setVisibility(View.VISIBLE);
+            isInvalid = true;
         } else {
             edEmail.setBackgroundResource(R.drawable.edittext_login_selector);
             tvEmailInvalid.setVisibility(View.GONE);
+            isInvalid = false;
         }
     }
 
@@ -141,7 +145,8 @@ public class LoginFm extends Fragment implements TextWatcher, View.OnKeyListener
         switch (v.getId()) {
             case R.id.btnLogin:
                 // Hiện tại không kiểm tra login, sẽ thực hiện khi có API request đăng nhập
-                loginValidateion();
+                if (edEmail.equals("") || edPassword.equals("") || !isInvalid)
+                    loginValidateion();
         }
     }
 
@@ -159,7 +164,7 @@ public class LoginFm extends Fragment implements TextWatcher, View.OnKeyListener
                 // Creating user login session
                 // For testing i am stroing name, email as follow
                 // Use user real data
-                session.createLoginSession("123@gmail.com", "1111");
+                session.createLoginSession("a@gmail.com", "1111");
 
                 Fragment fragment = new Fragment();
                 switch (res) {
@@ -176,7 +181,7 @@ public class LoginFm extends Fragment implements TextWatcher, View.OnKeyListener
                         .replace(R.id.fragment_container, fragment)
                         .commit();
 
-            }else{
+            } else {
                 // username / password doesn't match
                 alert.showAlertDialog(getActivity(), "Login failed..", "Email or password is incorrect", false);
             }
