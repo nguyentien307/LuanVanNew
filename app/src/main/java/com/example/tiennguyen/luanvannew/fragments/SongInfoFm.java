@@ -139,8 +139,9 @@ public class SongInfoFm extends Fragment implements View.OnClickListener {
         switch (v.getId()){
             case R.id.ll_btn_back:
             case R.id.iv_btn_back:{
-                LinearLayout secondScreen  = (LinearLayout) getActivity().findViewById(R.id.fragment_container_second);
-                secondScreen.setVisibility(View.GONE);
+//                LinearLayout secondScreen  = (LinearLayout) getActivity().findViewById(R.id.fragment_container_second);
+//                secondScreen.setVisibility(View.GONE);
+                getActivity().getSupportFragmentManager().popBackStack();
             }; break;
 
             case R.id.iv_add:{

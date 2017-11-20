@@ -75,7 +75,7 @@
             </RelativeLayout>
         </RelativeLayout>
 
-        <include layout="@layout/infor_title_name" />
+        <include layout="@layout/title_name" />
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/rc_songs"

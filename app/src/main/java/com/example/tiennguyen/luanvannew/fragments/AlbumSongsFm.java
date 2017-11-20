@@ -163,7 +163,11 @@ public class AlbumSongsFm extends Fragment implements View.OnClickListener {
         switch (v.getId()){
             case R.id.ll_btn_back:
             case R.id.iv_btn_back:{
-                getFragmentManager().popBackStack();
+
+                getActivity().getSupportFragmentManager().popBackStack();
+                LinearLayout secondScreen  = (LinearLayout) getActivity().findViewById(R.id.fragment_container_second);
+                secondScreen.setVisibility(View.GONE);
+
             }; break;
 
             case R.id.iv_add:{

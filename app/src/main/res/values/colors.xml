@@ -22,4 +22,8 @@
     <color name="dardGray">#5d5858</color>
     <color name="progressBarLightBlue">#a3d9ff</color>
 
+    <color name="pink">#f92048</color>
+    <color name="dark_pink">#d91d3f</color>
+    <color name="transparent">#80000000</color>
+
 </resources>

@@ -68,7 +68,7 @@
             android:orientation="vertical"
             android:layout_below="@+id/rl_header">
 
-            <include layout="@layout/infor_title_name"
+            <include layout="@layout/title_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/title_singers"
@@ -85,7 +85,7 @@
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-            <include layout="@layout/infor_title_name"
+            <include layout="@layout/title_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/title_composers" />
