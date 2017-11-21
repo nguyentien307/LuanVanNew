@@ -12,6 +12,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.tiennguyen.luanvannew.R;
+import com.example.tiennguyen.luanvannew.models.SliderItem;
 
 import java.util.ArrayList;
 
@@ -23,9 +24,9 @@ public class ViewPagerAdapter extends PagerAdapter {
 
     private Context context;
     private LayoutInflater layoutInflater;
-    private ArrayList<String> arrSlider;
+    private ArrayList<SliderItem> arrSlider;
 
-    public ViewPagerAdapter(Context context, ArrayList<String> arrSlider) {
+    public ViewPagerAdapter(Context context, ArrayList<SliderItem> arrSlider) {
         this.context = context;
         this.arrSlider = arrSlider;
     }
@@ -47,7 +48,7 @@ public class ViewPagerAdapter extends PagerAdapter {
 
         ImageView imageView = (ImageView) view.findViewById(R.id.iv_slider);
 
-        Glide.with(context).load(arrSlider.get(position))
+        Glide.with(context).load(arrSlider.get(position).getImg())
                 .thumbnail(0.5f)
                 .crossFade()
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
@@ -60,7 +61,7 @@ public class ViewPagerAdapter extends PagerAdapter {
             public void onClick(View v){
                 //this will log the page number that was click
                 //Log.i("TAG", "This page was clicked: " + position);
-                Toast.makeText(context, "click "+position, Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, arrSlider.get(position).getTitle(), Toast.LENGTH_SHORT).show();
             }
         });
 

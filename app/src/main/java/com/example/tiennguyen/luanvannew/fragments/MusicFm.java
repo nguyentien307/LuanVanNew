@@ -109,7 +109,7 @@ public class MusicFm extends Fragment implements View.OnClickListener {
             categoriesButton.setVisibility(View.VISIBLE);
             stylesButton.setVisibility(View.VISIBLE);
 
-            fragment = MusicSongsFm.newInstance(new CategoryItem("Hot Songs", "", R.drawable.style1));
+            fragment = MusicSongsFm.newInstance(new CategoryItem("Nhạc Trẻ", "/top100/Nhac-Tre/IWZ9Z088.html", R.drawable.style1));
         }
         else {
             tabSongs.setBackground(getResources().getDrawable(R.drawable.tab_title_left_normal));
@@ -136,7 +136,7 @@ public class MusicFm extends Fragment implements View.OnClickListener {
             categoriesButton.setVisibility(View.VISIBLE);
             stylesButton.setVisibility(View.INVISIBLE);
 
-            fragment = MusicAlbumsFm.newInstance(new CategoryItem("Hot Albums", "", R.drawable.style1));
+            fragment = MusicAlbumsFm.newInstance(new CategoryItem("Nhạc Trẻ", "/the-loai-album/Nhac-Tre/IWZ9Z088.html", R.drawable.style1));
         }
         else {
             tabAlbums.setBackground(getResources().getDrawable(R.drawable.tab_title_right_normal));

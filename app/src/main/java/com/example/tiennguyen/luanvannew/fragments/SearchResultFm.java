@@ -176,7 +176,7 @@ public class SearchResultFm extends Fragment implements View.OnFocusChangeListen
 
     private void setAdapter(ArrayList<SongItem> searchingArray, String numFound) {
         tvSongNum.setText("Have " + numFound + " results is founded for '" + data + "'");
-        songsAdapter = new SongsAdapter(getContext(), getActivity(), songArr, CONSTANTS.SONG_CATEGORIES);
+        songsAdapter = new SongsAdapter(getContext(), getActivity(), songArr, CONSTANTS.SONG_CATEGORIES, rcSearchResult);
         rcSearchResult.setAdapter(songsAdapter);
 
         songsAdapter.notifyItemRangeInserted(songsAdapter.getItemCount(), searchingArray.size() - 1);

@@ -105,7 +105,7 @@ public class PlaylistSongsFm extends Fragment implements View.OnClickListener {
         rcSongs.setNestedScrollingEnabled(false);
         songsLayoutManager = new LinearLayoutManager(getContext());
         rcSongs.setLayoutManager(songsLayoutManager);
-        songsAdapter = new SongsAdapter(getContext(), getActivity(), arrSongs, Constants.SONGS_LIST_IN_PLAYLIST);
+        songsAdapter = new SongsAdapter(getContext(), getActivity(), arrSongs, Constants.SONGS_LIST_IN_PLAYLIST, rcSongs);
         rcSongs.setAdapter(songsAdapter);
         prepareSongs();
 

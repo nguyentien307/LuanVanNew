@@ -11,12 +11,14 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -24,12 +26,13 @@ import com.example.tiennguyen.luanvannew.MyApplication;
 import com.example.tiennguyen.luanvannew.R;
 import com.example.tiennguyen.luanvannew.activities.PlayerActivity;
 import com.example.tiennguyen.luanvannew.commons.Constants;
+import com.example.tiennguyen.luanvannew.dialogs.MyAlertDialogFragment;
 import com.example.tiennguyen.luanvannew.fragments.PlayerCollapseFm;
 import com.example.tiennguyen.luanvannew.fragments.SongInfoFm;
+import com.example.tiennguyen.luanvannew.interfaces.OnLoadMoreListener;
 import com.example.tiennguyen.luanvannew.models.PersonItem;
 import com.example.tiennguyen.luanvannew.models.PlaylistItem;
 import com.example.tiennguyen.luanvannew.models.SongItem;
-import com.example.tiennguyen.luanvannew.dialogs.MyAlertDialogFragment;
 
 import java.util.ArrayList;
 
@@ -37,27 +40,63 @@ import java.util.ArrayList;
  * Created by TIENNGUYEN on 11/8/2017.
  */
 
-public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.ViewHolder> {
+public class SongsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     ArrayList<SongItem> arrSongs;
     private Context context;
     private String style;
     private Activity activity;
 
+    private final int VIEW_TYPE_ITEM = 0;
+    private final int VIEW_TYPE_LOADING = 1;
+    private OnLoadMoreListener mOnLoadMoreListener;
+    private boolean isLoading;
+    private int visibleThreshold = 5;
+    private int lastVisibleItem, totalItemCount;
 
-    public SongsAdapter(Context context, Activity activity, ArrayList<SongItem> arrSongs, String style){
+    public void setOnLoadMoreListener(OnLoadMoreListener mOnLoadMoreListener) {
+        this.mOnLoadMoreListener = mOnLoadMoreListener;
+    }
+
+
+    public SongsAdapter(Context context, Activity activity, ArrayList<SongItem> arrSongs, String style, RecyclerView recyclerView){
         this.arrSongs = arrSongs;
         this.context = context;
         this.style = style;
         this.activity = activity;
+
+        final LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                totalItemCount = linearLayoutManager.getItemCount();
+                lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition();
+                if (!isLoading && totalItemCount <= (lastVisibleItem + visibleThreshold)) {
+                    if (mOnLoadMoreListener != null) {
+                        mOnLoadMoreListener.onLoadMore();
+                    }
+                    isLoading = true;
+                }
+            }
+        });
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    private class LoadingViewHolder extends RecyclerView.ViewHolder {
+        public ProgressBar progressBar;
+
+        public LoadingViewHolder(View view) {
+            super(view);
+            progressBar = (ProgressBar) view.findViewById(R.id.progressBar1);
+        }
+    }
+
+    public class SongViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public TextView tvSongName, tvArtistName, tvViews, tvIndex;
         public ImageView ivAvatar, ivAdd, ivAbout, ivDelete ;
         public LinearLayout llAdd, llAbout;
         public LinearLayout llIndex;
 
-        ViewHolder(View itemView) {
+        SongViewHolder(View itemView) {
             super(itemView);
             tvSongName = (TextView) itemView.findViewById(R.id.tv_song_name);
             tvArtistName = (TextView) itemView.findViewById(R.id.tv_artist_name);
@@ -144,56 +183,73 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.ViewHolder> 
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-
-        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        View itemView ;
-        if(style == Constants.SONGS_LIST_IN_PLAYLIST){
-            itemView = inflater.inflate(R.layout.song_item_playlist, parent, false);
-        }else {
-            itemView = inflater.inflate(R.layout.song_item, parent, false);
-        }
-        ViewHolder svh = new ViewHolder(itemView);
-        return svh;
+    public int getItemViewType(int position) {
+        return arrSongs.get(position) == null ? VIEW_TYPE_LOADING : VIEW_TYPE_ITEM;
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.tvSongName.setText(arrSongs.get(position).getTitle());
-        holder.tvViews.setText("Views: "+arrSongs.get(position).getViews());
-
-        ArrayList<PersonItem> singers = arrSongs.get(position).getArtist();
-        String singerName = "";
-        for (int singerIndex = 0; singerIndex < singers.size(); singerIndex++) {
-            if (singerIndex == singers.size() - 1) {
-                singerName += singers.get(singerIndex).getName();
-            } else {
-                singerName += singers.get(singerIndex).getName() + ", ";
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View view;
+        if (viewType == VIEW_TYPE_ITEM) {
+            if(style == Constants.SONGS_LIST_IN_PLAYLIST){
+                view = LayoutInflater.from(activity).inflate(R.layout.song_item_playlist, parent, false);
+            }else {
+                view = LayoutInflater.from(activity).inflate(R.layout.song_item, parent, false);
             }
+            return new SongViewHolder(view);
+        } else if (viewType == VIEW_TYPE_LOADING) {
+            view = LayoutInflater.from(activity).inflate(R.layout.item_loading, parent, false);
+            return new LoadingViewHolder(view);
         }
-        if (singerName != "") {
-            holder.tvArtistName.setText(singerName);
-        } else holder.tvArtistName.setText("khong co");
+        return null;
+    }
 
-        if(style == Constants.SONG_CATEGORIES || style == Constants.SONGS_LIST_IN_PLAYLIST) {
-            if (arrSongs.get(position).getLinkImg() != "") {
-                Glide.with(context)
-                        .load(arrSongs.get(position).getLinkImg())
-                        .centerCrop()
-                        .placeholder(R.drawable.item_up)
-                        .error(R.drawable.item_up)
-                        .into(holder.ivAvatar);
+    @Override
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        if (holder instanceof SongViewHolder) {
+            SongViewHolder songViewHolder = (SongViewHolder) holder;
+            songViewHolder.tvSongName.setText(arrSongs.get(position).getTitle());
+            songViewHolder.tvViews.setText("Views: "+arrSongs.get(position).getViews());
+
+            ArrayList<PersonItem> singers = arrSongs.get(position).getArtist();
+            String singerName = "";
+            for (int singerIndex = 0; singerIndex < singers.size(); singerIndex++) {
+                if (singerIndex == singers.size() - 1) {
+                    singerName += singers.get(singerIndex).getName();
+                } else {
+                    singerName += singers.get(singerIndex).getName() + ", ";
+                }
             }
-        }
-        else if (style == Constants.ALBUM_CATEGORIES || style.equals(Constants.PLAYER_ACTIVITY)){
-            holder.tvIndex.setText(position + 1 +"");
-        }
+            if (singerName != "") {
+                songViewHolder.tvArtistName.setText(singerName);
+            } else songViewHolder.tvArtistName.setText("khong co");
 
+            if(style == Constants.SONG_CATEGORIES || style == Constants.SONGS_LIST_IN_PLAYLIST) {
+                if (arrSongs.get(position).getLinkImg() != "") {
+                    Glide.with(context)
+                            .load(arrSongs.get(position).getLinkImg())
+                            .centerCrop()
+                            .placeholder(R.drawable.item_up)
+                            .error(R.drawable.item_up)
+                            .into(songViewHolder.ivAvatar);
+                }
+            }
+            else if (style == Constants.ALBUM_CATEGORIES || style.equals(Constants.PLAYER_ACTIVITY)){
+                songViewHolder.tvIndex.setText(position + 1 +"");
+            }
+        } else if (holder instanceof LoadingViewHolder) {
+            LoadingViewHolder loadingViewHolder = (LoadingViewHolder) holder;
+            loadingViewHolder.progressBar.setIndeterminate(true);
+        }
     }
 
     @Override
     public int getItemCount() {
-        return arrSongs.size();
+        return arrSongs == null ? 0 : arrSongs.size();
+    }
+
+    public void setLoaded() {
+        isLoading = false;
     }
 
     @Override
@@ -247,6 +303,4 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.ViewHolder> 
         dialog.show(manager, "fragment_alert");
 
     }
-
-
 }

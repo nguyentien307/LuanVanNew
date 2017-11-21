@@ -20,10 +20,11 @@ import com.example.tiennguyen.luanvannew.commons.Constants;
 import com.example.tiennguyen.luanvannew.models.AlbumItem;
 import com.example.tiennguyen.luanvannew.models.PersonItem;
 import com.example.tiennguyen.luanvannew.models.SongItem;
+import com.example.tiennguyen.luanvannew.services.GetPage;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
 
@@ -115,7 +116,7 @@ public class AlbumSongsFm extends Fragment implements View.OnClickListener {
         rcSongs.setNestedScrollingEnabled(false);
         songsLayoutManager = new LinearLayoutManager(getContext());
         rcSongs.setLayoutManager(songsLayoutManager);
-        songsAdapter = new SongsAdapter(getContext(), getActivity(), arrSongs, Constants.ALBUM_CATEGORIES);
+        songsAdapter = new SongsAdapter(getContext(), getActivity(), arrSongs, Constants.ALBUM_CATEGORIES,rcSongs);
         rcSongs.setAdapter(songsAdapter);
         prepareSongs();
 
@@ -123,39 +124,7 @@ public class AlbumSongsFm extends Fragment implements View.OnClickListener {
     }
 
     private void prepareSongs() {
-        JSONObject data = null;
-        try {
-            data = new JSONObject(Constants.SONG_DATA);
 
-            JSONArray songList = data.getJSONArray("list");
-            for(int songIndex = 0; songIndex < songList.length() ; songIndex++){
-                JSONObject song = songList.getJSONObject(songIndex);
-                String title = song.getString("title");
-                String img = song.getString("img");
-                String href = song.getString("href");
-                JSONArray singersJSON = song.getJSONArray("singers");
-                ArrayList<PersonItem> arrSinger = new ArrayList<PersonItem>();
-                ArrayList<PersonItem> arrComposer = new ArrayList<PersonItem>();
-                for (int singerIndex = 0; singerIndex < singersJSON.length(); singerIndex++ ){
-                    JSONObject singer = singersJSON.getJSONObject(singerIndex);
-                    String singerName = singer.getString("singerName");
-                    String singerHref = singer.getString("singerHref");
-                    PersonItem singerItem = new PersonItem(singerName, singerHref, 200);
-                    arrSinger.add(singerItem);
-                }
-                PersonItem composer = new PersonItem("Trịnh Công Sơn", "", 200);
-                PersonItem composer1 = new PersonItem("Vũ Cát Tường", "", 200);
-                arrComposer.add(composer);
-                arrComposer.add(composer1);
-                SongItem songItem = new SongItem(title,200, href, arrSinger, arrComposer, "", img);
-                arrSongs.add(songItem);
-
-            }
-
-            songsAdapter.notifyDataSetChanged();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.example.tiennguyen.luanvannew.fragments;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -21,11 +22,13 @@ import com.example.tiennguyen.luanvannew.adapters.ViewPagerAdapter;
 import com.example.tiennguyen.luanvannew.commons.Constants;
 import com.example.tiennguyen.luanvannew.models.AlbumItem;
 import com.example.tiennguyen.luanvannew.models.PersonItem;
+import com.example.tiennguyen.luanvannew.models.SliderItem;
 import com.example.tiennguyen.luanvannew.models.SongItem;
+import com.example.tiennguyen.luanvannew.services.GetPage;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
 import java.util.Timer;
@@ -37,8 +40,9 @@ import java.util.TimerTask;
 
 public class MusicHotFm extends Fragment implements View.OnClickListener {
 
+    final Context myApp = getContext();
     // view pager
-    private ArrayList<String> arrSlider = new ArrayList<>();
+    private ArrayList<SliderItem> arrSlider = new ArrayList<>();
     private ViewPager viewPager;
     private ViewPagerAdapter viewPagerAdapter;
     //dots in viewpager
@@ -88,10 +92,11 @@ public class MusicHotFm extends Fragment implements View.OnClickListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup viewGroup, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fm_music_hot, viewGroup, false);
 
+
         viewPager = (ViewPager) view.findViewById(R.id.view_pager);
         sliderDotspanel = (LinearLayout) view.findViewById(R.id.ll_slider_dots);
         createArraySlider();
-        createSlider();
+
 
         //rcalbum
         rcAlbums = (RecyclerView) view.findViewById(R.id.rc_albums);
@@ -100,8 +105,6 @@ public class MusicHotFm extends Fragment implements View.OnClickListener {
         rcAlbums.setLayoutManager(albumsLayoutManager);
         albumsAdapter = new AlbumsAdapter(getContext(), arrAlbums, Constants.HORIZONTAL_ALBUMS_LIST);
         rcAlbums.setAdapter(albumsAdapter);
-        prepareAlbums();
-
 
 
         //rcyclesongs
@@ -111,7 +114,7 @@ public class MusicHotFm extends Fragment implements View.OnClickListener {
         rcSongs.setNestedScrollingEnabled(false);
         songsLayoutManager = new LinearLayoutManager(getContext());
         rcSongs.setLayoutManager(songsLayoutManager);
-        songsAdapter = new SongsAdapter(getContext(), getActivity(), arrSongs, Constants.SONG_CATEGORIES);
+        songsAdapter = new SongsAdapter(getContext(), getActivity(), arrSongs, Constants.SONG_CATEGORIES, rcSongs);
         rcSongs.setAdapter(songsAdapter);
         prepareSongs();
 
@@ -210,80 +213,108 @@ public class MusicHotFm extends Fragment implements View.OnClickListener {
 
     private void createArraySlider() {
         arrSlider.clear();
-        arrSlider.add("http://thefashionshows.com/file/2618/600x338/16:9/windows-8-piano-1920x1080_1419478427.jpg");
-        arrSlider.add("http://www.abc.net.au/radionational/image/7982806-3x2-700x467.jpg");
-        arrSlider.add("http://www.real.com/resources/wp-content/uploads/2013/08/youtube-music-playlist-762x294-1431640159.jpg");
+//        arrSlider.add("http://thefashionshows.com/file/2618/600x338/16:9/windows-8-piano-1920x1080_1419478427.jpg");
+//        arrSlider.add("http://www.abc.net.au/radionational/image/7982806-3x2-700x467.jpg");
+//        arrSlider.add("http://www.real.com/resources/wp-content/uploads/2013/08/youtube-music-playlist-762x294-1431640159.jpg");
 
-    }
+        GetPage getHomePage = new GetPage(getContext());
+        getHomePage.setDataDownloadListener(new GetPage.DataDownloadListener() {
+            @Override
+            public void dataDownloadedSuccessfully(Document data) {
 
-    private void prepareAlbums() {
-        JSONObject data = null;
-        try {
-            data = new JSONObject(Constants.DATA);
-
-            JSONArray albumListJSON = data.getJSONArray("list");
-            for (int albIndex = 0; albIndex < albumListJSON.length(); albIndex++) {
-                JSONObject album = albumListJSON.getJSONObject(albIndex);
-                String title = album.getString("title");
-                String img = album.getString("img");
-                String href = album.getString("href");
-                JSONArray singersJSON = album.getJSONArray("singers");
-                ArrayList<PersonItem> arrSinger = new ArrayList<PersonItem>();
-                for (int singerIndex = 0; singerIndex < singersJSON.length(); singerIndex++) {
-                    JSONObject singer = singersJSON.getJSONObject(singerIndex);
-                    String singerName = singer.getString("singerName");
-                    String singerHref = singer.getString("singerHref");
-                    PersonItem singerItem = new PersonItem(singerName, singerHref, 100);
-                    arrSinger.add(singerItem);
+                //create slider
+                Elements aElements = data.select("div.slide-scroll a");
+                for (int i = 0; i < aElements.size(); i++) {
+                    Element element = aElements.get(i);
+                    String href = element.attr("href");
+                    String title = element.attr("title");
+                    String img = "";
+                    if(i==0){
+                        img = element.select("img").attr("src");
+                    }
+                    else {
+                        img = element.select("img").attr("data-lazy");
+                    }
+                    SliderItem item = new SliderItem(img, title, href);
+                    arrSlider.add(item);
                 }
+                createSlider();
 
-                AlbumItem albumItem = new AlbumItem(title, href, img, 200, arrSinger);
 
-                arrAlbums.add(albumItem);
+                //prepare albums
+                Element albDiv = data.select("div.mt20-").get(1);
+                Elements albElements = albDiv.select("div.fn-list div.album-item");
+                for (Element albItem:albElements){
+                    Element aTag = albItem.select("a").first();
+                    String img = aTag.select("img").attr("src");
+                    Element aTagTitle = albItem.select("div.des .title-item a").first();
+                    String albHref = aTagTitle.attr("href");
+                    String title = aTagTitle.text();
 
+                    ArrayList<PersonItem> arrSingers = new ArrayList<PersonItem>();
+                    Elements singers = albItem.select(".singer-name");
+                    for(Element singer:singers){
+                        String singerHref = singer.select("a").attr("href");
+                        String singerName = singer.select("a").text();
+                        PersonItem singerItem = new PersonItem(singerName, singerHref, 192);
+                        arrSingers.add(singerItem);
+                    }
+
+                    AlbumItem albumItem = new AlbumItem(title, albHref, img, 300, arrSingers);
+                    arrAlbums.add(albumItem);
+                }
+                albumsAdapter.notifyDataSetChanged();
             }
 
-            albumsAdapter.notifyDataSetChanged();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+            @Override
+            public void dataDownloadFailed() {
+
+            }
+        });
+        getHomePage.execute(Constants.HOME_PAGE);
+
 
     }
 
     private void prepareSongs() {
-        JSONObject data = null;
-        try {
-            data = new JSONObject(Constants.SONG_DATA);
+        GetPage getChartSongsPage = new GetPage(getContext());
+        getChartSongsPage.setDataDownloadListener(new GetPage.DataDownloadListener() {
+            @Override
+            public void dataDownloadedSuccessfully(Document data) {
+                Elements songElements = data.select("div.table-body ul li");
+                for(int i = 0; i < 20; i++){
+                    Element songElement = songElements.get(i);
+                    String data_code = songElement.attr("data-code");
+                    Element e_item = songElement.select("div.e-item").first();
+                    String img = e_item.select("a").select("img").attr("src");
 
-            JSONArray songList = data.getJSONArray("list");
-            for(int songIndex = 0; songIndex < songList.length() ; songIndex++){
-                JSONObject song = songList.getJSONObject(songIndex);
-                String title = song.getString("title");
-                String img = song.getString("img");
-                String href = song.getString("href");
-                JSONArray singersJSON = song.getJSONArray("singers");
-                ArrayList<PersonItem> arrSinger = new ArrayList<PersonItem>();
-                ArrayList<PersonItem> arrComposer = new ArrayList<PersonItem>();
-                for (int singerIndex = 0; singerIndex < singersJSON.length(); singerIndex++ ){
-                    JSONObject singer = singersJSON.getJSONObject(singerIndex);
-                    String singerName = singer.getString("singerName");
-                    String singerHref = singer.getString("singerHref");
-                    PersonItem singerItem = new PersonItem(singerName, singerHref, 200);
-                    arrSinger.add(singerItem);
+                    Element aTagTitle = e_item.select(".title-item a").first();
+                    String title = aTagTitle.text();
+
+                    ArrayList<PersonItem> arrSingers = new ArrayList<PersonItem>();
+                    Elements singers = e_item.select(".title-sd-item");
+                    for(Element singer:singers){
+
+                        String singerHref = singer.select("a").attr("href");
+                        String singerName = singer.select("a").text();
+                        PersonItem singerItem = new PersonItem(singerName, singerHref, 192);
+                        arrSingers.add(singerItem);
+                    }
+                    ArrayList<PersonItem> arrComposers = new ArrayList<PersonItem>();
+                    PersonItem composer = new PersonItem("NHAC SĨ", "", 200);
+                    arrComposers.add(composer);
+                    SongItem songItem = new SongItem(title, 200, data_code, arrSingers, arrComposers, "", img);
+                    arrSongs.add(songItem);
                 }
-                PersonItem composer = new PersonItem("Trịnh Công Sơn", "", 200);
-                PersonItem composer1 = new PersonItem("Vũ Cát Tường", "", 200);
-                arrComposer.add(composer);
-                arrComposer.add(composer1);
-                SongItem songItem = new SongItem(title,200, href, arrSinger, arrComposer, "", img);
-                arrSongs.add(songItem);
-
+                songsAdapter.notifyDataSetChanged();
             }
 
-            songsAdapter.notifyDataSetChanged();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+            @Override
+            public void dataDownloadFailed() {
+
+            }
+        });
+        getChartSongsPage.execute(Constants.SONG_CHART_PAGE);
     }
 
     @Override

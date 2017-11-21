@@ -15,6 +15,11 @@ import com.example.tiennguyen.luanvannew.R;
 import com.example.tiennguyen.luanvannew.adapters.CategoriesAdapter;
 import com.example.tiennguyen.luanvannew.commons.Constants;
 import com.example.tiennguyen.luanvannew.models.CategoryItem;
+import com.example.tiennguyen.luanvannew.services.GetPage;
+
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
 
@@ -90,49 +95,85 @@ public class CategoryFm extends Fragment implements View.OnClickListener {
     }
 
     private void prepareSongStyles() {
-        CategoryItem item0 = new CategoryItem("Pop", "", R.drawable.style1);
-        arrCategories.add(item0);
-        CategoryItem item5 = new CategoryItem("Rock & Roll", "", R.drawable.category1);
-        arrCategories.add(item5);
-        CategoryItem item1 = new CategoryItem("Jazz", "", R.drawable.style1);
-        arrCategories.add(item1);
-        CategoryItem item2 = new CategoryItem("Blue", "", R.drawable.category1);
-        arrCategories.add(item2);
-        CategoryItem item3 = new CategoryItem("Valse", "", R.drawable.category2);
-        arrCategories.add(item3);
-        categoriesAdapter.notifyDataSetChanged();
+
+        GetPage getSongStylePage = new GetPage(getContext());
+        getSongStylePage.setDataDownloadListener(new GetPage.DataDownloadListener() {
+            @Override
+            public void dataDownloadedSuccessfully(Document data) {
+                Elements styles = data.select("div.widget-content ul li");
+                for(Element style:styles){
+                    String title = style.select("h2 a").text();
+                    String href = style.select("a").attr("href");
+                    String img = style.select("a img").attr("src");
+                    CategoryItem item = new CategoryItem(title, href, R.drawable.category1);
+                    arrCategories.add(item);
+                }
+
+                categoriesAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void dataDownloadFailed() {
+
+            }
+        });
+        getSongStylePage.execute(Constants.SONG_CATEGORIES_PAGE);
     }
 
     private void prepareSongCategories() {
-        CategoryItem item0 = new CategoryItem("Hot Songs", "", R.drawable.style1);
-        arrCategories.add(item0);
-        CategoryItem item5 = new CategoryItem("New Songs", "",  R.drawable.category1);
-        arrCategories.add(item5);
-        CategoryItem item1 = new CategoryItem("Nhạc Trẻ", "", R.drawable.category2);
-        arrCategories.add(item1);
-        CategoryItem item2 = new CategoryItem("Nhạc Cách Mạng", "", R.drawable.style1);
-        arrCategories.add(item2);
-        CategoryItem item3 = new CategoryItem("Nhạc Trữ Tình", "",  R.drawable.category1);
-        arrCategories.add(item3);
-        CategoryItem item4 = new CategoryItem("Nhạc Dân Ca", "", R.drawable.category2);
-        arrCategories.add(item4);
-        categoriesAdapter.notifyDataSetChanged();
+        GetPage getSongCategoryPage = new GetPage(getContext());
+        getSongCategoryPage.setDataDownloadListener(new GetPage.DataDownloadListener() {
+            @Override
+            public void dataDownloadedSuccessfully(Document data) {
+                Elements categories = data.select("div.tab-menu ul li");
+                for(int i = 0; i < 6; i++){
+                    Element category = categories.get(i);
+                    String title = category.select("a").text();
+                    String href = category.select("a").attr("href");
+                    CategoryItem item = new CategoryItem(title, href, R.drawable.category2);
+                    arrCategories.add(item);
+                }
+                Elements expandCate = data.select("div.tab-menu div.dropdown ul li");
+                for(Element category:expandCate){
+                    String title = category.select("a").text();
+                    String href = category.select("a").attr("href");
+                    CategoryItem item = new CategoryItem(title, href, R.drawable.category2);
+                    arrCategories.add(item);
+                }
+
+                categoriesAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void dataDownloadFailed() {
+
+            }
+        });
+        getSongCategoryPage.execute(Constants.SONG_CATEGORIES_PAGE);
     }
 
     private void prepareAlbumCategories() {
-        CategoryItem item0 = new CategoryItem("Hot Albums", "", R.drawable.category2);
-        arrCategories.add(item0);
-        CategoryItem item5 = new CategoryItem("New Albums", "",  R.drawable.category1);
-        arrCategories.add(item5);
-        CategoryItem item1 = new CategoryItem("Albums Nhạc Trẻ", "",  R.drawable.style1);
-        arrCategories.add(item1);
-        CategoryItem item2 = new CategoryItem("Albums Nhạc Cách Mạng", "", R.drawable.category2);
-        arrCategories.add(item2);
-        CategoryItem item3 = new CategoryItem("Albums Nhạc Trữ Tình", "",  R.drawable.style1);
-        arrCategories.add(item3);
-        CategoryItem item4 = new CategoryItem("Albums Nhạc Dân Ca", "",  R.drawable.category1);
-        arrCategories.add(item4);
-        categoriesAdapter.notifyDataSetChanged();
+        GetPage getAlbumCategoryPage = new GetPage(getContext());
+        getAlbumCategoryPage.setDataDownloadListener(new GetPage.DataDownloadListener() {
+            @Override
+            public void dataDownloadedSuccessfully(Document data) {
+                Element cateVietnam = data.select("div.fn-scrollbar ul.data-list li").first();
+                Elements categories = cateVietnam.select("ul li");
+                for(Element category:categories){
+                    String title = category.select("a").text();
+                    String href = category.select("a").attr("href");
+                    CategoryItem item = new CategoryItem(title, href, R.drawable.category1);
+                    arrCategories.add(item);
+                }
+                categoriesAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void dataDownloadFailed() {
+
+            }
+        });
+        getAlbumCategoryPage.execute(Constants.ALBUM_CATEGORIES_PAGE);
     }
 
 
