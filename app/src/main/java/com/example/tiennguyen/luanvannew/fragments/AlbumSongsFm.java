@@ -124,7 +124,39 @@ public class AlbumSongsFm extends Fragment implements View.OnClickListener {
     }
 
     private void prepareSongs() {
+        GetPage getSongs = new GetPage(getContext());
+        getSongs.setDataDownloadListener(new GetPage.DataDownloadListener() {
+            @Override
+            public void dataDownloadedSuccessfully(Document data) {
+                Elements songs = data.select("ul.list_song_in_album li");
+                for (Element song:songs) {
+                    Elements info = song.select("div.item_content a");
+                    String title = info.get(0).text();
+                    String href = info.get(0).attr("href");
+                    ArrayList<PersonItem> arrSingers = new ArrayList<PersonItem>();
+                    for(int i = 1; i < info.size(); i++){
+                        Element aTag = info.get(i);
+                        String singerHref = aTag.attr("href");
+                        String singerName = aTag.text();
+                        PersonItem singerItem = new PersonItem(singerName, singerHref, 192);
+                        arrSingers.add(singerItem);
+                    }
 
+                    ArrayList<PersonItem> arrComposers = new ArrayList<PersonItem>();
+                    PersonItem composer = new PersonItem("NHAC SĨ", "", 200);
+                    arrComposers.add(composer);
+                    SongItem songItem = new SongItem(title, 200, href, arrSingers, arrComposers, "", "");
+                    arrSongs.add(songItem);
+                }
+                songsAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void dataDownloadFailed() {
+
+            }
+        });
+        getSongs.execute(albumItem.getLink());
     }
 
     @Override

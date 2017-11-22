@@ -96,49 +96,18 @@ public class CategoryFm extends Fragment implements View.OnClickListener {
 
     private void prepareSongStyles() {
 
-        GetPage getSongStylePage = new GetPage(getContext());
-        getSongStylePage.setDataDownloadListener(new GetPage.DataDownloadListener() {
+        GetPage getSongPage = new GetPage(getContext());
+        getSongPage.setDataDownloadListener(new GetPage.DataDownloadListener() {
             @Override
             public void dataDownloadedSuccessfully(Document data) {
-                Elements styles = data.select("div.widget-content ul li");
-                for(Element style:styles){
-                    String title = style.select("h2 a").text();
-                    String href = style.select("a").attr("href");
-                    String img = style.select("a img").attr("src");
-                    CategoryItem item = new CategoryItem(title, href, R.drawable.category1);
-                    arrCategories.add(item);
-                }
-
-                categoriesAdapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void dataDownloadFailed() {
-
-            }
-        });
-        getSongStylePage.execute(Constants.SONG_CATEGORIES_PAGE);
-    }
-
-    private void prepareSongCategories() {
-        GetPage getSongCategoryPage = new GetPage(getContext());
-        getSongCategoryPage.setDataDownloadListener(new GetPage.DataDownloadListener() {
-            @Override
-            public void dataDownloadedSuccessfully(Document data) {
-                Elements categories = data.select("div.tab-menu ul li");
-                for(int i = 0; i < 6; i++){
+                Elements categories = data.select("ul.detail_menu_browsing_dashboard li");
+                for(int i = 15; i < 22; i++){
                     Element category = categories.get(i);
                     String title = category.select("a").text();
                     String href = category.select("a").attr("href");
                     CategoryItem item = new CategoryItem(title, href, R.drawable.category2);
                     arrCategories.add(item);
-                }
-                Elements expandCate = data.select("div.tab-menu div.dropdown ul li");
-                for(Element category:expandCate){
-                    String title = category.select("a").text();
-                    String href = category.select("a").attr("href");
-                    CategoryItem item = new CategoryItem(title, href, R.drawable.category2);
-                    arrCategories.add(item);
+
                 }
 
                 categoriesAdapter.notifyDataSetChanged();
@@ -149,22 +118,80 @@ public class CategoryFm extends Fragment implements View.OnClickListener {
 
             }
         });
-        getSongCategoryPage.execute(Constants.SONG_CATEGORIES_PAGE);
+        getSongPage.execute(Constants.SONG_PAGE);
+    }
+
+    private void prepareSongCategories() {
+        GetPage getSongPage = new GetPage(getContext());
+        getSongPage.setDataDownloadListener(new GetPage.DataDownloadListener() {
+            @Override
+            public void dataDownloadedSuccessfully(Document data) {
+                Elements categories = data.select("ul.detail_menu_browsing_dashboard li");
+                for(int i = 0; i < 11; i++){
+                    Element category = categories.get(i);
+                    if(i == 0){
+                        String href = category.select("h3 a").attr("href");
+                        String title = category.select("h3 a").text();
+                        CategoryItem item = new CategoryItem(title, href, R.drawable.category2);
+                        arrCategories.add(item);
+                    }else if(i > 2 && i < 10) {
+                        String title = category.select("a").text();
+                        String href = category.select("a").attr("href");
+                        CategoryItem item = new CategoryItem(title, href, R.drawable.category2);
+                        arrCategories.add(item);
+                    }
+                    else {
+                        Elements expandCate = category.select("ul li");
+                        for(Element cate:expandCate){
+                            String title = cate.select("a").text();
+                            String href = cate.select("a").attr("href");
+                            CategoryItem item = new CategoryItem(title, href, R.drawable.category2);
+                            arrCategories.add(item);
+                        }
+                    }
+                }
+
+                categoriesAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void dataDownloadFailed() {
+
+            }
+        });
+        getSongPage.execute(Constants.SONG_PAGE);
     }
 
     private void prepareAlbumCategories() {
-        GetPage getAlbumCategoryPage = new GetPage(getContext());
-        getAlbumCategoryPage.setDataDownloadListener(new GetPage.DataDownloadListener() {
+        GetPage getSongPage = new GetPage(getContext());
+        getSongPage.setDataDownloadListener(new GetPage.DataDownloadListener() {
             @Override
             public void dataDownloadedSuccessfully(Document data) {
-                Element cateVietnam = data.select("div.fn-scrollbar ul.data-list li").first();
-                Elements categories = cateVietnam.select("ul li");
-                for(Element category:categories){
-                    String title = category.select("a").text();
-                    String href = category.select("a").attr("href");
-                    CategoryItem item = new CategoryItem(title, href, R.drawable.category1);
-                    arrCategories.add(item);
+                Elements categories = data.select("ul.detail_menu_browsing_dashboard li");
+                for(int i = 0; i < 11; i++){
+                    Element category = categories.get(i);
+                    if(i == 0){
+                        String href = category.select("h3 a").attr("href");
+                        String title = category.select("h3 a").text();
+                        CategoryItem item = new CategoryItem(title, href, R.drawable.category2);
+                        arrCategories.add(item);
+                    }else if(i > 2 && i < 10) {
+                        String title = category.select("a").text();
+                        String href = category.select("a").attr("href");
+                        CategoryItem item = new CategoryItem(title, href, R.drawable.category2);
+                        arrCategories.add(item);
+                    }
+                    else {
+                        Elements expandCate = category.select("ul li");
+                        for(Element cate:expandCate){
+                            String title = cate.select("a").text();
+                            String href = cate.select("a").attr("href");
+                            CategoryItem item = new CategoryItem(title, href, R.drawable.category2);
+                            arrCategories.add(item);
+                        }
+                    }
                 }
+
                 categoriesAdapter.notifyDataSetChanged();
             }
 
@@ -173,7 +200,7 @@ public class CategoryFm extends Fragment implements View.OnClickListener {
 
             }
         });
-        getAlbumCategoryPage.execute(Constants.ALBUM_CATEGORIES_PAGE);
+        getSongPage.execute(Constants.ALBUM_PAGE);
     }
 
 

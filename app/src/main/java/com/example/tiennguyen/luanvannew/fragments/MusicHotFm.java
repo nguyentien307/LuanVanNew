@@ -114,9 +114,8 @@ public class MusicHotFm extends Fragment implements View.OnClickListener {
         rcSongs.setNestedScrollingEnabled(false);
         songsLayoutManager = new LinearLayoutManager(getContext());
         rcSongs.setLayoutManager(songsLayoutManager);
-        songsAdapter = new SongsAdapter(getContext(), getActivity(), arrSongs, Constants.SONG_CATEGORIES, rcSongs);
+        songsAdapter = new SongsAdapter(getContext(), getActivity(), arrSongs, Constants.ALBUM_CATEGORIES, rcSongs);
         rcSongs.setAdapter(songsAdapter);
-        prepareSongs();
 
         // title bar
         tvAlbumsTitle = (TextView) view.findViewById(R.id.tv_albums_title_name);
@@ -223,18 +222,12 @@ public class MusicHotFm extends Fragment implements View.OnClickListener {
             public void dataDownloadedSuccessfully(Document data) {
 
                 //create slider
-                Elements aElements = data.select("div.slide-scroll a");
+                Elements aElements = data.select("#marquee_imgid_musicHubMarquee li");
                 for (int i = 0; i < aElements.size(); i++) {
-                    Element element = aElements.get(i);
+                    Element element = aElements.get(i).select("div a").first();
                     String href = element.attr("href");
                     String title = element.attr("title");
-                    String img = "";
-                    if(i==0){
-                        img = element.select("img").attr("src");
-                    }
-                    else {
-                        img = element.select("img").attr("data-lazy");
-                    }
+                    String img = element.select("img").attr("src");
                     SliderItem item = new SliderItem(img, title, href);
                     arrSlider.add(item);
                 }
@@ -242,20 +235,17 @@ public class MusicHotFm extends Fragment implements View.OnClickListener {
 
 
                 //prepare albums
-                Element albDiv = data.select("div.mt20-").get(1);
-                Elements albElements = albDiv.select("div.fn-list div.album-item");
+                Elements albElements = data.select("div.list_album").first().select("ul li");
                 for (Element albItem:albElements){
-                    Element aTag = albItem.select("a").first();
-                    String img = aTag.select("img").attr("src");
-                    Element aTagTitle = albItem.select("div.des .title-item a").first();
-                    String albHref = aTagTitle.attr("href");
-                    String title = aTagTitle.text();
-
+                    String img = albItem.select(".avatar img").attr("src");
+                    Element info = albItem.select("div.info_album").first();
+                    String albHref = info.select("h3 a").attr("href");
+                    String title = info.select("h3 a").text();
                     ArrayList<PersonItem> arrSingers = new ArrayList<PersonItem>();
-                    Elements singers = albItem.select(".singer-name");
+                    Elements singers = info.select("h4 a");
                     for(Element singer:singers){
-                        String singerHref = singer.select("a").attr("href");
-                        String singerName = singer.select("a").text();
+                        String singerHref = singer.attr("href");
+                        String singerName = singer.text();
                         PersonItem singerItem = new PersonItem(singerName, singerHref, 192);
                         arrSingers.add(singerItem);
                     }
@@ -264,6 +254,30 @@ public class MusicHotFm extends Fragment implements View.OnClickListener {
                     arrAlbums.add(albumItem);
                 }
                 albumsAdapter.notifyDataSetChanged();
+
+
+                //prepare Songs
+                Elements songs = data.select("div.list_chart_music ul li");
+                for (Element song:songs){
+                    Element info = song.select("div.info_data").first();
+                    String songHref = info.select("h3 a").attr("href");
+                    String title = info.select("h3 a").text();
+                    ArrayList<PersonItem> arrSingers = new ArrayList<PersonItem>();
+                    Elements singers = info.select("h4 a");
+                    for(Element singer:singers){
+                        String singerHref = singer.attr("href");
+                        String singerName = singer.text();
+                        PersonItem singerItem = new PersonItem(singerName, singerHref, 192);
+                        arrSingers.add(singerItem);
+                    }
+                    ArrayList<PersonItem> arrComposers = new ArrayList<PersonItem>();
+                    PersonItem composer = new PersonItem("NHAC SĨ", "", 200);
+                    arrComposers.add(composer);
+
+                    SongItem item = new SongItem(title, 200, songHref, arrSingers, arrComposers, "", "");
+                    arrSongs.add(item);
+                }
+                songsAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -276,46 +290,6 @@ public class MusicHotFm extends Fragment implements View.OnClickListener {
 
     }
 
-    private void prepareSongs() {
-        GetPage getChartSongsPage = new GetPage(getContext());
-        getChartSongsPage.setDataDownloadListener(new GetPage.DataDownloadListener() {
-            @Override
-            public void dataDownloadedSuccessfully(Document data) {
-                Elements songElements = data.select("div.table-body ul li");
-                for(int i = 0; i < 20; i++){
-                    Element songElement = songElements.get(i);
-                    String data_code = songElement.attr("data-code");
-                    Element e_item = songElement.select("div.e-item").first();
-                    String img = e_item.select("a").select("img").attr("src");
-
-                    Element aTagTitle = e_item.select(".title-item a").first();
-                    String title = aTagTitle.text();
-
-                    ArrayList<PersonItem> arrSingers = new ArrayList<PersonItem>();
-                    Elements singers = e_item.select(".title-sd-item");
-                    for(Element singer:singers){
-
-                        String singerHref = singer.select("a").attr("href");
-                        String singerName = singer.select("a").text();
-                        PersonItem singerItem = new PersonItem(singerName, singerHref, 192);
-                        arrSingers.add(singerItem);
-                    }
-                    ArrayList<PersonItem> arrComposers = new ArrayList<PersonItem>();
-                    PersonItem composer = new PersonItem("NHAC SĨ", "", 200);
-                    arrComposers.add(composer);
-                    SongItem songItem = new SongItem(title, 200, data_code, arrSingers, arrComposers, "", img);
-                    arrSongs.add(songItem);
-                }
-                songsAdapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void dataDownloadFailed() {
-
-            }
-        });
-        getChartSongsPage.execute(Constants.SONG_CHART_PAGE);
-    }
 
     @Override
     public void onClick(View v) {

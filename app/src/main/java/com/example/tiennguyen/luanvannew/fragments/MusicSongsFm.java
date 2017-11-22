@@ -41,13 +41,17 @@ public class MusicSongsFm extends Fragment {
     private SongsAdapter songsAdapter;
     private ArrayList<SongItem> arrSongs = new ArrayList<>();
 
+
+
     //instance category
     private CategoryItem categoryItem;
 
     //continue load
     private Boolean isRemain = true;
-    private int index = 0;
-    private int end = 20;
+
+    private ArrayList<String> arrPages = new ArrayList<>();
+    private Boolean isLoadPages = true;
+    private  int index = 0;
 
     private String res = "";
 
@@ -82,9 +86,9 @@ public class MusicSongsFm extends Fragment {
         rcSongs.setNestedScrollingEnabled(false);
         songsLayoutManager = new LinearLayoutManager(getContext());
         rcSongs.setLayoutManager(songsLayoutManager);
-        songsAdapter = new SongsAdapter(getContext(), getActivity(), arrSongs, Constants.SONG_CATEGORIES, rcSongs);
+        songsAdapter = new SongsAdapter(getContext(), getActivity(), arrSongs, Constants.ALBUM_CATEGORIES, rcSongs);
         rcSongs.setAdapter(songsAdapter);
-        prepareSongs();
+        prepareSongs(categoryItem.getLink());
 
         songsAdapter.setOnLoadMoreListener(new OnLoadMoreListener() {
             @Override
@@ -99,8 +103,10 @@ public class MusicSongsFm extends Fragment {
                             songsAdapter.notifyItemRemoved(arrSongs.size());
 
                             //Generating more data
-                            index = arrSongs.size();
-                            end = index + 20;
+                            prepareSongs(arrPages.get(index));
+                            index = index + 1;
+                            if (index == arrPages.size()) isRemain = false;
+
                             //Toast.makeText(getActivity(), "index" + index, Toast.LENGTH_SHORT).show();
                             //prepareSongs();
                             songsAdapter.notifyDataSetChanged();
@@ -116,43 +122,45 @@ public class MusicSongsFm extends Fragment {
         return view;
     }
 
-    private void prepareSongs() {
+
+    private void prepareSongs(String href) {
         GetPage getSongs = new GetPage(getContext());
         getSongs.setDataDownloadListener(new GetPage.DataDownloadListener() {
             @Override
             public void dataDownloadedSuccessfully(Document data) {
-                Elements songElements = data.select("div.table-body ul li");
-                if(end>songElements.size()) {
-                    isRemain = false;
-                    end = songElements.size();
-                }
-                    for (int i = index; i < end; i++) {
-                        Element songElement = songElements.get(i);
-                        String data_code = songElement.attr("data-code");
-                        Element e_item = songElement.select("div.e-item").first();
-                        String img = e_item.select("a").select("img").attr("src");
-
-                        Element aTagTitle = e_item.select(".title-item a").first();
-                        String title = aTagTitle.text();
-
-                        ArrayList<PersonItem> arrSingers = new ArrayList<PersonItem>();
-                        Elements singers = e_item.select(".title-sd-item");
-                        for (Element singer : singers) {
-
-                            String singerHref = singer.select("a").attr("href");
-                            String singerName = singer.select("a").text();
-                            PersonItem singerItem = new PersonItem(singerName, singerHref, 192);
-                            arrSingers.add(singerItem);
-                        }
-                        ArrayList<PersonItem> arrComposers = new ArrayList<PersonItem>();
-                        PersonItem composer = new PersonItem("NHAC SĨ", "", 200);
-                        arrComposers.add(composer);
-                        SongItem songItem = new SongItem(title, 200, data_code, arrSingers, arrComposers, "", img);
-                        arrSongs.add(songItem);
+                Elements songElements = data.select("ul.list_item_music li");
+                for (int i = 0; i < songElements.size(); i++) {
+                    Element songElement;
+                    songElement = songElements.get(i).select("div.item_content h2").first();
+                    if(songElement == null){
+                        songElement = songElements.get(i).select("div.item_content h3").first();
                     }
-                    songsAdapter.notifyDataSetChanged();
+                    Elements info = songElement.select("a");
+                    String title = info.get(0).text();
+                    String href = info.get(0).attr("href");
+                    ArrayList<PersonItem> arrSingers = new ArrayList<PersonItem>();
+                    for (int index = 1 ; index < info.size(); index++){
+                        Element aTag = info.get(index);
+                        String singerHref = aTag.attr("href");
+                        String singerName = aTag.text();
+                        PersonItem singerItem = new PersonItem(singerName, singerHref, 192);
+                        arrSingers.add(singerItem);
+                    }
+                    ArrayList<PersonItem> arrComposers = new ArrayList<PersonItem>();
+                    PersonItem composer = new PersonItem("NHAC SĨ", "", 200);
+                    arrComposers.add(composer);
+                    SongItem songItem = new SongItem(title, 200, href, arrSingers, arrComposers, "", "");
+                    arrSongs.add(songItem);
+                }
+                songsAdapter.notifyDataSetChanged();
 
-
+                if(isLoadPages){
+                    Elements pages = data.select("div.box_pageview a");
+                    for(int i = 1; i < pages.size() -1 ; i++){
+                        String href = pages.get(i).attr("href");
+                        arrPages.add(href);
+                    }
+                }
             }
 
             @Override
@@ -160,7 +168,7 @@ public class MusicSongsFm extends Fragment {
 
             }
         });
-        getSongs.execute(Constants.HOME_PAGE + categoryItem.getLink());
+        getSongs.execute(href);
     }
 
 }

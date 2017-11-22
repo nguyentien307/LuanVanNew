@@ -64,8 +64,12 @@ public class Constants {
 
     // link
 
-    public static final String HOME_PAGE = "https://mp3.zing.vn/";
+    public static final String HOME_PAGE = "https://www.nhaccuatui.com/";
     public static final String SONG_CHART_PAGE = "https://mp3.zing.vn/bang-xep-hang/bai-hat-Viet-Nam/IWZ9Z08I.html";
     public static final String ALBUM_CATEGORIES_PAGE = "https://mp3.zing.vn/the-loai-album.html";
     public static final String SONG_CATEGORIES_PAGE = "https://mp3.zing.vn/top100/Nhac-Tre/IWZ9Z088.html";
+
+    public static final String SONG_PAGE = "https://www.nhaccuatui.com/bai-hat/bai-hat-moi.html";
+
+    public static final String ALBUM_PAGE = "https://www.nhaccuatui.com/playlist/playlist-moi.html";
 }

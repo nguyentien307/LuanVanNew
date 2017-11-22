@@ -83,19 +83,18 @@ public class MusicAlbumsFm extends Fragment {
         getAlbums.setDataDownloadListener(new GetPage.DataDownloadListener() {
             @Override
             public void dataDownloadedSuccessfully(Document data) {
-                Elements albums = data.select("div.zcontent div.fn-list div.album-item");
+                Elements albums = data.select("div.list_album ul li");
                 for (Element albItem:albums){
-                    Element aTag = albItem.select("a").first();
-                    String img = aTag.select("img").attr("src");
-                    Element aTagTitle = albItem.select("div.des .title-item a").first();
-                    String albHref = aTagTitle.attr("href");
-                    String title = aTagTitle.text();
+                    String img = albItem.select("div.box-left-album .avatar img").attr("data-src");
+                    Element info = albItem.select("div.info_album").first();
+                    String albHref = info.select("h2 a").attr("href");
+                    String title = info.select("h2 a").text();
 
                     ArrayList<PersonItem> arrSingers = new ArrayList<PersonItem>();
-                    Elements singers = albItem.select(".singer-name");
+                    Elements singers = info.select("p a");
                     for(Element singer:singers){
-                        String singerHref = singer.select("a").attr("href");
-                        String singerName = singer.select("a").text();
+                        String singerHref = singer.attr("href");
+                        String singerName = singer.text();
                         PersonItem singerItem = new PersonItem(singerName, singerHref, 192);
                         arrSingers.add(singerItem);
                     }
@@ -111,7 +110,7 @@ public class MusicAlbumsFm extends Fragment {
 
             }
         });
-        getAlbums.execute(Constants.HOME_PAGE + categoryItem.getLink());
+        getAlbums.execute(categoryItem.getLink());
     }
 
 }
