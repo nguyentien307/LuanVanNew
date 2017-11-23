@@ -17,13 +17,15 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.tiennguyen.luanvannew.R;
 import com.example.tiennguyen.luanvannew.adapters.SongsAdapter;
 import com.example.tiennguyen.luanvannew.commons.Constants;
+import com.example.tiennguyen.luanvannew.commons.GetDataCodeFromZing;
 import com.example.tiennguyen.luanvannew.models.AlbumItem;
 import com.example.tiennguyen.luanvannew.models.PersonItem;
 import com.example.tiennguyen.luanvannew.models.SongItem;
+import com.example.tiennguyen.luanvannew.services.GetPage;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
 
@@ -115,7 +117,7 @@ public class AlbumSongsFm extends Fragment implements View.OnClickListener {
         rcSongs.setNestedScrollingEnabled(false);
         songsLayoutManager = new LinearLayoutManager(getContext());
         rcSongs.setLayoutManager(songsLayoutManager);
-        songsAdapter = new SongsAdapter(getContext(), getActivity(), arrSongs, Constants.ALBUM_CATEGORIES);
+        songsAdapter = new SongsAdapter(getContext(), getActivity(), arrSongs, Constants.ALBUM_CATEGORIES,rcSongs);
         rcSongs.setAdapter(songsAdapter);
         prepareSongs();
 
@@ -123,39 +125,45 @@ public class AlbumSongsFm extends Fragment implements View.OnClickListener {
     }
 
     private void prepareSongs() {
-        JSONObject data = null;
-        try {
-            data = new JSONObject(Constants.SONG_DATA);
+        GetPage getSongs = new GetPage(getContext());
+        getSongs.setDataDownloadListener(new GetPage.DataDownloadListener() {
+            @Override
+            public void dataDownloadedSuccessfully(Document data) {
+                Elements songs = data.select("ul.list_song_in_album li");
+                for (Element song:songs) {
+                    Elements info = song.select("div.item_content a");
+                    final String title = info.get(0).text();
+                    String href = info.get(0).attr("href");
+                    final ArrayList<PersonItem> arrSingers = new ArrayList<PersonItem>();
+                    for(int i = 1; i < info.size(); i++){
+                        Element aTag = info.get(i);
+                        String singerHref = aTag.attr("href");
+                        String singerName = aTag.text();
+                        PersonItem singerItem = new PersonItem(singerName, singerHref, 192);
+                        arrSingers.add(singerItem);
+                    }
 
-            JSONArray songList = data.getJSONArray("list");
-            for(int songIndex = 0; songIndex < songList.length() ; songIndex++){
-                JSONObject song = songList.getJSONObject(songIndex);
-                String title = song.getString("title");
-                String img = song.getString("img");
-                String href = song.getString("href");
-                JSONArray singersJSON = song.getJSONArray("singers");
-                ArrayList<PersonItem> arrSinger = new ArrayList<PersonItem>();
-                ArrayList<PersonItem> arrComposer = new ArrayList<PersonItem>();
-                for (int singerIndex = 0; singerIndex < singersJSON.length(); singerIndex++ ){
-                    JSONObject singer = singersJSON.getJSONObject(singerIndex);
-                    String singerName = singer.getString("singerName");
-                    String singerHref = singer.getString("singerHref");
-                    PersonItem singerItem = new PersonItem(singerName, singerHref, 200);
-                    arrSinger.add(singerItem);
+                    final ArrayList<PersonItem> arrComposers = new ArrayList<PersonItem>();
+                    PersonItem composer = new PersonItem("NHAC SĨ", "", 200);
+                    arrComposers.add(composer);
+                    GetDataCodeFromZing getDataCodeFromZing = new GetDataCodeFromZing(new GetDataCodeFromZing.KeyCodeFromZing() {
+                        @Override
+                        public void keyCodeFromZing(String key, String imgLink) {
+                            SongItem item = new SongItem(title, 200, key, arrSingers, arrComposers, "", imgLink);
+                            arrSongs.add(item);
+                            songsAdapter.notifyDataSetChanged();
+                        }
+                    });
+                    getDataCodeFromZing.getKeyFromZing(getContext(), title);
                 }
-                PersonItem composer = new PersonItem("Trịnh Công Sơn", "", 200);
-                PersonItem composer1 = new PersonItem("Vũ Cát Tường", "", 200);
-                arrComposer.add(composer);
-                arrComposer.add(composer1);
-                SongItem songItem = new SongItem(title,200, href, arrSinger, arrComposer, "", img);
-                arrSongs.add(songItem);
-
             }
 
-            songsAdapter.notifyDataSetChanged();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+            @Override
+            public void dataDownloadFailed() {
+
+            }
+        });
+        getSongs.execute(albumItem.getLink());
     }
 
     @Override

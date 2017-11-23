@@ -11,12 +11,14 @@ import android.view.ViewGroup;
 import com.example.tiennguyen.luanvannew.R;
 import com.example.tiennguyen.luanvannew.adapters.SongsAdapter;
 import com.example.tiennguyen.luanvannew.commons.Constants;
+import com.example.tiennguyen.luanvannew.commons.GetDataCodeFromZing;
 import com.example.tiennguyen.luanvannew.models.PersonItem;
 import com.example.tiennguyen.luanvannew.models.SongItem;
+import com.example.tiennguyen.luanvannew.services.GetPage;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
 
@@ -34,10 +36,12 @@ public class ArtistSongsFm extends Fragment{
     public static final String ARG_PAGE = "ARG_PAGE";
 
     private int mPage;
+    private String songsLink;
 
-    public static ArtistSongsFm newInstance(int page) {
+    public static ArtistSongsFm newInstance(int page, String songsLink) {
         Bundle args = new Bundle();
         args.putInt(ARG_PAGE, page);
+        args.putString("songsLink", songsLink);
         ArtistSongsFm fragment = new ArtistSongsFm();
         fragment.setArguments(args);
         return fragment;
@@ -47,6 +51,8 @@ public class ArtistSongsFm extends Fragment{
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mPage = getArguments().getInt(ARG_PAGE);
+        songsLink = getArguments().getString("songsLink");
+
     }
 
     // Inflate the fragment layout we defined above for this fragment
@@ -62,7 +68,7 @@ public class ArtistSongsFm extends Fragment{
         rcSongs.setNestedScrollingEnabled(false);
         songsLayoutManager = new LinearLayoutManager(getContext());
         rcSongs.setLayoutManager(songsLayoutManager);
-        songsAdapter = new SongsAdapter(getContext(), getActivity(), arrSongs, Constants.SONG_CATEGORIES);
+        songsAdapter = new SongsAdapter(getContext(), getActivity(), arrSongs, Constants.SONG_CATEGORIES, rcSongs);
         rcSongs.setAdapter(songsAdapter);
         prepareSongs();
 
@@ -70,36 +76,56 @@ public class ArtistSongsFm extends Fragment{
     }
 
     private void prepareSongs() {
-        JSONObject data = null;
-        try {
-            data = new JSONObject(Constants.SONG_DATA);
+        GetPage getSongs = new GetPage(getContext());
+        getSongs.setDataDownloadListener(new GetPage.DataDownloadListener() {
+            @Override
+            public void dataDownloadedSuccessfully(Document data) {
+                Elements songs;
 
-            JSONArray songList = data.getJSONArray("list");
-            for(int songIndex = 0; songIndex < songList.length() ; songIndex++){
-                JSONObject song = songList.getJSONObject(songIndex);
-                String title = song.getString("title");
-                String img = song.getString("img");
-                String href = song.getString("href");
-                JSONArray singersJSON = song.getJSONArray("singers");
-                ArrayList<PersonItem> arrSinger = new ArrayList<PersonItem>();
-                ArrayList<PersonItem> arrComposer = new ArrayList<PersonItem>();
-                for (int singerIndex = 0; singerIndex < singersJSON.length(); singerIndex++ ){
-                    JSONObject singer = singersJSON.getJSONObject(singerIndex);
-                    String singerName = singer.getString("singerName");
-                    String singerHref = singer.getString("singerHref");
-                    PersonItem singerItem = new PersonItem(singerName, singerHref, 200);
-                    arrSinger.add(singerItem);
+                Boolean isSearch;
+                if(data.select("ul.list_item_music li").size()!= 0){
+                    songs = data.select("ul.list_item_music li");
+                    isSearch = false;
+                }else {
+                    songs = data.select("ul.search_returns_list li");
+                    isSearch = true;
                 }
-                PersonItem composer = new PersonItem("NHAC SĨ", "", 200);
-                arrComposer.add(composer);
-                SongItem songItem = new SongItem(title,200, href, arrSinger, arrComposer, "", img);
-                arrSongs.add(songItem);
-
+                for(Element song:songs){
+                    final String title = song.select("div.item_content h3 a").text();
+                    String href = song.select("div.item_content h3 a").attr("href");
+                    Elements singers;
+                    if(isSearch){
+                        singers = song.select("div.item_content a");
+                    }else {
+                        singers = song.select("div.item_content span a");
+                    }
+                    final ArrayList<PersonItem> arrSingers = new ArrayList<PersonItem>();
+                    for (Element singer:singers){
+                        String singerHref = singer.attr("href");
+                        String singerName = singer.text();
+                        PersonItem singerItem = new PersonItem(singerName, singerHref, 192);
+                        arrSingers.add(singerItem);
+                    }
+                    final ArrayList<PersonItem> arrComposers = new ArrayList<PersonItem>();
+                    PersonItem composer = new PersonItem("NHAC SĨ", "", 200);
+                    arrComposers.add(composer);
+                    GetDataCodeFromZing getDataCodeFromZing = new GetDataCodeFromZing(new GetDataCodeFromZing.KeyCodeFromZing() {
+                        @Override
+                        public void keyCodeFromZing(String key, String imgLink) {
+                            SongItem item = new SongItem(title, 200, key, arrSingers, arrComposers, "", imgLink);
+                            arrSongs.add(item);
+                            songsAdapter.notifyDataSetChanged();
+                        }
+                    });
+                    getDataCodeFromZing.getKeyFromZing(getContext(), title);
+                }
             }
 
-            songsAdapter.notifyDataSetChanged();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+            @Override
+            public void dataDownloadFailed() {
+
+            }
+        });
+        getSongs.execute(songsLink);
     }
 }

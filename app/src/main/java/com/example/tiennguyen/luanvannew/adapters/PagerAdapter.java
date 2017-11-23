@@ -14,17 +14,20 @@ import com.example.tiennguyen.luanvannew.fragments.ArtistSongsFm;
 public class PagerAdapter extends FragmentPagerAdapter {
     final int PAGE_COUNT = 2;
     private String tabTitles[] = new String[] { "Songs", "Albums" };
+    private String songsLink, albumsLink;
 
-    public PagerAdapter(FragmentManager fm) {
+    public PagerAdapter(FragmentManager fm, String songsLink, String albumsLink) {
         super(fm);
+        this.albumsLink = albumsLink;
+        this.songsLink = songsLink;
     }
 
     @Override
     public Fragment getItem(int position) {
         Fragment fragment = new Fragment();
         switch (position) {
-            case 0: fragment = ArtistSongsFm.newInstance(1); break;
-            case 1: fragment = ArtistAlbumsFm.newInstance(1); break;
+            case 0: fragment = ArtistSongsFm.newInstance(1, songsLink); break;
+            case 1: fragment = ArtistAlbumsFm.newInstance(1, albumsLink); break;
         }
         return fragment;
     }

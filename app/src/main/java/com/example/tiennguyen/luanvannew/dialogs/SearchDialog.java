@@ -1,5 +1,6 @@
 package com.example.tiennguyen.luanvannew.dialogs;
 
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
@@ -22,7 +23,7 @@ public class SearchDialog {
         this.customLI = customLI;
     }
 
-    public void displaySearchDialog() {
+    public void displaySearchDialog(Activity activity) {
         LayoutInflater inflater = customLI.getLayoutInflater();
         View dialogLayout = inflater.inflate(R.layout.dialog_search_title, null);
         final RadioButton song = (RadioButton) dialogLayout.findViewById(R.id.rbSongs);
@@ -33,16 +34,18 @@ public class SearchDialog {
         Constants = new Constants();
         AlertDialog.Builder searchDialog = customLI.getAlertDialog();
         searchDialog.setView(dialogLayout);
-        searchDialog.setTitle(Constants.SEARCH_TITLE);
+        searchDialog.setTitle(activity.getResources().getString(R.string.searching_for_songs));
         String title = customLI.getCheckedTitle();
         switch (title) {
             case "album":
                 album.setChecked(true);
                 break;
             case "artist":
+            case "nghệ sĩ":
                 artist.setChecked(true);
                 break;
             case "composer":
+            case "nhạc sĩ":
                 composer.setChecked(true);
                 break;
             default:

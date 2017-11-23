@@ -28,11 +28,38 @@
     <string name="search_history">Search history</string>
     <string name="clear_history">Clear all</string>
     <string name="searching_for_songs">Searching for songs</string>
+    <string name="searching_for">Searching for </string>
     <string name="songs_title">Songs</string>
     <string name="albums_title">Albums</string>
     <string name="artists_title">Artists</string>
     <string name="composers_title">Composers</string>
     <string name="top_song_view">Top songs</string>
+    <string name="title_search_result_1">Have</string>
+    <string name="title_search_result_2">results is founded for</string>
+
+    <!--Setting-->
+    <string name="title_setting">Settings</string>
+    <string name="title_player_setting">Music Player</string>
+    <string name="title_search_setting">Search setting</string>
+    <string name="title_language_setting">Languages</string>
+    <string name="button_change">Change</string>
+    <string name="play_in_background">Play in background</string>
+    <string name="Continue_to_play_plug_headphone">Continue to play when headphone is attached</string>
+    <string name="Continue_to_play_remove_headphone">Continue to play when headphone is removed</string>
+    <string name="Auto_stop_play">Auto stop play music</string>
+    <string name="save_seach_history">Save search history</string>
+
+    <!--login-->
+    <string name="title_login">Login</string>
+    <string name="email_hint">Email</string>
+    <string name="password_hint">Password</string>
+    <string name="login_button">login</string>
+    <string name="forgot_password">Forgot your password?</string>
+    <string name="sign_in_with">Sign in with</string>
+    <string name="field_require">Field required.</string>
+    <string name="login_fail">Login failed...</string>
+    <string name="error_message">Email or password is incorrect.</string>
+    <string name="warning_message">Please enter email and password.</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
@@ -51,5 +78,18 @@
         <item>15 min</item>
         <item>30 min</item>
         <item>45 min</item>
+    </string-array>
+
+    <string name="language_english" translatable="false">English</string>
+    <string name="language_vietnamese" translatable="false">Tiếng Việt</string>
+    <string-array name="language_names">
+        <item>@string/language_english</item>
+        <item>@string/language_vietnamese</item>
+    </string-array>
+    <string name="language_english_code" translatable="false">en</string>
+    <string name="language_vietnamese_code" translatable="false">vi</string>
+    <string-array name="language_codes">
+        <item>@string/language_english_code</item>
+        <item>@string/language_vietnamese_code</item>
     </string-array>
 </resources>

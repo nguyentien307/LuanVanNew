@@ -29,11 +29,14 @@ public class ArtistMusicFm extends Fragment implements View.OnClickListener {
 //    private TextView tvTitleName;
 
     private PersonItem personItem ;
+    private String songsLink, albumsLink;
 
-    public static ArtistMusicFm newInstance(PersonItem personItem) {
+    public static ArtistMusicFm newInstance(PersonItem personItem, String songsLink, String albumsLink) {
         ArtistMusicFm contentFragment = new ArtistMusicFm();
         Bundle bundle = new Bundle();
         bundle.putSerializable("personItem", personItem);
+        bundle.putString("songsLink", songsLink);
+        bundle.putString("albumsLink", albumsLink);
         contentFragment.setArguments(bundle);
         return contentFragment;
     }
@@ -41,8 +44,11 @@ public class ArtistMusicFm extends Fragment implements View.OnClickListener {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments()!= null)
+        if (getArguments()!= null){
             personItem = (PersonItem) getArguments().getSerializable("personItem");
+            songsLink = getArguments().getString("songsLink");
+            albumsLink = getArguments().getString("albumsLink");
+        }
     }
 
     @Override
@@ -58,7 +64,7 @@ public class ArtistMusicFm extends Fragment implements View.OnClickListener {
 
         // Get the ViewPager and set it's PagerAdapter so that it can display items
         ViewPager viewPager = (ViewPager) view.findViewById(R.id.viewpager);
-        viewPager.setAdapter(new PagerAdapter(getChildFragmentManager()));
+        viewPager.setAdapter(new PagerAdapter(getChildFragmentManager(), songsLink, albumsLink));
 
         // Give the PagerSlidingTabStrip the ViewPager
         PagerSlidingTabStrip tabsStrip = (PagerSlidingTabStrip) view.findViewById(R.id.tabs);

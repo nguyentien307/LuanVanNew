@@ -157,7 +157,7 @@ public class SearchFm extends Fragment implements TextWatcher, View.OnClickListe
         rcTopSongs.setNestedScrollingEnabled(false);
         songsLayoutManager = new LinearLayoutManager(getContext());
         rcTopSongs.setLayoutManager(songsLayoutManager);
-        songsAdapter = new SongsAdapter(getContext(), getActivity(), arrSongs, Constants.SONG_CATEGORIES);
+        songsAdapter = new SongsAdapter(getContext(), getActivity(), arrSongs, Constants.SONG_CATEGORIES, rcTopSongs);
         rcTopSongs.setAdapter(songsAdapter);
         prepareSongs();
     }
@@ -234,7 +234,7 @@ public class SearchFm extends Fragment implements TextWatcher, View.OnClickListe
                     @Override
                     public void onResult(String title) {
                         searchTitle = title;
-                        edSearch.setHint("Searching for " + searchTitle);
+                        edSearch.setHint(getResources().getString(R.string.searching_for) + searchTitle);
                     }
 
                     @Override
@@ -242,7 +242,7 @@ public class SearchFm extends Fragment implements TextWatcher, View.OnClickListe
                         return searchTitle;
                     }
                 });
-                searchDialog.displaySearchDialog();
+                searchDialog.displaySearchDialog(getActivity());
                 break;
             case R.id.llClearHistory:
                 AlertDialogClearHistory alertDialogClearHistory = new AlertDialogClearHistory(new AlertDialogClearHistory.ConfirmClear() {
@@ -318,8 +318,8 @@ public class SearchFm extends Fragment implements TextWatcher, View.OnClickListe
                 String img = song.getString("img");
                 String href = song.getString("href");
                 JSONArray singersJSON = song.getJSONArray("singers");
-                ArrayList<PersonItem> arrSinger = new ArrayList<PersonItem>();
-                ArrayList<PersonItem> arrComposer = new ArrayList<PersonItem>();
+                ArrayList<PersonItem> arrSinger = new ArrayList<>();
+                ArrayList<PersonItem> arrComposer = new ArrayList<>();
                 for (int singerIndex = 0; singerIndex < singersJSON.length(); singerIndex++ ){
                     JSONObject singer = singersJSON.getJSONObject(singerIndex);
                     String singerName = singer.getString("singerName");
@@ -393,7 +393,7 @@ public class SearchFm extends Fragment implements TextWatcher, View.OnClickListe
     }
 
     private void setZingAdapter(String totalResult, ArrayList<SongItem> arrList) {
-        SongsAdapter songsAdapter = new SongsAdapter(getContext(), getActivity(), arrList, Constants.SONG_CATEGORIES);
+        SongsAdapter songsAdapter = new SongsAdapter(getContext(), getActivity(), arrList, Constants.SONG_CATEGORIES, rcSearchingList);
         rcSearchingList.setAdapter(songsAdapter);
 //        songsAdapter.notifyItemRangeInserted(songsAdapter.getItemCount(), arrList.size() - 1);
     }

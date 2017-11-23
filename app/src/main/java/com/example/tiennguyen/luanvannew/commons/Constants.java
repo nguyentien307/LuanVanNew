@@ -67,4 +67,23 @@ public class Constants {
     public static final String ADD_PLAYLIST_TITLE = "Add playlist";
     public static final String DELETE_CONFIRM = "Do you want to delete?";
     public static final String REQUEST_LOGIN = "You still haven't logged in.";
+
+    // link
+
+    public static final String HOME_PAGE = "https://www.nhaccuatui.com/";
+    public static final String SONG_CHART_PAGE = "https://mp3.zing.vn/bang-xep-hang/bai-hat-Viet-Nam/IWZ9Z08I.html";
+    public static final String ALBUM_CATEGORIES_PAGE = "https://mp3.zing.vn/the-loai-album.html";
+    public static final String SONG_CATEGORIES_PAGE = "https://mp3.zing.vn/top100/Nhac-Tre/IWZ9Z088.html";
+
+    public static final String SONG_PAGE = "https://www.nhaccuatui.com/bai-hat/bai-hat-moi.html";
+
+    public static final String ALBUM_PAGE = "https://www.nhaccuatui.com/playlist/playlist-moi.html";
+
+    public class Value {
+        public static final int DEFAULT_LANGUAGE_ID = 0;
+    }
+
+    public class RequestCode {
+        public static final int CHANGE_LANGUAGE = 10000;
+    }
 }

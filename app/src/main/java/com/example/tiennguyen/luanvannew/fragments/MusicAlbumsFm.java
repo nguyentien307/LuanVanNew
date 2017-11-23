@@ -16,10 +16,11 @@ import com.example.tiennguyen.luanvannew.commons.Constants;
 import com.example.tiennguyen.luanvannew.models.AlbumItem;
 import com.example.tiennguyen.luanvannew.models.CategoryItem;
 import com.example.tiennguyen.luanvannew.models.PersonItem;
+import com.example.tiennguyen.luanvannew.services.GetPage;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
 
@@ -78,37 +79,38 @@ public class MusicAlbumsFm extends Fragment {
     }
 
     private void prepareAlbums() {
-        JSONObject data = null;
-        try {
-            data = new JSONObject(Constants.DATA);
+        GetPage getAlbums = new GetPage(getContext());
+        getAlbums.setDataDownloadListener(new GetPage.DataDownloadListener() {
+            @Override
+            public void dataDownloadedSuccessfully(Document data) {
+                Elements albums = data.select("div.list_album ul li");
+                for (Element albItem:albums){
+                    String img = albItem.select("div.box-left-album .avatar img").attr("data-src");
+                    Element info = albItem.select("div.info_album").first();
+                    String albHref = info.select("h2 a").attr("href");
+                    String title = info.select("h2 a").text();
 
-            JSONArray albumListJSON = data.getJSONArray("list");
-            for (int albIndex = 0; albIndex < albumListJSON.length(); albIndex++) {
-                JSONObject album = albumListJSON.getJSONObject(albIndex);
-                String title = album.getString("title");
-                String img = album.getString("img");
-                String href = album.getString("href");
-                JSONArray singersJSON = album.getJSONArray("singers");
-                ArrayList<PersonItem> arrSinger = new ArrayList<PersonItem>();
-                for (int singerIndex = 0; singerIndex < singersJSON.length(); singerIndex++) {
-                    JSONObject singer = singersJSON.getJSONObject(singerIndex);
-                    String singerName = singer.getString("singerName");
-                    String singerHref = singer.getString("singerHref");
-                    PersonItem singerItem = new PersonItem(singerName, singerHref, 100);
-                    arrSinger.add(singerItem);
+                    ArrayList<PersonItem> arrSingers = new ArrayList<PersonItem>();
+                    Elements singers = info.select("p a");
+                    for(Element singer:singers){
+                        String singerHref = singer.attr("href");
+                        String singerName = singer.text();
+                        PersonItem singerItem = new PersonItem(singerName, singerHref, 192);
+                        arrSingers.add(singerItem);
+                    }
+
+                    AlbumItem albumItem = new AlbumItem(title, albHref, img, 300, arrSingers);
+                    arrAlbums.add(albumItem);
                 }
-
-                AlbumItem albumItem = new AlbumItem(title, href, img, 200, arrSinger);
-
-                arrAlbums.add(albumItem);
-
+                albumsAdapter.notifyDataSetChanged();
             }
 
-            albumsAdapter.notifyDataSetChanged();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+            @Override
+            public void dataDownloadFailed() {
 
+            }
+        });
+        getAlbums.execute(categoryItem.getLink());
     }
 
 }

@@ -23,7 +23,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Login"
+                android:text="@string/title_login"
                 android:textColor="@color/lightBlue"
                 android:textSize="@dimen/title_text_size_16dp"/>
         </RelativeLayout>
@@ -73,7 +73,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:background="@drawable/edittext_login_selector"
-                            android:hint="Email"
+                            android:hint="@string/email_hint"
                             android:padding="@dimen/padding_5dp"
                             android:textColor="@color/white"
                             android:textColorHint="@color/dardGray"
@@ -92,7 +92,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="@dimen/login_heigth_35dp"
-                            android:text="Field required."
+                            android:text="@string/field_require"
                             android:textColor="@color/red"
                             android:textSize="@dimen/invalid_text_size"
                             android:visibility="gone" />
@@ -129,7 +129,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:background="@drawable/edittext_login_selector"
-                            android:hint="Password"
+                            android:hint="@string/password_hint"
                             android:inputType="textPassword"
                             android:imeOptions="actionDone"
                             android:padding="@dimen/padding_5dp"
@@ -150,7 +150,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="@dimen/login_heigth_35dp"
-                            android:text="Field required."
+                            android:text="@string/field_require"
                             android:textColor="@color/red"
                             android:textSize="@dimen/invalid_text_size"
                             android:visibility="gone" />
@@ -170,7 +170,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="@drawable/button_login_selector"
-                        android:text="Login"
+                        android:text="@string/login_button"
                         android:textColor="@drawable/btn_login_text_color" />
                 </LinearLayout>
 
@@ -189,7 +189,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Forgot your password?"
+                    android:text="@string/forgot_password"
                     android:textColor="@color/darkBlue"
                     android:textSize="@dimen/login_text_sỉze" />
             </RelativeLayout>
@@ -228,7 +228,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Sign in with"
+                        android:text="@string/sign_in_with"
                         android:textColor="#ffffff"
                         android:textSize="@dimen/sign_in_with_text_size" />
                 </LinearLayout>

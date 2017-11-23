@@ -1,6 +1,7 @@
 package com.example.tiennguyen.luanvannew;
 
 import android.content.Intent;
+import android.databinding.DataBindingUtil;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -17,6 +18,7 @@ import android.widget.LinearLayout;
 import android.widget.TimePicker;
 
 import com.example.tiennguyen.luanvannew.commons.Constants;
+import com.example.tiennguyen.luanvannew.databinding.ActivityMainBinding;
 import com.example.tiennguyen.luanvannew.fragments.MusicFm;
 import com.example.tiennguyen.luanvannew.fragments.PlaylistFm;
 import com.example.tiennguyen.luanvannew.fragments.SearchFm;
@@ -27,7 +29,10 @@ import com.example.tiennguyen.luanvannew.helpers.BottomNavigationViewHelper;
 import com.example.tiennguyen.luanvannew.helpers.CustomTypefaceSpan;
 import com.example.tiennguyen.luanvannew.models.PersonItem;
 import com.example.tiennguyen.luanvannew.models.SongItem;
+import com.example.tiennguyen.luanvannew.services.PlayerService;
 import com.example.tiennguyen.luanvannew.sessions.SessionManagement;
+import com.example.tiennguyen.luanvannew.utils.LanguageUtils;
+
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -40,10 +45,15 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     private Boolean isPlayerCall = false;
     private SongItem songItem;
 
+    private ActivityMainBinding mBinding;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        LanguageUtils.loadLocale();
+        mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+        mBinding.setMain(MainActivity.this);
+
+//        setContentView(R.layout.activity_main);
         setBottomNavigation();
 
     }
@@ -170,5 +180,22 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 }
             }
         }
+        if(requestCode == Constants.RequestCode.CHANGE_LANGUAGE){
+            if (resultCode == RESULT_OK) {
+                updateViewByLanguage();
+            }
+        }
+    }
+
+
+
+
+    private void updateViewByLanguage() {
+        fragment = SettingFm.newInstance("new");
+        getSupportFragmentManager()
+                .beginTransaction()
+                .setCustomAnimations( R.anim.slide_in_up , R.anim.slide_out_up)
+                .replace(R.id.fragment_container, fragment)
+                .commit();
     }
 }

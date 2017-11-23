@@ -1,5 +1,6 @@
 package com.example.tiennguyen.luanvannew.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -8,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.RadioButton;
+import android.widget.Button;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -16,6 +18,8 @@ import android.widget.Toast;
 import com.example.tiennguyen.luanvannew.MyApplication;
 import com.example.tiennguyen.luanvannew.R;
 import com.example.tiennguyen.luanvannew.sessions.SessionManagement;
+import com.example.tiennguyen.luanvannew.changelanguage.ChangeLanguageActivity;
+import com.example.tiennguyen.luanvannew.commons.Constants;
 
 import java.util.ArrayList;
 
@@ -23,13 +27,13 @@ import java.util.ArrayList;
  * Created by TIENNGUYEN on 11/11/2017.
  */
 
-public class SettingFm extends Fragment {
+public class SettingFm extends Fragment implements View.OnClickListener {
 
-    private View titleMusic, titleHistory;
-    private TextView tvMusicTitle, tvHistoryTilte;
+    private View titleMusic, titleHistory, titleLanguage;
+    private TextView tvMusicTitle, tvHistoryTilte, tvLanguageTitle;
 
     private View switchPlayerBackground, switchPlugPhone, switchHistory, switchRemovePhone;
-
+    private Button changeLanguage;
     SessionManagement session;
 
     private String res = "";
@@ -56,10 +60,15 @@ public class SettingFm extends Fragment {
 
         titleMusic = view.findViewById(R.id.title_music);
         tvMusicTitle = (TextView) titleMusic.findViewById(R.id.tv_title_name);
-        tvMusicTitle.setText("Music player");
+        tvMusicTitle.setText(R.string.title_player_setting);
         titleHistory = view.findViewById(R.id.title_history);
         tvHistoryTilte = (TextView) titleHistory.findViewById(R.id.tv_title_name);
-        tvHistoryTilte.setText("Search Settings");
+        tvHistoryTilte.setText(R.string.title_search_setting);
+        titleLanguage = view.findViewById(R.id.title_language);
+        tvLanguageTitle = (TextView) titleLanguage.findViewById(R.id.tv_title_name);
+        tvLanguageTitle.setText(R.string.title_language_setting);
+        changeLanguage = (Button) view.findViewById(R.id.button_change_language);
+        changeLanguage.setOnClickListener(this);
 
         session = new SessionManagement(getContext());
 
@@ -227,5 +236,15 @@ public class SettingFm extends Fragment {
                 return;
             }
         });
+    }
+
+    public void openLanguageScreen() {
+        Intent intent = new Intent(getContext(), ChangeLanguageActivity.class);
+        startActivityForResult(intent, Constants.RequestCode.CHANGE_LANGUAGE);
+    }
+
+    @Override
+    public void onClick(View v) {
+        openLanguageScreen();
     }
 }

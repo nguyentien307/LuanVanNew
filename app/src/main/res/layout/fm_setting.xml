@@ -1,236 +1,277 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/lightBlack"
-    >
-    <LinearLayout
-        android:id="@+id/header"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/toolbar_height_40dp"
-            android:background="@drawable/bg_header">
-            <TextView
-                android:id="@+id/tv_header_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="@dimen/title_text_size"
-                android:textColor="@color/lightBlue"
-                android:layout_centerInParent="true"
-                android:text="Settings"/>
-        </RelativeLayout>
-
-    </LinearLayout>
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/lightBlack"
-        android:paddingLeft="@dimen/dimen_16dp"
-        android:paddingRight="@dimen/dimen_16dp"
-        android:layout_below="@+id/header"
-        android:layout_marginTop="@dimen/margin_8dp">
-        <LinearLayout
-            android:id="@+id/title_music_setting"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <include
-                android:id="@+id/title_music"
-                layout="@layout/title_name"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <variable
+            name="main"
+            type="com.example.tiennguyen.luanvannew.MainActivity"
             />
-        </LinearLayout>
+    </data>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
         <RelativeLayout
-            android:id="@+id/rl_row_1"
-            android:layout_below="@+id/title_music_setting"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/row_height_40dp"
-            android:layout_marginTop="@dimen/margin_16dp"
+            android:layout_height="match_parent"
+            android:background="@color/lightBlack"
             >
             <LinearLayout
+                android:id="@+id/header"
+                android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center_vertical">
-
-                <TextView
+                android:layout_height="wrap_content">
+                <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_toStartOf="@+id/ll_swich_1"
-                    android:text="Phát nhạc dưới nền"
-                    android:textColor="@color/white"/>
+                    android:layout_height="@dimen/toolbar_height_40dp"
+                    android:background="@drawable/bg_header">
+                    <TextView
+                        android:id="@+id/tv_header_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="@dimen/title_text_size"
+                        android:textColor="@color/lightBlue"
+                        android:layout_centerInParent="true"
+                        android:text="@string/title_setting"/>
+                </RelativeLayout>
 
-            </LinearLayout>
-            <LinearLayout
-                android:id="@+id/ll_swich_1"
-                android:layout_width="@dimen/switch_width_60dp"
-                android:layout_height="@dimen/switch_height_23dp"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true">
-                <include
-                    android:id="@+id/swich_btn_1"
-                    layout="@layout/swich_button" />
-            </LinearLayout>
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:id="@+id/rl_row_2"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/row_height_40dp"
-            android:layout_below="@+id/rl_row_1"
-            android:layout_marginTop="@dimen/margin_16dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center_vertical">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_toStartOf="@+id/ll_swich_2"
-                    android:text="Tiếp tục phát khi gắn tai phone"
-                    android:textColor="@color/white"/>
-
-            </LinearLayout>
-            <LinearLayout
-                android:id="@+id/ll_swich_2"
-                android:layout_width="@dimen/switch_width_60dp"
-                android:layout_height="@dimen/switch_height_23dp"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true">
-                <include
-                    android:id="@+id/swich_btn_2"
-                    layout="@layout/swich_button" />
-            </LinearLayout>
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:id="@+id/rl_row"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/row_height_40dp"
-            android:layout_below="@+id/rl_row_2"
-            android:layout_marginTop="@dimen/margin_16dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center_vertical">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_toStartOf="@+id/ll_swich_2"
-                    android:text="Tiếp tục phát khi tháo tai phone"
-                    android:textColor="@color/white"/>
-
-            </LinearLayout>
-            <LinearLayout
-                android:id="@+id/ll_swich"
-                android:layout_width="@dimen/switch_width_60dp"
-                android:layout_height="@dimen/switch_height_23dp"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true">
-                <include
-                    android:id="@+id/swich_btn"
-                    layout="@layout/swich_button" />
-            </LinearLayout>
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:id="@+id/rl_row_3"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/row_height_40dp"
-            android:layout_below="@+id/rl_row"
-            android:layout_marginTop="@dimen/margin_16dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center_vertical">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Tự động dừng phát nhạc"
-                    android:textColor="@color/white"
-                    android:layout_centerVertical="true"/>
             </LinearLayout>
             <RelativeLayout
-                android:layout_width="80dp"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:background="@drawable/spiner_background"
-                android:layout_centerVertical="true"
-                android:layout_alignParentEnd="true">
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/lightBlack"
+                android:paddingLeft="@dimen/dimen_16dp"
+                android:paddingRight="@dimen/dimen_16dp"
+                android:layout_below="@+id/header"
+                android:layout_marginTop="@dimen/margin_8dp">
+                <LinearLayout
+                    android:id="@+id/title_music_setting"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <include
+                        android:id="@+id/title_music"
+                        layout="@layout/title_name"
+                        />
+                </LinearLayout>
+                <RelativeLayout
+                    android:id="@+id/rl_row_1"
+                    android:layout_below="@+id/title_music_setting"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/row_height_40dp"
+                    android:layout_marginTop="@dimen/margin_16dp"
+                    >
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center_vertical">
 
-                <Spinner
-                    android:id="@+id/spinner"
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_toStartOf="@+id/ll_swich_1"
+                            android:text="@string/play_in_background"
+                            android:textColor="@color/white"/>
+
+                    </LinearLayout>
+                    <LinearLayout
+                        android:id="@+id/ll_swich_1"
+                        android:layout_width="@dimen/switch_width_60dp"
+                        android:layout_height="@dimen/switch_height_23dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true">
+                        <include
+                            android:id="@+id/swich_btn_1"
+                            layout="@layout/swich_button" />
+                    </LinearLayout>
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/rl_row_2"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/row_height_40dp"
+                    android:layout_below="@+id/rl_row_1"
+                    android:layout_marginTop="@dimen/margin_16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center_vertical"
+                        android:layout_toLeftOf="@+id/ll_swich_2"
+                        android:layout_marginRight="@dimen/margin_8dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_toStartOf="@+id/ll_swich_2"
+                            android:text="@string/Continue_to_play_plug_headphone"
+                            android:textColor="@color/white"/>
+
+                    </LinearLayout>
+                    <LinearLayout
+                        android:id="@+id/ll_swich_2"
+                        android:layout_width="@dimen/switch_width_60dp"
+                        android:layout_height="@dimen/switch_height_23dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true">
+                        <include
+                            android:id="@+id/swich_btn_2"
+                            layout="@layout/swich_button" />
+                    </LinearLayout>
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/rl_row"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/row_height_40dp"
+                    android:layout_below="@+id/rl_row_2"
+                    android:layout_marginTop="@dimen/margin_16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center_vertical"
+                        android:layout_toLeftOf="@+id/ll_swich"
+                        android:layout_marginRight="@dimen/margin_8dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_toStartOf="@+id/ll_swich_2"
+                            android:text="@string/Continue_to_play_remove_headphone"
+                            android:textColor="@color/white" />
+
+                    </LinearLayout>
+                    <LinearLayout
+                        android:id="@+id/ll_swich"
+                        android:layout_width="@dimen/switch_width_60dp"
+                        android:layout_height="@dimen/switch_height_23dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true">
+                        <include
+                            android:id="@+id/swich_btn"
+                            layout="@layout/swich_button" />
+                    </LinearLayout>
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/rl_row_3"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/row_height_40dp"
+                    android:layout_below="@+id/rl_row"
+                    android:layout_marginTop="@dimen/margin_16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center_vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/Auto_stop_play"
+                            android:textColor="@color/white"
+                            android:layout_centerVertical="true"/>
+                    </LinearLayout>
+                    <RelativeLayout
+                        android:layout_width="80dp"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:background="@drawable/spiner_background"
+                        android:layout_centerVertical="true"
+                        android:layout_alignParentEnd="true">
+
+                        <Spinner
+                            android:id="@+id/spinner"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_gravity="center"
+                            android:background="@android:color/transparent"
+                            android:gravity="center"
+                            android:layout_marginLeft="5dp"
+                            android:spinnerMode="dropdown"
+                            android:popupBackground="#aaaaaa" />
+
+                        <ImageView
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:layout_alignParentRight="true"
+                            android:layout_centerVertical="true"
+                            android:layout_gravity="center"
+                            android:src="@drawable/drop"/>
+
+                    </RelativeLayout>
+
+                </RelativeLayout>
+
+                <LinearLayout
+                    android:id="@+id/title_history_setting"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_gravity="center"
-                    android:background="@android:color/transparent"
-                    android:gravity="center"
-                    android:layout_marginLeft="5dp"
-                    android:spinnerMode="dropdown"
-                    android:popupBackground="#aaaaaa" />
+                    android:layout_below="@+id/rl_row_3"
+                    android:layout_marginTop="@dimen/margin_16dp">
+                    <include
+                        android:id="@+id/title_history"
+                        layout="@layout/title_name"
+                        />
+                </LinearLayout>
 
-                <ImageView
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
-                    android:layout_gravity="center"
-                    android:src="@drawable/drop"/>
+                <RelativeLayout
+                    android:id="@+id/rl_row_4"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/row_height_40dp"
+                    android:layout_below="@+id/title_history_setting"
+                    android:layout_marginTop="@dimen/margin_16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center_vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_toStartOf="@+id/ll_swich_3"
+                            android:text="@string/save_seach_history"
+                            android:textColor="@color/white"/>
+                    </LinearLayout>
+                    <LinearLayout
+                        android:id="@+id/ll_swich_3"
+                        android:layout_width="@dimen/switch_width_60dp"
+                        android:layout_height="@dimen/switch_height_23dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true">
+                        <include
+                            android:id="@+id/swich_btn_3"
+                            layout="@layout/swich_button" />
+                    </LinearLayout>
+
+                </RelativeLayout>
+
+                <LinearLayout
+                    android:id="@+id/title_language_setting"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/rl_row_4"
+                    android:layout_marginTop="@dimen/margin_16dp">
+                    <include
+                        android:id="@+id/title_language"
+                        layout="@layout/title_name"
+                        />
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/button_change_language"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:text="@string/button_change"
+                    android:layout_below="@+id/title_language_setting"
+                    />
 
             </RelativeLayout>
 
         </RelativeLayout>
 
-        <LinearLayout
-            android:id="@+id/title_history_setting"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/rl_row_3"
-            android:layout_marginTop="@dimen/margin_16dp">
-            <include
-                android:id="@+id/title_history"
-                layout="@layout/title_name"
-                />
-        </LinearLayout>
-
-        <RelativeLayout
-            android:id="@+id/rl_row_4"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/row_height_40dp"
-            android:layout_below="@+id/title_history_setting"
-            android:layout_marginTop="@dimen/margin_16dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center_vertical">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_toStartOf="@+id/ll_swich_3"
-                android:text="Lưu lịch sử tìm kiếm"
-                android:textColor="@color/white"/>
-            </LinearLayout>
-            <LinearLayout
-                android:id="@+id/ll_swich_3"
-                android:layout_width="@dimen/switch_width_60dp"
-                android:layout_height="@dimen/switch_height_23dp"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true">
-                <include
-                    android:id="@+id/swich_btn_3"
-                    layout="@layout/swich_button" />
-            </LinearLayout>
-        </RelativeLayout>
-
-    </RelativeLayout>
-
-</RelativeLayout>
+    </ScrollView>
+</layout>

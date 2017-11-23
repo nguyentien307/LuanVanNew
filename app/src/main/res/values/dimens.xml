@@ -57,6 +57,7 @@
     <dimen name="layout_control_player_size_30dp">30dp</dimen>
     <dimen name="player_ic_player_image_size_20dp">20dp</dimen>
     <dimen name="timer_image_size_25dp">25dp</dimen>
+    <dimen name="volumn_height_60dp">60dp</dimen>
 
 
     <dimen name="title_text_size">15sp</dimen>

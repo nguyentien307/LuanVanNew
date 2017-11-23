@@ -16,13 +16,17 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.tiennguyen.luanvannew.R;
-import com.example.tiennguyen.luanvannew.commons.Constants;
 import com.example.tiennguyen.luanvannew.fragments.ArtistMusicFm;
 import com.example.tiennguyen.luanvannew.interfaces.ItemClickListener;
 import com.example.tiennguyen.luanvannew.models.PersonItem;
+import com.example.tiennguyen.luanvannew.services.GetPage;
 import com.github.aakira.expandablelayout.ExpandableLayoutListenerAdapter;
 import com.github.aakira.expandablelayout.ExpandableLinearLayout;
 import com.github.aakira.expandablelayout.Utils;
+
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
 
@@ -30,6 +34,8 @@ import java.util.ArrayList;
  * Created by TIENNGUYEN on 11/6/2017.
  */
 public class InformationsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+
+
     private ArrayList<PersonItem> arrPerson;
     private Context context;
     private SparseBooleanArray expandState = new SparseBooleanArray();
@@ -44,7 +50,7 @@ public class InformationsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         RelativeLayout rlTitle, rlButton, button;
-        TextView tvPersonTitle, tvName, tvViews, tvLink, tvDetail;
+        TextView tvPersonTitle, tvName, tvLink, tvDetail;
         ImageView ivAvatar;
         ExpandableLinearLayout expandableLayout;
         ItemClickListener itemClickListener, itemChildClick;
@@ -62,7 +68,7 @@ public class InformationsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             expandableLayout = (ExpandableLinearLayout) itemView.findViewById(R.id.expandableLayout);
             ivAvatar = (ImageView) itemView.findViewById(R.id.iv_avatar);
             tvName = (TextView) itemView.findViewById(R.id.tv_name);
-            tvViews = (TextView) itemView.findViewById(R.id.tv_views);
+           // tvViews = (TextView) itemView.findViewById(R.id.tv_views);
             tvLink = (TextView) itemView.findViewById(R.id.tv_link);
             tvDetail = (TextView) itemView.findViewById(R.id.tv_detail);
 
@@ -101,6 +107,7 @@ public class InformationsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
         final ViewHolder viewHolder = (ViewHolder)holder;
         PersonItem item = arrPerson.get(position);
+
         viewHolder.setIsRecyclable(false);
 
         viewHolder.tvPersonTitle.setText(item.getName());
@@ -111,17 +118,17 @@ public class InformationsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
             @Override
             public void onPreOpen() {
-                changeRotate(viewHolder.button,0f,180f).start();
-                expandState.put(position,true);
+                changeRotate(viewHolder.button, 0f, 180f).start();
+                expandState.put(position, true);
             }
 
             @Override
             public void onPreClose() {
-                changeRotate(viewHolder.button,180f,0f).start();
-                expandState.put(position,false);
+                changeRotate(viewHolder.button, 180f, 0f).start();
+                expandState.put(position, false);
             }
         });
-        viewHolder.button.setRotation(expandState.get(position)?180f:0f);
+        viewHolder.button.setRotation(expandState.get(position) ? 180f : 0f);
         viewHolder.rlButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -135,33 +142,93 @@ public class InformationsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 viewHolder.expandableLayout.toggle();
             }
         });
+        if(item.getLink() != "") {
 
-        Glide.with(context).load(R.drawable.avatar)
-                .thumbnail(0.5f)
-                .crossFade()
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .centerCrop()
-                .placeholder(R.drawable.item_up)
-                .error(R.drawable.item_up)
-                .into(viewHolder.ivAvatar);
-        viewHolder.tvName.setText(item.getName());
-        viewHolder.tvViews.setText("Views: "+ item.getViews());
+            GetPage getArtist = new GetPage(context);
+            getArtist.setDataDownloadListener(new GetPage.DataDownloadListener() {
+                @Override
+                public void dataDownloadedSuccessfully(Document data) {
+                    String basicInfo = "";
+                    String detailInfo = "";
+                    String songsLink = "";
+                    String albumsLink = "";
+                    String imgLink = "";
 
-        viewHolder.tvDetail.setText(Constants.ARTIST_INFO);
+                    imgLink = data.select("div.singer-avatar img").attr("src");
+                    Elements pTags = data.select("div.singer-left-avatar p");
+                    for (int i = 0; i < pTags.size(); i++) {
+                        Element pTag = pTags.get(i);
+                        if (i == pTags.size() - 1) {
+                            basicInfo += pTag.text();
+                        } else {
+                            basicInfo += pTag.text() + "\n";
+                        }
+                    }
+                    Elements details = data.select("div.singer_profile_content div p");
+                    for (int i = 0; i < details.size(); i++) {
+                        Element pTag = details.get(i);
+                        if (i == pTags.size() - 1) {
+                            detailInfo += pTag.text();
+                        } else {
+                            detailInfo += pTag.text() + "\n";
+                        }
+                    }
+
+                    Elements links = data.select("div.singer-top-menu div div ul li");
+                    if (links.size() != 0) {
+                        songsLink = links.get(1).select("a").attr("href");
+                        albumsLink = links.get(2).select("a").attr("href");
+                    }
+                    else{
+                        Elements searchLinks = data.select("ul.search_control_select li");
+                        songsLink = searchLinks.get(1).select("a").attr("href");
+                        albumsLink = searchLinks.get(2).select("a").attr("href");
+                    }
 
 
-        viewHolder.setItemChildClickListener(new ItemClickListener() {
-            @Override
-            public void onClick(View view, int position, boolean isLongClick) {
-                Fragment fragment = ArtistMusicFm.newInstance(arrPerson.get(position));
-                transaction(R.id.fragment_container_second, fragment);
-            }
-        });
-        viewHolder.setItemClickListener(new ItemClickListener() {
-            @Override
-            public void onClick(View view, int position, boolean isLongClick) {
-            }
-        });
+
+                    Glide.with(context).load(imgLink)
+                            .thumbnail(0.5f)
+                            .crossFade()
+                            .diskCacheStrategy(DiskCacheStrategy.ALL)
+                            .centerCrop()
+                            .placeholder(R.drawable.item_up)
+                            .error(R.drawable.item_up)
+                            .into(viewHolder.ivAvatar);
+                    viewHolder.tvName.setText(basicInfo);
+                    //viewHolder.tvViews.setText("Views: "+ item.getViews());
+
+                    viewHolder.tvDetail.setText(detailInfo);
+
+
+                    final String finalSongsLink = songsLink;
+                    final String finalAlbumsLink = albumsLink;
+                    viewHolder.setItemChildClickListener(new ItemClickListener() {
+                        @Override
+                        public void onClick(View view, int position, boolean isLongClick) {
+                            Fragment fragment = ArtistMusicFm.newInstance(arrPerson.get(position), finalSongsLink, finalAlbumsLink);
+                            transaction(R.id.fragment_container_second, fragment);
+                        }
+                    });
+                    viewHolder.setItemClickListener(new ItemClickListener() {
+                        @Override
+                        public void onClick(View view, int position, boolean isLongClick) {
+                        }
+                    });
+                }
+
+                @Override
+                public void dataDownloadFailed() {
+
+                }
+            });
+            getArtist.execute(item.getLink());
+        }
+        else {
+
+        }
+
+
     }
 
 

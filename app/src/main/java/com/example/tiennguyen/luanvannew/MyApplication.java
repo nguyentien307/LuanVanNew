@@ -4,6 +4,7 @@ import android.app.Application;
 
 import com.example.tiennguyen.luanvannew.models.PlaylistItem;
 import com.example.tiennguyen.luanvannew.models.SongItem;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 
@@ -51,5 +52,23 @@ public class MyApplication extends Application {
 
     public void setArrayPlayer(ArrayList<SongItem> arrayPlayer) {
         this.arrayPlayer = arrayPlayer;
+    }
+
+
+    private static MyApplication sInstance;
+    private Gson mGSon;
+
+    public static MyApplication self() {
+        return sInstance;
+    }
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        sInstance = this;
+        mGSon = new Gson();
+    }
+
+    public Gson getGSon() {
+        return mGSon;
     }
 }

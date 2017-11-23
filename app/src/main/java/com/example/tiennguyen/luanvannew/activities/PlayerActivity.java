@@ -2,7 +2,9 @@ package com.example.tiennguyen.luanvannew.activities;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
+import android.media.AudioManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -15,6 +17,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.example.tiennguyen.luanvannew.MainActivity;
@@ -62,14 +65,19 @@ public class PlayerActivity extends AppCompatActivity implements OnActionClicked
     private ImageView imgTimer;
     private Calendar calendar;
     private SessionManagement session;
-    private AlarmManager alarmManager;
-    private Intent intent;
-    private PendingIntent pendingIntent;
 
     ImageView img_bg;
 
     ListView lvSongs;
     public static ArrayList<SongItem> songArr;
+
+    // set volumn
+    private LinearLayout llVolumn;
+    private SeekBar volumeSeekbar = null;
+    private AudioManager audioManager = null;
+    private LinearLayout llControlVolumn;
+    private boolean isOpenControlVolumn = false;
+    private Timer timer;
 
     Intent playerService;
     @Override
@@ -149,15 +157,16 @@ public class PlayerActivity extends AppCompatActivity implements OnActionClicked
         llShuffle = (LinearLayout) findViewById(R.id.llShuffle);
         llReplay = (LinearLayout) findViewById(R.id.llReplay);
 
+        llVolumn = (LinearLayout) findViewById(R.id.llVolumn);
+        volumeSeekbar = (SeekBar)findViewById(R.id.sbVolumn);
+        llControlVolumn = (LinearLayout) findViewById(R.id.llControlVolumn);
+        llControlVolumn.setVisibility(View.GONE);
+        llVolumn.setOnClickListener(this);
+
         session = new SessionManagement(getBaseContext());
-        intent = new Intent(PlayerActivity.this, AlarmTimerActivity.class);
         llTimerChecked = (LinearLayout) findViewById(R.id.llTimerChecked);
         imgTimer = (ImageView) findViewById(R.id.imgTimerChecked);
-        if (session.isCheckAlarm()) {
-            imgTimer.setImageResource(R.drawable.timer_checked);
-        } else {
-            imgTimer.setImageResource(R.drawable.timer_unchecked);
-        }
+        timer = new Timer();
 
         llTimerChecked.setOnClickListener(this);
 
@@ -190,10 +199,10 @@ public class PlayerActivity extends AppCompatActivity implements OnActionClicked
                 finish();
                 break;
             case R.id.llTimerChecked:
-                if (session.isCheckAlarm()) {
+                if (!session.isCheckAlarm()) {
                     imgTimer.setImageResource(R.drawable.timer_checked);
-                    session.setCheckAlarm(false);
-                    new Timer().schedule(new TimerTask() {
+                    session.setCheckAlarm(true);
+                    timer.schedule(new TimerTask() {
                         @Override
                         public void run() {
                             session.setCheckAlarm(false);
@@ -204,16 +213,62 @@ public class PlayerActivity extends AppCompatActivity implements OnActionClicked
                             Intent startMain = new Intent(Intent.ACTION_MAIN);
                             startMain.addCategory(Intent.CATEGORY_HOME);
                             startActivity(startMain);
-                            finish();
+                            stopService(playerService);
                         }
-                    }, session.getAutoStopPlayMusicTime() * 60 * 1000);
+                    }, 5000);
                 } else {
                     imgTimer.setImageResource(R.drawable.timer_unchecked);
-                    session.setCheckAlarm(true);
+                    session.setCheckAlarm(false);
+                    timer.cancel();
+                }
+                break;
+            case R.id.llVolumn:
+                if (!isOpenControlVolumn) {
+                    llControlVolumn.setVisibility(View.VISIBLE);
+                    setVolumeControlStream(AudioManager.STREAM_MUSIC);
+                    initControls();
+                    isOpenControlVolumn = true;
+                } else {
+                    llControlVolumn.setVisibility(View.GONE);
+                    isOpenControlVolumn = false;
                 }
                 break;
             default:
                 break;
+        }
+    }
+
+    private void initControls() {
+        try {
+            audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+            volumeSeekbar.setMax(audioManager
+                    .getStreamMaxVolume(AudioManager.STREAM_MUSIC));
+            volumeSeekbar.setProgress(audioManager
+                    .getStreamVolume(AudioManager.STREAM_MUSIC));
+
+
+            volumeSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener()
+            {
+                @Override
+                public void onStopTrackingTouch(SeekBar arg0)
+                {
+                }
+
+                @Override
+                public void onStartTrackingTouch(SeekBar arg0)
+                {
+                }
+
+                @Override
+                public void onProgressChanged(SeekBar arg0, int progress, boolean arg2)
+                {
+                    audioManager.setStreamVolume(AudioManager.STREAM_MUSIC,
+                            progress, 0);
+                }
+            });
+        } catch (Exception e)
+        {
+            e.printStackTrace();
         }
     }
 

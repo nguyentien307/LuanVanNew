@@ -183,12 +183,12 @@ public class LoginFm extends Fragment implements TextWatcher, View.OnKeyListener
 
             } else {
                 // username / password doesn't match
-                alert.showAlertDialog(getActivity(), "Login failed..", "Email or password is incorrect", false);
+                alert.showAlertDialog(getActivity(), getResources().getString(R.string.login_fail), getResources().getString(R.string.error_message), false);
             }
         }else{
             // user didn't entered username or password
             // Show alert asking him to enter the details
-            alert.showAlertDialog(getActivity(), "Login failed..", "Please enter email and password", false);
+            alert.showAlertDialog(getActivity(), getResources().getString(R.string.login_fail), getResources().getString(R.string.warning_message), false);
         }
     }
 

@@ -182,8 +182,9 @@ public class SearchResultFm extends Fragment implements View.OnFocusChangeListen
     }
 
     private void setAdapter(ArrayList<SongItem> searchingArray, String numFound) {
-        tvSongNum.setText("Have " + numFound + " results is founded for '" + data + "'");
-        songsAdapter = new SongsAdapter(getContext(), getActivity(), songArr, CONSTANTS.SONG_CATEGORIES);
+        tvSongNum.setText(getResources()
+                .getString(R.string.title_search_result_1) + " " + numFound + " " + getResources().getString(R.string.title_search_result_2) + "'" + data + "'");
+        songsAdapter = new SongsAdapter(getContext(), getActivity(), songArr, CONSTANTS.SONG_CATEGORIES, rcSearchResult);
         rcSearchResult.setAdapter(songsAdapter);
 
         songsAdapter.notifyItemRangeInserted(songsAdapter.getItemCount(), searchingArray.size() - 1);
@@ -251,8 +252,9 @@ public class SearchResultFm extends Fragment implements View.OnFocusChangeListen
     }
 
     private void setZingAdapter(String totalResult, ArrayList<SongItem> arrList) {
-        tvSongNum.setText("Have " + totalResult + " results is founded for '" + data + "'");
-        songsAdapter = new SongsAdapter(getContext(), getActivity(), arrList, CONSTANTS.SONG_CATEGORIES);
+        tvSongNum.setText(getResources()
+                .getString(R.string.title_search_result_1) + " " + totalResult + " " + getResources().getString(R.string.title_search_result_2) + "'" + data + "'");
+        songsAdapter = new SongsAdapter(getContext(), getActivity(), arrList, CONSTANTS.SONG_CATEGORIES, rcSearchResult);
         rcSearchResult.setAdapter(songsAdapter);
 //        songsAdapter.notifyItemRangeInserted(songsAdapter.getItemCount(), arrList.size() - 1);
     }
