@@ -44,4 +44,12 @@
     <string name="email">EMAIL</string>
     <string name="nick_chat">NICK CHAT</string>
     <string name="level">LEVEL</string>
+    
+    <string-array name="spiner">
+        <item>None</item>
+        <item>1 min</item>
+        <item>15 min</item>
+        <item>30 min</item>
+        <item>45 min</item>
+    </string-array>
 </resources>

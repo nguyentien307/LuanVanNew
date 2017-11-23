@@ -1,5 +1,7 @@
 package com.example.tiennguyen.luanvannew.activities;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -15,6 +17,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.example.tiennguyen.luanvannew.MainActivity;
 import com.example.tiennguyen.luanvannew.MyApplication;
 import com.example.tiennguyen.luanvannew.R;
 import com.example.tiennguyen.luanvannew.adapters.PlayerAdapter;
@@ -22,8 +25,12 @@ import com.example.tiennguyen.luanvannew.commons.Constants;
 import com.example.tiennguyen.luanvannew.models.PersonItem;
 import com.example.tiennguyen.luanvannew.models.SongItem;
 import com.example.tiennguyen.luanvannew.services.PlayerService;
+import com.example.tiennguyen.luanvannew.sessions.SessionManagement;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import co.mobiwise.library.InteractivePlayerView;
 import co.mobiwise.library.OnActionClickedListener;
@@ -50,6 +57,14 @@ public class PlayerActivity extends AppCompatActivity implements OnActionClicked
     private String type = "";
     private ArrayList<SongItem> arrayListSong = new ArrayList<>();
     ArrayList<PersonItem> arrArtist = new ArrayList<>();
+
+    private LinearLayout llTimerChecked;
+    private ImageView imgTimer;
+    private Calendar calendar;
+    private SessionManagement session;
+    private AlarmManager alarmManager;
+    private Intent intent;
+    private PendingIntent pendingIntent;
 
     ImageView img_bg;
 
@@ -134,6 +149,18 @@ public class PlayerActivity extends AppCompatActivity implements OnActionClicked
         llShuffle = (LinearLayout) findViewById(R.id.llShuffle);
         llReplay = (LinearLayout) findViewById(R.id.llReplay);
 
+        session = new SessionManagement(getBaseContext());
+        intent = new Intent(PlayerActivity.this, AlarmTimerActivity.class);
+        llTimerChecked = (LinearLayout) findViewById(R.id.llTimerChecked);
+        imgTimer = (ImageView) findViewById(R.id.imgTimerChecked);
+        if (session.isCheckAlarm()) {
+            imgTimer.setImageResource(R.drawable.timer_checked);
+        } else {
+            imgTimer.setImageResource(R.drawable.timer_unchecked);
+        }
+
+        llTimerChecked.setOnClickListener(this);
+
         img_bg = (ImageView) findViewById(R.id.img_bg);
         Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.bg_player);
         img_bg.startAnimation(animation);
@@ -161,6 +188,29 @@ public class PlayerActivity extends AppCompatActivity implements OnActionClicked
         switch (v.getId()) {
             case R.id.llBackFromPlayer:
                 finish();
+                break;
+            case R.id.llTimerChecked:
+                if (session.isCheckAlarm()) {
+                    imgTimer.setImageResource(R.drawable.timer_checked);
+                    session.setCheckAlarm(false);
+                    new Timer().schedule(new TimerTask() {
+                        @Override
+                        public void run() {
+                            session.setCheckAlarm(false);
+                            Intent intent = new Intent(PlayerActivity.this, MainActivity.class);
+                            startActivity(intent);
+
+                            // Tao su kien ket thuc app
+                            Intent startMain = new Intent(Intent.ACTION_MAIN);
+                            startMain.addCategory(Intent.CATEGORY_HOME);
+                            startActivity(startMain);
+                            finish();
+                        }
+                    }, session.getAutoStopPlayMusicTime() * 60 * 1000);
+                } else {
+                    imgTimer.setImageResource(R.drawable.timer_unchecked);
+                    session.setCheckAlarm(true);
+                }
                 break;
             default:
                 break;

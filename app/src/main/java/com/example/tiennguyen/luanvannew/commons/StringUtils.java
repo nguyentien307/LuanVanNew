@@ -54,4 +54,18 @@ public class StringUtils {
         }
         return String.valueOf(sb);
     }
+
+    public static String newText(String text, int length){
+        String newText = "";
+        if(text.length() > length + 3){
+            for(int i = 0; i < length; i++){
+                newText = newText + text.charAt(i);
+            }
+            newText = newText + " ...";
+        }
+        else{
+            newText = text;
+        }
+        return newText;
+    }
 }

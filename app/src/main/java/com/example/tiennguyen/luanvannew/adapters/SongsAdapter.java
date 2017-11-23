@@ -128,7 +128,6 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.ViewHolder> 
                         bundle.putParcelableArrayList("arrComposer", arrSongs.get(getAdapterPosition()).getComposer());
                     } else {
                         bundle.putParcelableArrayList("arrSong", arrSongs);
-                        ArrayList<ArrayList<PersonItem>> listArtist = new ArrayList<>();
                         for (int i = 0; i < arrSongs.size(); i++) {
                             bundle.putParcelableArrayList("arrArtist" + i, arrSongs.get(i).getArtist());
                             bundle.putParcelableArrayList("arrComposer" + i, arrSongs.get(i).getComposer());
@@ -265,6 +264,4 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.ViewHolder> 
             session.checkLogin();
         }
     }
-
-
 }

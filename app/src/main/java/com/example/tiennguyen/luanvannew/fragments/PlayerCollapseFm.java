@@ -90,12 +90,6 @@ public class PlayerCollapseFm extends Fragment implements View.OnClickListener {
         btnPreviousCol = (ImageView) view.findViewById(R.id.imgPreCol);
 
         rlPlayerCollapse.setOnClickListener(this);
-        llNextCol.setOnClickListener(this);
-        llPlayCol.setOnClickListener(this);
-        llPreCol.setOnClickListener(this);
-        btnPlayCol.setOnClickListener(this);
-        btnNextCol.setOnClickListener(this);
-        btnPreviousCol.setOnClickListener(this);
     }
 
     @Override

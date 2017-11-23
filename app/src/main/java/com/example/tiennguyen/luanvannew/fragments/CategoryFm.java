@@ -141,6 +141,7 @@ public class CategoryFm extends Fragment implements View.OnClickListener {
         switch (v.getId()){
             case R.id.ll_btn_back:
             case R.id.iv_btn_back:{
+                getActivity().getSupportFragmentManager().popBackStack();
                 LinearLayout fullScreen  = (LinearLayout) getActivity().findViewById(R.id.full_screen_content);
                 fullScreen.setVisibility(View.GONE);
             }

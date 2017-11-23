@@ -67,7 +67,7 @@
             </RelativeLayout>
         </RelativeLayout>
 
-        <include layout="@layout/infor_title_name"
+        <include layout="@layout/title_name"
             android:id="@+id/title_singers"/>
 
         <android.support.v7.widget.RecyclerView
@@ -80,7 +80,7 @@
             >
         </android.support.v7.widget.RecyclerView>
 
-        <include layout="@layout/infor_title_name"
+        <include layout="@layout/title_name"
             android:id="@+id/title_composers"/>
 
         <android.support.v7.widget.RecyclerView

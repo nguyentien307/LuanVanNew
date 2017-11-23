@@ -25,11 +25,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.tiennguyen.luanvannew.R;
 import com.example.tiennguyen.luanvannew.activities.PlayerActivity;
 import com.example.tiennguyen.luanvannew.commons.StringUtils;
 import com.example.tiennguyen.luanvannew.fragments.PlayerCollapseFm;
 import com.example.tiennguyen.luanvannew.models.SongItem;
+import com.example.tiennguyen.luanvannew.sessions.SessionManagement;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
@@ -81,6 +83,10 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
 
     private boolean isRepeat = false;
     private boolean isShuffle = false;
+    private int titleLength = 25;
+    private int artistLength = 33;
+
+    private SessionManagement session;
 
     //BroadCast Receiver sử dụng để lắng nge và phát sóng dữ liệu khi tai nge được cắm
     //Và nếu có cắm tai nge, thì dừng nhạc và dừng service
@@ -101,9 +107,12 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
             }
             switch (headsetSwitch) {
                 case (0):
-                    headsetDisconnected();
+                    if (!session.getContinueWhenRemovePhone())
+                        headsetDisconnected();
                     break;
                 case (1):
+                    if (!session.getContinueWhenPlugPhone())
+                        headsetDisconnected();
                     break;
             }
         }
@@ -115,6 +124,8 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
 
     @Override
     public void onCreate() {
+        session = new SessionManagement(getApplicationContext());
+
         mp = new MediaPlayer();
         mp.setOnCompletionListener(this);
         mp.setOnErrorListener(this);
@@ -145,15 +156,26 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
 //            initNotification(songIndex);
             currentSongIndex = songIndex;
         } else if (currentSongIndex != -1) {
-            musicTitle.get().setText(songArr.get(currentSongIndex).getTitle());
-            artistName.get().setText(StringUtils.getArtists(songArr.get(songIndex).getArtist()));
+            musicTitle.get().setText(StringUtils.newText(songArr.get(currentSongIndex).getTitle(), titleLength));
+            artistName.get().setText(StringUtils.newText(StringUtils.getArtists(songArr.get(currentSongIndex).getArtist()), artistLength));
 
-            tvTitleCol.get().setText(songArr.get(currentSongIndex).getTitle());
-            artistName.get().setText(StringUtils.getArtists(songArr.get(songIndex).getArtist()));
-            if (mp.isPlaying())
+            tvTitleCol.get().setText(StringUtils.newText(songArr.get(currentSongIndex).getTitle(), titleLength));
+            tvArtistCol.get().setText(StringUtils.getArtists(songArr.get(currentSongIndex).getArtist()));
+            Glide.with(getBaseContext()).load(songArr.get(currentSongIndex).getLinkImg())
+                    .thumbnail(0.5f)
+                    .crossFade()
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .centerCrop()
+                    .placeholder(R.drawable.item_up)
+                    .error(R.drawable.item_up)
+                    .into(imgTitleCol.get());
+            interactivePlayerViewWeakReference.get().setCoverURL(songArr.get(currentSongIndex).getLinkImg());
+            if (mp.isPlaying()) {
                 icControlPlayPause.get().setBackgroundResource(R.drawable.ic_action_pause);
-            else
+            }
+            else {
                 icControlPlayPause.get().setBackgroundResource(R.drawable.ic_action_play);
+            }
         }
 
         //Nếu có cuộc gọi đến, tạm dừng máy nge nhạc, và resume khi ngắt kết nối cuộc gọi.
@@ -232,6 +254,7 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
         btnNextCol = new WeakReference<>(PlayerCollapseFm.btnNextCol);
         btnPreviousCol = new WeakReference<>(PlayerCollapseFm.btnPreviousCol);
         btnPlayCol = new WeakReference<>(PlayerCollapseFm.btnPlayCol);
+        imgTitleCol = new WeakReference<>(PlayerCollapseFm.imgTitleCol);
 
         llNextCol.get().setOnClickListener(this);
         llPreviousCol.get().setOnClickListener(this);
@@ -261,11 +284,19 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
             mp.setDataSource(URL_TEMPLATE + songArr.get(songIndex).getLink());
             //gửi tin nhắn đến MainActivity để hiển thị đồng bộ
 //                sendBufferingBroadcast();
-            musicTitle.get().setText(songArr.get(songIndex).getTitle());
-            artistName.get().setText(StringUtils.getArtists(songArr.get(songIndex).getArtist()));
+            musicTitle.get().setText(StringUtils.newText(songArr.get(songIndex).getTitle(), titleLength));
+            artistName.get().setText(StringUtils.newText(StringUtils.getArtists(songArr.get(songIndex).getArtist()), artistLength));
 
-            tvTitleCol.get().setText(songArr.get(songIndex).getTitle());
+            tvTitleCol.get().setText(StringUtils.newText(songArr.get(songIndex).getTitle(), titleLength));
             tvArtistCol.get().setText(StringUtils.getArtists(songArr.get(songIndex).getArtist()));
+            Glide.with(getBaseContext()).load(songArr.get(songIndex).getLinkImg())
+                    .thumbnail(0.5f)
+                    .crossFade()
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .centerCrop()
+                    .placeholder(R.drawable.item_up)
+                    .error(R.drawable.item_up)
+                    .into(imgTitleCol.get());
 
             icControlPlayPause.get().setBackgroundResource(R.drawable.ic_action_pause);
             interactivePlayerViewWeakReference.get().setCoverURL(songArr.get(songIndex).getLinkImg());

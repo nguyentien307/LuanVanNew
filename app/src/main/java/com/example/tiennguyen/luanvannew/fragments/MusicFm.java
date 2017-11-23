@@ -186,6 +186,7 @@ public class MusicFm extends Fragment implements View.OnClickListener {
     public void transaction(int idLayout, Fragment fragment){
         getActivity().getSupportFragmentManager()
                 .beginTransaction()
+                .addToBackStack(null)
                 .replace(idLayout, fragment)
                 .commit();
     }

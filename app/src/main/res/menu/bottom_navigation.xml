@@ -4,16 +4,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.example.tiennguyen.luanvannew.MainActivity">
     <item
-        android:id="@+id/action_user"
-        android:enabled="true"
-        android:icon="@drawable/ic_user_grey"
-        android:title="@string/action_user"
-        app:showAsAction="ifRoom" />
-    <item
         android:id="@+id/action_music"
         android:enabled="true"
         android:icon="@drawable/ic_music"
         android:title="@string/action_music"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_user"
+        android:enabled="true"
+        android:icon="@drawable/ic_user_grey"
+        android:title="@string/action_user"
         app:showAsAction="ifRoom" />
     <item
         android:id="@+id/action_search"

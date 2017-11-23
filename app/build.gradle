@@ -43,5 +43,6 @@ dependencies {
     compile 'com.github.aakira:expandable-layout:1.6.0@aar'
     compile 'com.astuetz:pagerslidingtabstrip:1.0.1'
     compile 'com.github.iammert:InteractivePlayerView:f4f6490290'
+    compile 'org.jsoup:jsoup:1.10.2'
     testCompile 'junit:junit:4.12'
 }

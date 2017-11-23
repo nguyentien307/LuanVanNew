@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -72,11 +73,13 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.ViewHolder
 
         @Override
         public void onClick(View v) {
+            LinearLayout secondScreen  = (LinearLayout) ((AppCompatActivity)context).findViewById(R.id.fragment_container_second);
+            secondScreen.setVisibility(View.VISIBLE);
             AlbumSongsFm fragment = AlbumSongsFm.newInstance(arrAlbums.get(getAdapterPosition()));
             ((AppCompatActivity)context).getSupportFragmentManager()
                     .beginTransaction()
                     .addToBackStack(null)
-                    .replace(R.id.fragment_container, fragment)
+                    .replace(R.id.fragment_container_second, fragment)
                     .commit();
         }
     }

@@ -32,7 +32,9 @@ public class SessionManagement {
     int PRIVATE_MODE = 0;
 
     // Sharedpref file name
-    private static final String PREF_NAME = "AndroidHivePref";
+    private static final String PREF_NAME = "User infomation";
+
+    private static final String PREF_NAME_1 = "Setting infomation";
 
     // All Shared Preferences Keys
     private static final String IS_LOGIN = "IsLoggedIn";
@@ -43,7 +45,25 @@ public class SessionManagement {
     // Email address (make variable public to access from outside)
     public static final String KEY_PASSWORD = "password";
 
+    public static final String PLAY_IN_BACKGROUND = "play in background";
+
+    public static final String CONTINUE_PLAY_WHEN_PLUG_PHONE = "continue play when plug phone";
+
+    public static final String CONTINUE_PLAY_WHEN_REMOVE_PHONE = "continue play when remove phone";
+
+    public static final String SAVE_HISTORY = "save history";
+
+    public static final String AUTO_STOP_TIME = "auto stop time";
+
+    public static final String CHECK_ALARM = "check alarm";
+
     HaveNotLoggedIn haveNotLoggedIn;
+
+    public SessionManagement(Context context) {
+        this._context = context;
+        pref = _context.getSharedPreferences(PREF_NAME_1, PRIVATE_MODE);
+        editor = pref.edit();
+    }
 
     // Constructor
     public SessionManagement(Context context, HaveNotLoggedIn haveNotLoggedIn){
@@ -118,5 +138,59 @@ public class SessionManagement {
 
     public interface HaveNotLoggedIn {
         void haveNotLoggedIn();
+    }
+
+    public boolean isCheckAlarm() {
+        return pref.getBoolean(CHECK_ALARM, false);
+    }
+
+    public void setCheckAlarm(boolean checkAlarm) {
+        editor.putBoolean(CHECK_ALARM, checkAlarm);
+        editor.commit();
+    }
+
+    public Boolean getPlayInBackground() {
+        return pref.getBoolean(PLAY_IN_BACKGROUND, true);
+    }
+
+    public void setPlayInBackground(Boolean playInBackground) {
+        editor.putBoolean(PLAY_IN_BACKGROUND, playInBackground);
+        editor.commit();
+    }
+
+    public Boolean getContinueWhenPlugPhone() {
+        return pref.getBoolean(CONTINUE_PLAY_WHEN_PLUG_PHONE, true);
+    }
+
+    public void setContinueWhenPlugPhone(Boolean continueWhenPlugPhone) {
+        editor.putBoolean(CONTINUE_PLAY_WHEN_PLUG_PHONE, continueWhenPlugPhone);
+        editor.commit();
+    }
+
+    public Boolean getContinueWhenRemovePhone() {
+        return pref.getBoolean(CONTINUE_PLAY_WHEN_REMOVE_PHONE, true);
+    }
+
+    public void setContinueWhenRemovePhone(Boolean continueWhenRemovePhone) {
+        editor.putBoolean(CONTINUE_PLAY_WHEN_REMOVE_PHONE, continueWhenRemovePhone);
+        editor.commit();
+    }
+
+    public Boolean getSaveHistory() {
+        return pref.getBoolean(SAVE_HISTORY, true);
+    }
+
+    public void setSaveHistory(Boolean saveHistory) {
+        editor.putBoolean(SAVE_HISTORY, saveHistory);
+        editor.commit();
+    }
+
+    public int getAutoStopPlayMusicTime() {
+        return pref.getInt(AUTO_STOP_TIME, -1);
+    }
+
+    public void setAutoStopPlayMusicTime(int autoStopPlayMusicTime) {
+        editor.putInt(AUTO_STOP_TIME, autoStopPlayMusicTime);
+        editor.commit();
     }
 }

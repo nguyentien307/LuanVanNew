@@ -22,12 +22,14 @@ import com.example.tiennguyen.luanvannew.MainActivity;
 import com.example.tiennguyen.luanvannew.MyApplication;
 import com.example.tiennguyen.luanvannew.R;
 import com.example.tiennguyen.luanvannew.commons.Constants;
+import com.example.tiennguyen.luanvannew.dialogs.AlertDialogManagement;
 import com.example.tiennguyen.luanvannew.dialogs.MyAlertDialogFragment;
 import com.example.tiennguyen.luanvannew.fragments.SongInfoFm;
 import com.example.tiennguyen.luanvannew.models.PlaylistItem;
 import com.example.tiennguyen.luanvannew.models.SongItem;
 import com.example.tiennguyen.luanvannew.services.PlayerService;
 import com.example.tiennguyen.luanvannew.commons.StringUtils;
+import com.example.tiennguyen.luanvannew.sessions.SessionManagement;
 
 import java.util.ArrayList;
 
@@ -118,11 +120,27 @@ public class PlayerAdapter extends RecyclerView.Adapter<PlayerAdapter.PlayerView
         }
 
         private void showDialog(){
-            ArrayList<PlaylistItem> arrPlaylists = ((MyApplication) activity.getApplication()).getArrPlaylists();
-            MyAlertDialogFragment dialog = MyAlertDialogFragment.newInstance(arrPlaylists);
-            FragmentManager manager = ((AppCompatActivity)context).getSupportFragmentManager();
-            dialog.show(manager, "fragment_alert");
+            SessionManagement session = new SessionManagement(context, new SessionManagement.HaveNotLoggedIn() {
+                @Override
+                public void haveNotLoggedIn() {
+                    AlertDialogManagement alertDialod = new AlertDialogManagement(new AlertDialogManagement.ConfirmLogout() {
+                        @Override
+                        public void confirmLogout() {
 
+                        }
+                    });
+                    alertDialod.showAlertDialog(context, Constants.ADD_PLAYLIST_TITLE, Constants.REQUEST_LOGIN, false);
+                }
+            });
+            if (session.isLoggedIn()) {
+                ArrayList<PlaylistItem> arrPlaylists = ((MyApplication) activity.getApplication()).getArrPlaylists();
+                MyAlertDialogFragment dialog = MyAlertDialogFragment.newInstance(arrPlaylists);
+                FragmentManager manager = ((AppCompatActivity) context).getSupportFragmentManager();
+                dialog.show(manager, "fragment_alert");
+            }
+            else {
+                session.checkLogin();
+            }
         }
     }
 }

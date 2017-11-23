@@ -16,14 +16,20 @@ import com.example.tiennguyen.luanvannew.R;
 import com.example.tiennguyen.luanvannew.adapters.SongsAdapter;
 import com.example.tiennguyen.luanvannew.commons.Constants;
 import com.example.tiennguyen.luanvannew.commons.StringUtils;
+import com.example.tiennguyen.luanvannew.commons.ZingMP3LinkTemplate;
 import com.example.tiennguyen.luanvannew.models.PersonItem;
 import com.example.tiennguyen.luanvannew.models.SongItem;
 import com.example.tiennguyen.luanvannew.services.BaseURI;
 import com.example.tiennguyen.luanvannew.services.GetData;
+import com.example.tiennguyen.luanvannew.services.GetHtmlData;
+import com.example.tiennguyen.luanvannew.services.XMLDomParser;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
 
@@ -68,7 +74,8 @@ public class SearchResultFm extends Fragment implements View.OnFocusChangeListen
 
     private void initView(View view) {
         initialView(view);
-        showResult();
+//        showResult();
+        showZingResult();
     }
 
     private void initialView(View view) {
@@ -200,5 +207,53 @@ public class SearchResultFm extends Fragment implements View.OnFocusChangeListen
                 .beginTransaction()
                 .replace(R.id.fragment_container, fragment)
                 .commit();
+    }
+
+    private void showZingResult() {
+        setLoading(true);
+        edSearchView.setText(data, TextView.BufferType.SPANNABLE);
+        StringUtils convertedToUnsigned = new StringUtils();
+        String name = convertedToUnsigned.convertedToUnsigned(data);
+        GetHtmlData gethtmlData = new GetHtmlData(getContext());
+        gethtmlData.execute(ZingMP3LinkTemplate.SEARCH_URL + name);
+        gethtmlData.setDataDownloadListener(new GetHtmlData.DataDownloadListener() {
+
+            @Override
+            public void dataDownloadedSuccessfully(String data) {
+                setLoading(false);
+                displayZingList(data, false);
+            }
+
+            @Override
+            public void dataDownloadFailed() {
+            }
+        });
+    }
+
+    private void displayZingList(String data, boolean b) {
+        ArrayList<SongItem> arrList = new ArrayList<>();
+        Document document = Jsoup.parse(data);
+        String totalResult = document.select("div.sta-result").select("span").text();
+        Elements div = document.select("div.item-song");
+        for (int i = 0; i < div.size(); i++) {
+            String data_code = div.get(i).attr("data-code");
+            String img = div.get(i).select("img").attr("src");
+            String titleAndArtists = div.get(i).select("h3").select("a").attr("title");
+            String[] arrTitleArtists = titleAndArtists.split(" - ", 2);
+            String[] arrArtists = arrTitleArtists[1].split(", ");
+            ArrayList<PersonItem> arrArtist = new ArrayList<>();
+            for (int j = 0; j < arrArtists.length; j++) {
+                arrArtist.add(new PersonItem(arrArtists[j], "", 157523));
+            }
+            arrList.add(new SongItem(arrTitleArtists[0], 1437659, data_code, arrArtist, null, "", img));
+        }
+        setZingAdapter(totalResult, arrList);
+    }
+
+    private void setZingAdapter(String totalResult, ArrayList<SongItem> arrList) {
+        tvSongNum.setText("Have " + totalResult + " results is founded for '" + data + "'");
+        songsAdapter = new SongsAdapter(getContext(), getActivity(), arrList, CONSTANTS.SONG_CATEGORIES);
+        rcSearchResult.setAdapter(songsAdapter);
+//        songsAdapter.notifyItemRangeInserted(songsAdapter.getItemCount(), arrList.size() - 1);
     }
 }
