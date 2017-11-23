@@ -1,6 +1,7 @@
 package com.example.tiennguyen.luanvannew;
 
 import android.content.Intent;
+import android.databinding.DataBindingUtil;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -16,6 +17,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 
 import com.example.tiennguyen.luanvannew.commons.Constants;
+import com.example.tiennguyen.luanvannew.databinding.ActivityMainBinding;
 import com.example.tiennguyen.luanvannew.fragments.MusicFm;
 import com.example.tiennguyen.luanvannew.fragments.PlaylistFm;
 import com.example.tiennguyen.luanvannew.fragments.SearchFm;
@@ -26,6 +28,7 @@ import com.example.tiennguyen.luanvannew.helpers.BottomNavigationViewHelper;
 import com.example.tiennguyen.luanvannew.helpers.CustomTypefaceSpan;
 import com.example.tiennguyen.luanvannew.models.PersonItem;
 import com.example.tiennguyen.luanvannew.models.SongItem;
+import com.example.tiennguyen.luanvannew.utils.LanguageUtils;
 
 import java.util.ArrayList;
 
@@ -36,10 +39,15 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     private Boolean isPlayerCall = false;
     private SongItem songItem;
 
+    private ActivityMainBinding mBinding;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        LanguageUtils.loadLocale();
+        mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+        mBinding.setMain(MainActivity.this);
+
+//        setContentView(R.layout.activity_main);
         setBottomNavigation();
 
     }
@@ -166,5 +174,19 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 }
             }
         }
+        if(requestCode == Constants.RequestCode.CHANGE_LANGUAGE){
+            if (resultCode == RESULT_OK) {
+                updateViewByLanguage();
+            }
+        }
+    }
+
+
+
+
+    private void updateViewByLanguage() {
+//        mBinding.buttonChangeLanguage.setText(getString(R.string.main_button_change_language));
+//        mBinding.textContent.setText(getString(R.string.main_content));
+//        mBinding.textNews.setText(getString(R.string.main_news));
     }
 }

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">LuanVanNew</string>
+    <string name="action_category">Thể loại</string>
+    <string name="action_delete">Xóa</string>
+    <string name="action_music">Âm nhạc</string>
+    <string name="action_play_all">Phát tất cả</string>
+    <string name="action_playlist">DS Phát</string>
+    <string name="action_search">Tìm kiếm</string>
+    <string name="action_setting">Cài đặt</string>
+    <string name="action_style">Điệu nhạc</string>
+    <string name="action_user">Cá nhân</string>
+    <string name="albums_title">Albums</string>
+    <string name="artists_title">Nghệ sĩ</string>
+    <string name="category_button">Thể loại</string>
+    <string name="category_header_title">Thể loại</string>
+    <string name="category_tab_title_album">Albums</string>
+    <string name="category_tab_title_hot">Hot</string>
+    <string name="category_tab_title_song">Bài hát</string>
+    <string name="clear_history">Xóa</string>
+    <string name="composers_title">Tác giả</string>
+    <string name="email">Email</string>
+    <string name="hot_albums_title_bar">Albums Hot</string>
+    <string name="hot_songs_title_bar">Bài hát Hot</string>
+    <string name="level">Cấp độ</string>
+    <string name="logout">Đăng xuất</string>
+    <string name="my_playlist">DS Phát</string>
+    <string name="name">TÊN</string>
+    <string name="nick_chat">NICK CHAT</string>
+    <string name="phone_number">Số ĐT</string>
+    <string name="search_history">Lịch sử tìm kiếm</string>
+    <string name="searching_for_songs">Tìm kiếm bài hát</string>
+    <string name="songs_title">Bài hát</string>
+    <string name="style_button">Điệu nhạc</string>
+    <string name="style_header_title">Điệu nhạc</string>
+    <string name="user_profile_title">Thông tin tài khoản</string>
+    <string name="view_all">Xem tất cả</string>
+</resources>

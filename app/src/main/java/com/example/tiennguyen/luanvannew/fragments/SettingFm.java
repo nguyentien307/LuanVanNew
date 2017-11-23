@@ -1,5 +1,6 @@
 package com.example.tiennguyen.luanvannew.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -7,23 +8,27 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.tiennguyen.luanvannew.R;
+import com.example.tiennguyen.luanvannew.changelanguage.ChangeLanguageActivity;
+import com.example.tiennguyen.luanvannew.commons.Constants;
 
 /**
  * Created by TIENNGUYEN on 11/11/2017.
  */
 
-public class SettingFm extends Fragment {
+public class SettingFm extends Fragment implements View.OnClickListener {
 
-    private View titleMusic, titleHistory;
-    private TextView tvMusicTitle, tvHistoryTilte;
+    private View titleMusic, titleHistory, titleLanguage;
+    private TextView tvMusicTitle, tvHistoryTilte, tvLanguageTitle;
 
     private View switchPlayerBackground, switchPhone, switchHistory;
+    private Button changeLanguage;
 
     private String res = "";
 
@@ -53,6 +58,9 @@ public class SettingFm extends Fragment {
         titleHistory = view.findViewById(R.id.title_history);
         tvHistoryTilte = (TextView) titleHistory.findViewById(R.id.tv_title_name);
         tvHistoryTilte.setText("Search Settings");
+        titleLanguage = view.findViewById(R.id.title_language);
+        tvLanguageTitle = (TextView) titleLanguage.findViewById(R.id.tv_title_name);
+        tvLanguageTitle.setText("Languages");
 
         switchPlayerBackground = view.findViewById(R.id.swich_btn_1);
         RadioGroup groupBackground = (RadioGroup) switchPlayerBackground.findViewById(R.id.toggle);
@@ -121,6 +129,20 @@ public class SettingFm extends Fragment {
                 return;
             }
         });
+
+        changeLanguage = (Button) view.findViewById(R.id.button_change_language);
+        changeLanguage.setOnClickListener(this);
+
         return view;
+    }
+
+    public void openLanguageScreen() {
+        Intent intent = new Intent(getContext(), ChangeLanguageActivity.class);
+        startActivityForResult(intent, Constants.RequestCode.CHANGE_LANGUAGE);
+    }
+
+    @Override
+    public void onClick(View v) {
+        openLanguageScreen();
     }
 }

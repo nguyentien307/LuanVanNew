@@ -72,4 +72,12 @@ public class Constants {
     public static final String SONG_PAGE = "https://www.nhaccuatui.com/bai-hat/bai-hat-moi.html";
 
     public static final String ALBUM_PAGE = "https://www.nhaccuatui.com/playlist/playlist-moi.html";
+
+    public class Value {
+        public static final int DEFAULT_LANGUAGE_ID = 0;
+    }
+
+    public class RequestCode {
+        public static final int CHANGE_LANGUAGE = 10000;
+    }
 }
