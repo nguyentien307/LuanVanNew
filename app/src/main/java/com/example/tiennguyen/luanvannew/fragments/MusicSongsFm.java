@@ -8,7 +8,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -99,8 +98,8 @@ public class MusicSongsFm extends Fragment {
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
-//                            arrSongs.remove(arrSongs.size() - 1);
-//                            songsAdapter.notifyItemRemoved(arrSongs.size());
+                            arrSongs.remove(arrSongs.size() - 1);
+                            songsAdapter.notifyItemRemoved(arrSongs.size());
 
                             //Generating more data
                             prepareSongs(arrPages.get(index));
