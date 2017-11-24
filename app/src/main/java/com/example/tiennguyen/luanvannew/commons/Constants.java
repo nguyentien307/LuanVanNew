@@ -33,7 +33,7 @@ public class Constants {
             "  \"name\": \"Quyên Hứa\",\n" +
             "  \"email\": \"huathitoquyen0403@gmail.com\",\n" +
             "  \"memberlevel\": 1,\n" +
-            "  \"phone\": 0986980391,\n" +
+            "  \"phone\": \"0986980391\",\n" +
             "  \"nickchat\": \"quyenhua0403\",\n" +
             "  \"chatserver\": \"quyenhua\"\n" +
             "}";

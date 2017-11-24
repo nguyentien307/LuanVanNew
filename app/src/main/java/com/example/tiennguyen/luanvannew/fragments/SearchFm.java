@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
@@ -25,6 +27,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.example.tiennguyen.luanvannew.R;
+import com.example.tiennguyen.luanvannew.adapters.AlbumsAdapter;
 import com.example.tiennguyen.luanvannew.adapters.HistoryAdapter;
 import com.example.tiennguyen.luanvannew.adapters.SongsAdapter;
 import com.example.tiennguyen.luanvannew.commons.Constants;
@@ -33,9 +36,11 @@ import com.example.tiennguyen.luanvannew.commons.WriteData;
 import com.example.tiennguyen.luanvannew.commons.ZingMP3LinkTemplate;
 import com.example.tiennguyen.luanvannew.dialogs.AlertDialogClearHistory;
 import com.example.tiennguyen.luanvannew.dialogs.SearchDialog;
+import com.example.tiennguyen.luanvannew.models.AlbumItem;
 import com.example.tiennguyen.luanvannew.models.PersonItem;
 import com.example.tiennguyen.luanvannew.models.SongItem;
 import com.example.tiennguyen.luanvannew.services.GetHtmlData;
+import com.example.tiennguyen.luanvannew.services.GetPage;
 import com.example.tiennguyen.luanvannew.sessions.SessionManagement;
 
 import org.json.JSONArray;
@@ -62,7 +67,7 @@ public class SearchFm extends Fragment implements TextWatcher, View.OnClickListe
     private EditText edSearch;
     private RecyclerView rcHistory;
     private LinearLayout llSearchCategories;
-    private String searchTitle = "";
+    private String searchTitle = getResources().getString(R.string.songs_title);
     private LinearLayout llClearHistory;
     private RecyclerView rcTopSongs;
     private RelativeLayout rlTopSong;
@@ -79,6 +84,9 @@ public class SearchFm extends Fragment implements TextWatcher, View.OnClickListe
     private ProgressBar pbSeachingLoading;
     private LinearLayout llSearching;
     private RecyclerView rcSearchingList;
+
+    private AlbumsAdapter albumsAdapter;
+    private RecyclerView.LayoutManager layoutManager;
 
     public static SearchFm newInstance(String name) {
         SearchFm contentFragment = new SearchFm();
@@ -356,26 +364,57 @@ public class SearchFm extends Fragment implements TextWatcher, View.OnClickListe
         setLoading(true);
         StringUtils convertedToUnsigned = new StringUtils();
         String name = convertedToUnsigned.convertedToUnsigned(data);
-        GetHtmlData gethtmlData = new GetHtmlData(getContext());
-        gethtmlData.execute(ZingMP3LinkTemplate.SEARCH_URL + name);
-        gethtmlData.setDataDownloadListener(new GetHtmlData.DataDownloadListener() {
+        GetPage gethtmlData = new GetPage(getContext());
+        String title = searchTitle.equals("albums") ? "playlist" : "bai-hat";
+        String url = ZingMP3LinkTemplate.getSearchUrl(name, title);
+        gethtmlData.execute(url);
+        gethtmlData.setDataDownloadListener( new GetPage.DataDownloadListener() {
 
             @Override
-            public void dataDownloadedSuccessfully(String data) {
+            public void dataDownloadedSuccessfully(Document data) {
                 setLoading(false);
-                displayZingList(data, false);
+                if (searchTitle.equals("album")) {
+                    displayAlbumList(data);
+                } else {
+                    displayZingList(data);
+                }
             }
 
             @Override
             public void dataDownloadFailed() {
+
             }
         });
     }
 
-    private void displayZingList(String data, boolean b) {
+    private void displayAlbumList(Document document) {
+        ArrayList<AlbumItem> arrList = new ArrayList<>();
+        Elements div = document.select("div.item-song");
+        for (int i = 0; i < div.size(); i++) {
+            String img = div.get(i).select("img").attr("src");
+            String title = div.get(i).select("h2").select("a").text();
+            Elements arrArtists = div.get(i).select("h3").select("a");
+            ArrayList<PersonItem> arrArtist = new ArrayList<>();
+            for (int j = 0; j < arrArtists.size(); j++) {
+                arrArtist.add(new PersonItem(arrArtists.get(j).text(), "", 157523));
+            }
+            arrList.add(new AlbumItem(title, "", img, 101022, arrArtist));
+        }
+        setAlbumAdapter(arrList);
+    }
+
+    private void setAlbumAdapter(ArrayList<AlbumItem> arrList) {
+        albumsAdapter = new AlbumsAdapter(getContext(), arrList, Constants.VERTICAL_ALBUMS_LIST);
+        layoutManager = new GridLayoutManager(getContext(), 2);
+        rcSearchingList.setLayoutManager(layoutManager);
+        rcSearchingList.addItemDecoration(new AlbumsAdapter.GridSpacingItemDecoration(2, albumsAdapter.dpToPx(10), true));
+        rcSearchingList.setItemAnimator(new DefaultItemAnimator());
+        rcSearchingList.setNestedScrollingEnabled(false);
+        rcSearchingList.setAdapter(albumsAdapter);
+    }
+
+    private void displayZingList(Document document) {
         ArrayList<SongItem> arrList = new ArrayList<>();
-        Document document = Jsoup.parse(data);
-        String totalResult = document.select("div.sta-result").select("span").text();
         Elements div = document.select("div.item-song");
         for (int i = 0; i < div.size(); i++) {
             String data_code = div.get(i).attr("data-code");
@@ -389,10 +428,10 @@ public class SearchFm extends Fragment implements TextWatcher, View.OnClickListe
             }
             arrList.add(new SongItem(arrTitleArtists[0], 1437659, data_code, arrArtist, null, "", img));
         }
-        setZingAdapter(totalResult, arrList);
+        setZingAdapter(arrList);
     }
 
-    private void setZingAdapter(String totalResult, ArrayList<SongItem> arrList) {
+    private void setZingAdapter(ArrayList<SongItem> arrList) {
         SongsAdapter songsAdapter = new SongsAdapter(getContext(), getActivity(), arrList, Constants.SONG_CATEGORIES, rcSearchingList);
         rcSearchingList.setAdapter(songsAdapter);
 //        songsAdapter.notifyItemRangeInserted(songsAdapter.getItemCount(), arrList.size() - 1);

@@ -5,7 +5,9 @@ package com.example.tiennguyen.luanvannew.commons;
  */
 
 public class ZingMP3LinkTemplate {
-    public static final String SEARCH_URL = "https://mp3.zing.vn/tim-kiem/bai-hat.html?q=";
+    public static final String SEARCH_URL = "https://mp3.zing.vn/tim-kiem/";
 
-
+    public static String getSearchUrl(String songName, String title) {
+        return SEARCH_URL + title + ".html?q=" + songName;
+    }
 }

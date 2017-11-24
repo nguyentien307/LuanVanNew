@@ -159,12 +159,12 @@ public class LoginFm extends Fragment implements TextWatcher, View.OnKeyListener
             // For testing puspose username, password is checked with sample data
             // username = test
             // password = test
-            if(email.equals("123@gmail.com") && password.equals("1111")){
+            if(email.equals("huathitoquyen0403@gmail.com") && password.equals("1111")){
 
                 // Creating user login session
                 // For testing i am stroing name, email as follow
                 // Use user real data
-                session.createLoginSession("a@gmail.com", "1111");
+                session.createLoginSession("huathitoquyen0403@gmail.com", "1111");
 
                 Fragment fragment = new Fragment();
                 switch (res) {
