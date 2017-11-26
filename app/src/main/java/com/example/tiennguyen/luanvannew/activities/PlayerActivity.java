@@ -215,7 +215,7 @@ public class PlayerActivity extends AppCompatActivity implements OnActionClicked
                             startActivity(startMain);
                             stopService(playerService);
                         }
-                    }, 5000);
+                    }, session.getAutoStopPlayMusicTime() * 60 * 1000);
                 } else {
                     imgTimer.setImageResource(R.drawable.timer_unchecked);
                     session.setCheckAlarm(false);

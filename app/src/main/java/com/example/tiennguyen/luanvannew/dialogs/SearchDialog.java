@@ -28,8 +28,6 @@ public class SearchDialog {
         View dialogLayout = inflater.inflate(R.layout.dialog_search_title, null);
         final RadioButton song = (RadioButton) dialogLayout.findViewById(R.id.rbSongs);
         final RadioButton album = (RadioButton) dialogLayout.findViewById(R.id.rbALbums);
-        final RadioButton artist = (RadioButton) dialogLayout.findViewById(R.id.rbArtists);
-        final RadioButton composer = (RadioButton) dialogLayout.findViewById(R.id.rbComposers);
 
         Constants = new Constants();
         AlertDialog.Builder searchDialog = customLI.getAlertDialog();
@@ -37,16 +35,8 @@ public class SearchDialog {
         searchDialog.setTitle(activity.getResources().getString(R.string.searching_for_songs));
         String title = customLI.getCheckedTitle();
         switch (title) {
-            case "album":
+            case "albums":
                 album.setChecked(true);
-                break;
-            case "artist":
-            case "nghệ sĩ":
-                artist.setChecked(true);
-                break;
-            case "composer":
-            case "nhạc sĩ":
-                composer.setChecked(true);
                 break;
             default:
                 song.setChecked(true);
@@ -60,10 +50,6 @@ public class SearchDialog {
                     searchTitle = song.getText().toString().toLowerCase();
                 } else if (album.isChecked()) {
                     searchTitle = album.getText().toString().toLowerCase();
-                } else if (artist.isChecked()) {
-                    searchTitle = artist.getText().toString().toLowerCase();
-                } else if (composer.isChecked()) {
-                    searchTitle = composer.getText().toString().toLowerCase();
                 }
                 customLI.onResult(searchTitle);
             }
