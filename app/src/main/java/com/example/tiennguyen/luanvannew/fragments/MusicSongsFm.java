@@ -8,6 +8,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,6 +43,7 @@ public class MusicSongsFm extends Fragment {
     private RecyclerView.LayoutManager songsLayoutManager;
     private SongsAdapter songsAdapter;
     private ArrayList<SongItem> arrSongs = new ArrayList<>();
+    private RelativeLayout rlMusicSongLoading;
 
 
 
@@ -79,6 +82,8 @@ public class MusicSongsFm extends Fragment {
         tvTitleName = (TextView) view.findViewById(R.id.tv_title_name);
         tvTitleName.setText(categoryItem.getName());
 
+        rlMusicSongLoading = (RelativeLayout) view.findViewById(R.id.rlMusicSongLoading);
+
         //recycle songs
         rcSongs = (RecyclerView) view.findViewById(R.id.rc_songs);
         rcSongs.setHasFixedSize(true);
@@ -102,7 +107,7 @@ public class MusicSongsFm extends Fragment {
                             songsAdapter.notifyItemRemoved(arrSongs.size());
 
                             //Generating more data
-                            prepareSongs(arrPages.get(index));
+                            prepareMoreSongs(arrPages.get(index));
                             index = index + 1;
                             if (index == arrPages.size()) isRemain = false;
 
@@ -121,51 +126,12 @@ public class MusicSongsFm extends Fragment {
         return view;
     }
 
-
-    private void prepareSongs(String href) {
+    private void prepareMoreSongs(String href) {
         GetPage getSongs = new GetPage(getContext());
         getSongs.setDataDownloadListener(new GetPage.DataDownloadListener() {
             @Override
             public void dataDownloadedSuccessfully(Document data) {
-                Elements songElements = data.select("ul.list_item_music li");
-                for (int i = 0; i < songElements.size(); i++) {
-                    Element songElement;
-                    songElement = songElements.get(i).select("div.item_content h2").first();
-                    if(songElement == null){
-                        songElement = songElements.get(i).select("div.item_content h3").first();
-                    }
-                    Elements info = songElement.select("a");
-                    final String title = info.get(0).text();
-                    String href = info.get(0).attr("href");
-                    final ArrayList<PersonItem> arrSingers = new ArrayList<PersonItem>();
-                    for (int index = 1 ; index < info.size(); index++){
-                        Element aTag = info.get(index);
-                        String singerHref = aTag.attr("href");
-                        String singerName = aTag.text();
-                        PersonItem singerItem = new PersonItem(singerName, singerHref, 192);
-                        arrSingers.add(singerItem);
-                    }
-                    final ArrayList<PersonItem> arrComposers = new ArrayList<PersonItem>();
-                    PersonItem composer = new PersonItem("NHAC SĨ", "", 200);
-                    arrComposers.add(composer);
-                    GetDataCodeFromZing getDataCodeFromZing = new GetDataCodeFromZing(new GetDataCodeFromZing.KeyCodeFromZing() {
-                        @Override
-                        public void keyCodeFromZing(String key, String imgLink) {
-                            SongItem item = new SongItem(title, 200, key, arrSingers, arrComposers, "", imgLink);
-                            arrSongs.add(item);
-                            songsAdapter.notifyDataSetChanged();
-                        }
-                    });
-                    getDataCodeFromZing.getKeyFromZing(getContext(), title);
-                }
-
-                if(isLoadPages){
-                    Elements pages = data.select("div.box_pageview a");
-                    for(int i = 1; i < pages.size() -1 ; i++){
-                        String href = pages.get(i).attr("href");
-                        arrPages.add(href);
-                    }
-                }
+                viewSongList(data);
             }
 
             @Override
@@ -174,6 +140,74 @@ public class MusicSongsFm extends Fragment {
             }
         });
         getSongs.execute(href);
+    }
+
+    private void prepareSongs(String href) {
+        GetPage getSongs = new GetPage(getContext());
+        setLoadingVisible(true);
+        getSongs.setDataDownloadListener(new GetPage.DataDownloadListener() {
+            @Override
+            public void dataDownloadedSuccessfully(Document data) {
+                setLoadingVisible(false);
+                viewSongList(data);
+            }
+
+            @Override
+            public void dataDownloadFailed () {
+
+            }
+        });
+        getSongs.execute(href);
+    }
+
+    private void viewSongList(Document data) {
+        Elements songElements = data.select("ul.list_item_music li");
+        for (int i = 0; i < songElements.size(); i++) {
+            Element songElement;
+            songElement = songElements.get(i).select("div.item_content h2").first();
+            if(songElement == null){
+                songElement = songElements.get(i).select("div.item_content h3").first();
+            }
+            Elements info = songElement.select("a");
+            final String title = info.get(0).text();
+            String href = info.get(0).attr("href");
+            final ArrayList<PersonItem> arrSingers = new ArrayList<PersonItem>();
+            for (int index = 1 ; index < info.size(); index++){
+                Element aTag = info.get(index);
+                String singerHref = aTag.attr("href");
+                String singerName = aTag.text();
+                PersonItem singerItem = new PersonItem(singerName, singerHref, 192);
+                arrSingers.add(singerItem);
+            }
+            final ArrayList<PersonItem> arrComposers = new ArrayList<PersonItem>();
+            PersonItem composer = new PersonItem("NHAC SĨ", "", 200);
+            arrComposers.add(composer);
+            GetDataCodeFromZing getDataCodeFromZing = new GetDataCodeFromZing(new GetDataCodeFromZing.KeyCodeFromZing() {
+                @Override
+                public void keyCodeFromZing(String key, String imgLink) {
+                    SongItem item = new SongItem(title, 200, key, arrSingers, arrComposers, "", imgLink);
+                    arrSongs.add(item);
+                    songsAdapter.notifyDataSetChanged();
+                }
+            });
+            getDataCodeFromZing.getKeyFromZing(getContext(), title);
+        }
+
+        if(isLoadPages){
+            Elements pages = data.select("div.box_pageview a");
+            for(int i = 1; i < pages.size() -1 ; i++){
+                String href = pages.get(i).attr("href");
+                arrPages.add(href);
+            }
+        }
+    }
+
+    private void setLoadingVisible(boolean b) {
+        if (b) {
+            rlMusicSongLoading.setVisibility(View.VISIBLE);
+        } else {
+            rlMusicSongLoading.setVisibility(View.GONE);
+        }
     }
 
 }

@@ -3,6 +3,16 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
     >
+
+    <RelativeLayout
+        android:id="@+id/rlMusicAlbumLoading"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center">
+
+        <include layout="@layout/item_loading"/>
+    </RelativeLayout>
+
     <include layout="@layout/top_title_name"/>
 
     <android.support.v7.widget.RecyclerView

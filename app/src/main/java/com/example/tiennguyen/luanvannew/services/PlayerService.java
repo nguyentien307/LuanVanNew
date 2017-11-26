@@ -48,7 +48,7 @@ import co.mobiwise.library.OnActionClickedListener;
  * TODO: Customize class - update intent actions, extra parameters and static
  * helper methods.
  */
-public class PlayerService extends Service implements MediaPlayer.OnCompletionListener, OnActionClickedListener,
+public class PlayerService extends Service implements MediaPlayer.OnCompletionListener,
         View.OnClickListener, View.OnTouchListener, MediaPlayer.OnErrorListener, MediaPlayer.OnPreparedListener,
         MediaPlayer.OnBufferingUpdateListener, MediaPlayer.OnSeekCompleteListener, MediaPlayer.OnInfoListener {
 
@@ -242,7 +242,6 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
         llBackward.get().setOnClickListener(this);
         llShuffle.get().setOnClickListener(this);
         llReplay.get().setOnClickListener(this);
-        interactivePlayerViewWeakReference.get().setOnActionClickedListener(this);
 
         // Player Collapse
         tvTitleCol = new WeakReference<>(PlayerCollapseFm.tvTitleCol);
@@ -426,23 +425,6 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
                 playSong(0);
                 currentSongIndex = 0;
             }
-        }
-    }
-
-    // Thua
-    @Override
-    public void onActionClicked(int i) {
-        switch (i) {
-            case 1:
-                isShuffle = true;
-                break;
-            case 2:
-                break;
-            case 3:
-                isRepeat = true;
-                break;
-            default:
-                break;
         }
     }
 

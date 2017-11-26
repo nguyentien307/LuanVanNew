@@ -194,6 +194,15 @@
                     android:textSize="@dimen/login_text_sỉze" />
             </RelativeLayout>
 
+            <RelativeLayout
+                android:id="@+id/rlLoginLoading"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center">
+
+                <include layout="@layout/item_loading"/>
+                </RelativeLayout>
+
             <LinearLayout
                 android:id="@+id/llSignInWith"
                 android:layout_width="match_parent"
