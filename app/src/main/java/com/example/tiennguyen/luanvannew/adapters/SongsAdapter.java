@@ -28,12 +28,14 @@ import com.example.tiennguyen.luanvannew.commons.Constants;
 import com.example.tiennguyen.luanvannew.dialogs.AlertDialogManagement;
 import com.example.tiennguyen.luanvannew.dialogs.MyAlertDialogFragment;
 import com.example.tiennguyen.luanvannew.fragments.PlayerCollapseFm;
+import com.example.tiennguyen.luanvannew.fragments.PlaylistSongsFm;
 import com.example.tiennguyen.luanvannew.fragments.SongInfoFm;
 import com.example.tiennguyen.luanvannew.interfaces.OnLoadMoreListener;
 import com.example.tiennguyen.luanvannew.models.PersonItem;
 import com.example.tiennguyen.luanvannew.models.PlaylistItem;
 import com.example.tiennguyen.luanvannew.models.SongItem;
 import com.example.tiennguyen.luanvannew.sessions.SessionManagement;
+import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -50,6 +52,7 @@ public class SongsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     protected Context context;
     private String style;
     private Activity activity;
+    private int position;
 
     private final int VIEW_TYPE_ITEM = 0;
     private final int VIEW_TYPE_LOADING = 1;
@@ -58,12 +61,41 @@ public class SongsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     private int visibleThreshold = 5;
     private int lastVisibleItem, totalItemCount;
 
+    SessionManagement session;
+
 
     public SongsAdapter(Context context, Activity activity, ArrayList<SongItem> arrSongs, String style, RecyclerView recyclerView){
         this.arrSongs = arrSongs;
         this.context = context;
         this.style = style;
         this.activity = activity;
+        this.position = -1;
+        if(recyclerView.getLayoutManager() instanceof LinearLayoutManager){
+            final LinearLayoutManager linearLayoutManager = (LinearLayoutManager)recyclerView.getLayoutManager();
+            recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                @Override
+                public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                    super.onScrolled(recyclerView, dx, dy);
+                    totalItemCount = linearLayoutManager.getItemCount();
+                    lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition();
+                    if(!isLoading && totalItemCount <= (lastVisibleItem + visibleThreshold)){
+                        if(onLoadMoreListener != null){
+                            onLoadMoreListener.onLoadMore();
+                        }
+                        isLoading = true;
+                    }
+                }
+            });
+        }
+
+    }
+
+    public SongsAdapter(Context context, Activity activity, ArrayList<SongItem> arrSongs, String style, RecyclerView recyclerView, int position){
+        this.arrSongs = arrSongs;
+        this.context = context;
+        this.style = style;
+        this.activity = activity;
+        this.position = position;
         if(recyclerView.getLayoutManager() instanceof LinearLayoutManager){
             final LinearLayoutManager linearLayoutManager = (LinearLayoutManager)recyclerView.getLayoutManager();
             recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -229,7 +261,7 @@ public class SongsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
                 case R.id.iv_delete: {
                     //Toast.makeText(context,"Delete", Toast.LENGTH_SHORT).show();
-                    AlertDialog diaBox = AskOption();
+                    AlertDialog diaBox = AskOption(getAdapterPosition());
                     diaBox.show();
                 }; break;
 
@@ -276,7 +308,7 @@ public class SongsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 .commit();
     }
 
-    private AlertDialog AskOption()
+    private AlertDialog AskOption(final int songPos)
     {
         AlertDialog myQuittingDialogBox =new AlertDialog.Builder(context)
                 //set message, title, and icon
@@ -288,6 +320,80 @@ public class SongsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
                     public void onClick(DialogInterface dialog, int whichButton) {
                         //your deleting code
+                        session = new SessionManagement(context);
+                        //ArrayList<PlaylistItem> newPlaylists = new ArrayList<>();
+                        ArrayList<SongItem> arrSong = new ArrayList<SongItem>();
+                        ArrayList<PlaylistItem> arrPlaylists = new ArrayList<>();
+
+                        PlaylistItem playlistItem;
+
+                        String jsonPlaylists = session.getPlaylist();
+                        //Toast.makeText(context, jsonPlaylists, Toast.LENGTH_LONG).show();
+                        try {
+                            JSONArray arr = new JSONArray(jsonPlaylists);
+                            for(int i = 0 ; i < arr.length(); i++) {
+                                JSONObject jsonItem = arr.getJSONObject(i);
+                                PlaylistItem item = new PlaylistItem(jsonItem.getString("name"), jsonItem.getString("link"), jsonItem.getInt("img"), jsonItem.getInt("number"), jsonItem.getString("arrSongs"));
+                                arrPlaylists.add(item);
+                            }
+                            JSONObject jsonItem = arr.getJSONObject(position);
+                            playlistItem = new PlaylistItem(jsonItem.getString("name"), jsonItem.getString("link"), jsonItem.getInt("img"), jsonItem.getInt("number"), jsonItem.getString("arrSongs"));
+                            //JSONObject item = new JSONObject(newPlaylists.get(position).getArrSongs());
+                            String a = playlistItem.getArrSongs();
+                            if (!a.equals("")) {
+                                JSONArray songs = new JSONArray(a);
+                                for (int j = 0; j < songs.length(); j++) {
+                                    JSONObject song = songs.getJSONObject(j);
+                                    String title = song.getString("title");
+                                    int views = song.getInt("views");
+                                    String link = song.getString("link");
+                                    String linkLyric = song.getString("linkLyric");
+                                    String linkImg = song.getString("linkImg");
+                                    JSONArray singers = song.getJSONArray("artist");
+                                    JSONArray composers = song.getJSONArray("composer");
+                                    final ArrayList<PersonItem> arrSingers = new ArrayList<PersonItem>();
+                                    final ArrayList<PersonItem> arrComposers = new ArrayList<PersonItem>();
+                                    for (int index = 0; index < singers.length(); index++) {
+                                        JSONObject singer = singers.getJSONObject(index);
+                                        String singerHref = singer.getString("link");
+                                        String singerName = singer.getString("name");
+                                        int view = singer.getInt("views");
+                                        PersonItem singerItem = new PersonItem(singerName, singerHref, view);
+                                        arrSingers.add(singerItem);
+                                    }
+                                    for (int index = 0; index < composers.length(); index++) {
+                                        JSONObject composer = composers.getJSONObject(index);
+                                        String composerHref = composer.getString("link");
+                                        String composerName = composer.getString("name");
+                                        int view = composer.getInt("views");
+                                        PersonItem composerItem = new PersonItem(composerName, composerHref, view);
+                                        arrComposers.add(composerItem);
+                                    }
+                                    SongItem item = new SongItem(title, views, link, arrSingers, arrComposers, linkLyric, linkImg);
+                                    arrSong.add(item);
+                                }
+                                //arrSongs.clear();
+                            }
+
+                            arrSong.remove(songPos);
+                            Gson gson = new Gson();
+                            String jsonSongs = gson.toJson(arrSong);
+                            //Toast.makeText(context, jsonSongs, Toast.LENGTH_SHORT).show();
+                            PlaylistItem item = arrPlaylists.get(position);
+                            item.setArrSongs(jsonSongs);
+                            item.setNumber(arrSong.size());
+                            arrPlaylists.set(position, item );
+                            String jsonPlaylist = gson.toJson(arrPlaylists);
+                            session.setPlaylist(jsonPlaylist);
+
+                            Fragment fragment = PlaylistSongsFm.newInstance(item, position);
+                            ((AppCompatActivity) context).getSupportFragmentManager()
+                                    .beginTransaction()
+                                    .replace(R.id.fragment_container, fragment)
+                                    .commit();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                         dialog.dismiss();
                     }
 

@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -22,6 +23,8 @@ import com.example.tiennguyen.luanvannew.commons.Constants;
 import com.example.tiennguyen.luanvannew.models.PersonItem;
 import com.example.tiennguyen.luanvannew.models.PlaylistItem;
 import com.example.tiennguyen.luanvannew.models.SongItem;
+import com.example.tiennguyen.luanvannew.sessions.SessionManagement;
+import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -52,11 +55,23 @@ public class PlaylistSongsFm extends Fragment implements View.OnClickListener {
     //InformationsAdapter singersAdapter, composersAdapter;
 
     private PlaylistItem playlistItem ;
+    private int position;
+    private SessionManagement session;
 
     public static PlaylistSongsFm newInstance(PlaylistItem playlistItem) {
         PlaylistSongsFm contentFragment = new PlaylistSongsFm();
         Bundle bundle = new Bundle();
         bundle.putSerializable("playlistItem", playlistItem);
+        bundle.putInt("position", -1);
+        contentFragment.setArguments(bundle);
+        return contentFragment;
+    }
+
+    public static PlaylistSongsFm newInstance(PlaylistItem playlistItem, int position) {
+        PlaylistSongsFm contentFragment = new PlaylistSongsFm();
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("playlistItem", playlistItem);
+        bundle.putInt("position", position);
         contentFragment.setArguments(bundle);
         return contentFragment;
     }
@@ -64,8 +79,11 @@ public class PlaylistSongsFm extends Fragment implements View.OnClickListener {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments()!= null)
+        if (getArguments() != null){
             playlistItem = (PlaylistItem) getArguments().getSerializable("playlistItem");
+            position = getArguments().getInt("position");
+        }
+
     }
 
     @Override
@@ -105,7 +123,7 @@ public class PlaylistSongsFm extends Fragment implements View.OnClickListener {
         rcSongs.setNestedScrollingEnabled(false);
         songsLayoutManager = new LinearLayoutManager(getContext());
         rcSongs.setLayoutManager(songsLayoutManager);
-        songsAdapter = new SongsAdapter(getContext(), getActivity(), arrSongs, Constants.SONGS_LIST_IN_PLAYLIST, rcSongs);
+        songsAdapter = new SongsAdapter(getContext(), getActivity(), arrSongs, Constants.SONGS_LIST_IN_PLAYLIST, rcSongs, position);
         rcSongs.setAdapter(songsAdapter);
         prepareSongs();
 
@@ -113,36 +131,58 @@ public class PlaylistSongsFm extends Fragment implements View.OnClickListener {
     }
 
     private void prepareSongs() {
-        JSONObject data = null;
+        session = new SessionManagement(getContext());
+        //ArrayList<PlaylistItem> newPlaylists = new ArrayList<>();
+
+        PlaylistItem playlistItem;
+
+        String jsonPlaylists = session.getPlaylist();
+        //Toast.makeText(context, jsonPlaylists, Toast.LENGTH_LONG).show();
         try {
-            data = new JSONObject(Constants.SONG_DATA);
-
-            JSONArray songList = data.getJSONArray("list");
-            for(int songIndex = 0; songIndex < songList.length() ; songIndex++){
-                JSONObject song = songList.getJSONObject(songIndex);
-                String title = song.getString("title");
-                String img = song.getString("img");
-                String href = song.getString("href");
-                JSONArray singersJSON = song.getJSONArray("singers");
-                ArrayList<PersonItem> arrSinger = new ArrayList<PersonItem>();
-                ArrayList<PersonItem> arrComposer = new ArrayList<PersonItem>();
-                for (int singerIndex = 0; singerIndex < singersJSON.length(); singerIndex++ ){
-                    JSONObject singer = singersJSON.getJSONObject(singerIndex);
-                    String singerName = singer.getString("singerName");
-                    String singerHref = singer.getString("singerHref");
-                    PersonItem singerItem = new PersonItem(singerName, singerHref, 200);
-                    arrSinger.add(singerItem);
+            JSONArray arr = new JSONArray(jsonPlaylists);
+            JSONObject jsonItem = arr.getJSONObject(position);
+            playlistItem = new PlaylistItem(jsonItem.getString("name"), jsonItem.getString("link"), jsonItem.getInt("img"), jsonItem.getInt("number"), jsonItem.getString("arrSongs"));
+            //JSONObject item = new JSONObject(newPlaylists.get(position).getArrSongs());
+            String a = playlistItem.getArrSongs();
+            int songIndex = 0;
+            int songLength = 0;
+            if (!a.equals("")) {
+                JSONArray songs = new JSONArray(a);
+                songLength = songs.length();
+                for (int j = 0; j < songs.length(); j++) {
+                    JSONObject song = songs.getJSONObject(j);
+                    String title = song.getString("title");
+                    int views = song.getInt("views");
+                    String link = song.getString("link");
+                    String linkLyric = song.getString("linkLyric");
+                    String linkImg = song.getString("linkImg");
+                    JSONArray singers = song.getJSONArray("artist");
+                    JSONArray composers = song.getJSONArray("composer");
+                    final ArrayList<PersonItem> arrSingers = new ArrayList<PersonItem>();
+                    final ArrayList<PersonItem> arrComposers = new ArrayList<PersonItem>();
+                    for (int index = 0; index < singers.length(); index++) {
+                        JSONObject singer = singers.getJSONObject(index);
+                        String singerHref = singer.getString("link");
+                        String singerName = singer.getString("name");
+                        int view = singer.getInt("views");
+                        PersonItem singerItem = new PersonItem(singerName, singerHref, view);
+                        arrSingers.add(singerItem);
+                    }
+                    for (int index = 0; index < composers.length(); index++) {
+                        JSONObject composer = composers.getJSONObject(index);
+                        String composerHref = composer.getString("link");
+                        String composerName = composer.getString("name");
+                        int view = composer.getInt("views");
+                        PersonItem composerItem = new PersonItem(composerName, composerHref, view);
+                        arrComposers.add(composerItem);
+                    }
+                    SongItem item = new SongItem(title, views, link, arrSingers, arrComposers, linkLyric, linkImg);
+                    arrSongs.add(item);
                 }
-                PersonItem composer = new PersonItem("Trịnh Công Sơn", "", 200);
-                PersonItem composer1 = new PersonItem("Vũ Cát Tường", "", 200);
-                arrComposer.add(composer);
-                arrComposer.add(composer1);
-                SongItem songItem = new SongItem(title,200, href, arrSinger, arrComposer, "", img);
-                arrSongs.add(songItem);
-
+                //arrSongs.clear();
+                songsAdapter.notifyDataSetChanged();
             }
 
-            songsAdapter.notifyDataSetChanged();
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -153,7 +193,11 @@ public class PlaylistSongsFm extends Fragment implements View.OnClickListener {
         switch (v.getId()){
             case R.id.ll_btn_back:
             case R.id.iv_btn_back:{
-                getFragmentManager().popBackStack();
+                Fragment fragment = PlaylistFm.newInstance("new");
+                ((AppCompatActivity) getContext()).getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.fragment_container, fragment)
+                        .commit();
             };break;
 
             case R.id.iv_delete:{
@@ -180,6 +224,39 @@ public class PlaylistSongsFm extends Fragment implements View.OnClickListener {
 
                     public void onClick(DialogInterface dialog, int whichButton) {
                         //your deleting code
+                        session = new SessionManagement(getContext());
+                        //ArrayList<PlaylistItem> newPlaylists = new ArrayList<>();
+                        ArrayList<SongItem> arrSong = new ArrayList<SongItem>();
+                        ArrayList<PlaylistItem> arrPlaylists = new ArrayList<>();
+
+                        PlaylistItem playlistItem;
+
+                        String jsonPlaylists = session.getPlaylist();
+                        //Toast.makeText(context, jsonPlaylists, Toast.LENGTH_LONG).show();
+                        try {
+                            JSONArray arr = new JSONArray(jsonPlaylists);
+                            for(int i = 0 ; i < arr.length(); i++) {
+                                JSONObject jsonItem = arr.getJSONObject(i);
+                                PlaylistItem item = new PlaylistItem(jsonItem.getString("name"), jsonItem.getString("link"), jsonItem.getInt("img"), jsonItem.getInt("number"), jsonItem.getString("arrSongs"));
+                                arrPlaylists.add(item);
+                            }
+                            JSONObject jsonItem = arr.getJSONObject(position);
+                            playlistItem = new PlaylistItem(jsonItem.getString("name"), jsonItem.getString("link"), jsonItem.getInt("img"), jsonItem.getInt("number"), jsonItem.getString("arrSongs"));
+                            playlistItem.setArrSongs("");
+                            playlistItem.setNumber(0);
+                            Gson gson = new Gson();
+                            arrPlaylists.set(position, playlistItem);
+                            String jsonPlaylist = gson.toJson(arrPlaylists);
+                            session.setPlaylist(jsonPlaylist);
+
+                            Fragment fragment = PlaylistSongsFm.newInstance(playlistItem, position);
+                            ((AppCompatActivity) getContext()).getSupportFragmentManager()
+                                    .beginTransaction()
+                                    .replace(R.id.fragment_container, fragment)
+                                    .commit();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                         dialog.dismiss();
                     }
 
