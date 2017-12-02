@@ -108,9 +108,9 @@ public class PlaylistFm extends Fragment implements View.OnClickListener {
     }
 
     private void preparePlaylists() {
+        arrPlaylists.clear();
         if(session.getPlaylist() != "") {
             String jsonPlaylists = session.getPlaylist();
-            Toast.makeText(getContext(), jsonPlaylists, Toast.LENGTH_SHORT).show();
             try {
                 JSONArray arr = new JSONArray(jsonPlaylists);
                 for(int i = 0 ; i < arr.length(); i++){
@@ -235,7 +235,6 @@ public class PlaylistFm extends Fragment implements View.OnClickListener {
                             PlaylistFm fragment = PlaylistFm.newInstance("new");
                             ((AppCompatActivity) getContext()).getSupportFragmentManager()
                                     .beginTransaction()
-                                    .addToBackStack(null)
                                     .replace(R.id.fragment_container, fragment)
                                     .commit();
                         }

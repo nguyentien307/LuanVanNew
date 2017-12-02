@@ -32,8 +32,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-import static com.example.tiennguyen.luanvannew.fragments.PlaylistSongsFm.newInstance;
-
 /**
  * Created by TIENNGUYEN on 11/13/2017.
  */
@@ -68,7 +66,7 @@ public class PlaylistsAdapter extends RecyclerView.Adapter<PlaylistsAdapter.View
 
         @Override
         public void onClick(View v) {
-            PlaylistSongsFm fragment = newInstance(arrPlaylists.get(getAdapterPosition()));
+            PlaylistSongsFm fragment = PlaylistSongsFm.newInstance(arrPlaylists.get(getAdapterPosition()), getAdapterPosition());
             ((AppCompatActivity)context).getSupportFragmentManager()
                     .beginTransaction()
                     .addToBackStack(null)

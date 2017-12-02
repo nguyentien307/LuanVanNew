@@ -59,14 +59,14 @@ public class PlaylistsNameAdapter extends RecyclerView.Adapter<PlaylistsNameAdap
         @Override
         public void onClick(View v) {
             dialog.dismiss();
-            Toast.makeText(context,getAdapterPosition() + "", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(context,getAdapterPosition() + "", Toast.LENGTH_SHORT).show();
             //addToPlaylists(getAdapterPosition(), songItem);
             //Toast.makeText(context,"Added to " + arrPlaylists.get(getAdapterPosition()).getName(), Toast.LENGTH_SHORT).show();
             session = new SessionManagement(context);
             ArrayList<PlaylistItem> newPlaylists = new ArrayList<>();
 
                 String jsonPlaylists = session.getPlaylist();
-                //Toast.makeText(getContext(), jsonPlaylists, Toast.LENGTH_SHORT).show();
+                //Toast.makeText(context, jsonPlaylists, Toast.LENGTH_LONG).show();
                 try {
                     JSONArray arr = new JSONArray(jsonPlaylists);
                     for(int i = 0 ; i < arr.length(); i++){
@@ -77,46 +77,60 @@ public class PlaylistsNameAdapter extends RecyclerView.Adapter<PlaylistsNameAdap
                     }
                     //JSONObject item = new JSONObject(newPlaylists.get(position).getArrSongs());
                     PlaylistItem playlistItem = newPlaylists.get(getAdapterPosition());
-                    JSONArray songs = new JSONArray(playlistItem.getArrSongs());
                     ArrayList<SongItem> arrSongs = new ArrayList<>();
-                    for(int j = 0; j < songs.length(); j ++){
-                        JSONObject song = songs.getJSONObject(j);
-                        String title = song.getString("title");
-                        int views = song.getInt("views");
-                        String link = song.getString("link");
-                        String linkLyric = song.getString("linkLyric");
-                        String linkImg = song.getString("linkImg");
-                        JSONArray singers = song.getJSONArray("artist");
-                        JSONArray composers = song.getJSONArray("composer");
-                        final ArrayList<PersonItem> arrSingers = new ArrayList<PersonItem>();
-                        final ArrayList<PersonItem> arrComposers = new ArrayList<PersonItem>();
-                        for (int index = 0 ; index < singers.length(); index++){
-                            JSONObject singer = singers.getJSONObject(index);
-                            String singerHref = singer.getString("link");
-                            String singerName = singer.getString("name");
-                            int view = singer.getInt("views");
-                            PersonItem singerItem = new PersonItem(singerName, singerHref, view);
-                            arrSingers.add(singerItem);
+                    String a = playlistItem.getArrSongs();
+                    int j = 0;
+                    int songLength = 0;
+                    if (!a.equals("")) {
+                        JSONArray songs = new JSONArray(a);
+                        songLength = songs.length();
+                        for (j = 0; j < songs.length(); j++) {
+                            JSONObject song = songs.getJSONObject(j);
+                            String title = song.getString("title");
+                            if (songItem.getTitle().equals(title)){
+                                Toast.makeText(context, "Song has already added", Toast.LENGTH_SHORT).show();
+                                break;
+                            }
+                            int views = song.getInt("views");
+                            String link = song.getString("link");
+                            String linkLyric = song.getString("linkLyric");
+                            String linkImg = song.getString("linkImg");
+                            JSONArray singers = song.getJSONArray("artist");
+                            JSONArray composers = song.getJSONArray("composer");
+                            final ArrayList<PersonItem> arrSingers = new ArrayList<PersonItem>();
+                            final ArrayList<PersonItem> arrComposers = new ArrayList<PersonItem>();
+                            for (int index = 0; index < singers.length(); index++) {
+                                JSONObject singer = singers.getJSONObject(index);
+                                String singerHref = singer.getString("link");
+                                String singerName = singer.getString("name");
+                                int view = singer.getInt("views");
+                                PersonItem singerItem = new PersonItem(singerName, singerHref, view);
+                                arrSingers.add(singerItem);
+                            }
+                            for (int index = 0; index < composers.length(); index++) {
+                                JSONObject composer = composers.getJSONObject(index);
+                                String composerHref = composer.getString("link");
+                                String composerName = composer.getString("name");
+                                int view = composer.getInt("views");
+                                PersonItem composerItem = new PersonItem(composerName, composerHref, view);
+                                arrComposers.add(composerItem);
+                            }
+                            SongItem item = new SongItem(title, views, link, arrSingers, arrComposers, linkLyric, linkImg);
+                            arrSongs.add(item);
                         }
-                        for (int index = 0 ; index < composers.length(); index++){
-                            JSONObject composer = composers.getJSONObject(index);
-                            String composerHref = composer.getString("link");
-                            String composerName = composer.getString("name");
-                            int view = composer.getInt("views");
-                            PersonItem composerItem = new PersonItem(composerName, composerHref, view);
-                            arrComposers.add(composerItem);
-                        }
-                        SongItem item = new SongItem(title, views, link, arrSingers, arrComposers, linkLyric, linkImg );
-                        arrSongs.add(item);
+                        //arrSongs.clear();
                     }
-                    arrSongs.add(songItem);
-                    Gson gson = new Gson();
-                    String jsonSongs = gson.toJson(arrSongs);
-//                    Toast.makeText(context,getAdapterPosition() + "", Toast.LENGTH_SHORT).show();
-                    PlaylistItem newItem = new PlaylistItem(playlistItem.getName(), playlistItem.getLink(), playlistItem.getImg(), playlistItem.getNumber(), jsonSongs);
-                    newPlaylists.set(getAdapterPosition(), newItem);
-                    String jsonPlaylist = gson.toJson(newPlaylists);
-                    session.setPlaylist(jsonPlaylist);
+                    if (j == songLength) {
+                        arrSongs.add(songItem);
+
+                        Gson gson = new Gson();
+                        String jsonSongs = gson.toJson(arrSongs);
+                        Toast.makeText(context, jsonSongs, Toast.LENGTH_SHORT).show();
+                        PlaylistItem newItem = new PlaylistItem(playlistItem.getName(), playlistItem.getLink(), playlistItem.getImg(), arrSongs.size(), jsonSongs);
+                        newPlaylists.set(getAdapterPosition(), newItem);
+                        String jsonPlaylist = gson.toJson(newPlaylists);
+                        session.setPlaylist(jsonPlaylist);
+                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
