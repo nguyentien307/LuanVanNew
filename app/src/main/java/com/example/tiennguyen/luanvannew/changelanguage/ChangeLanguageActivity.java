@@ -6,7 +6,10 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
+import android.view.View;
 
+import com.example.tiennguyen.luanvannew.MainActivity;
+import com.example.tiennguyen.luanvannew.MyApplication;
 import com.example.tiennguyen.luanvannew.R;
 import com.example.tiennguyen.luanvannew.databinding.ActivityChangeLanguageBinding;
 import com.example.tiennguyen.luanvannew.interfaces.ItemClickListener1;
@@ -37,6 +40,12 @@ public class ChangeLanguageActivity extends AppCompatActivity {
         LinearLayoutManager layoutManager = new LinearLayoutManager(ChangeLanguageActivity.this);
         binding.recyclerViewLanguage.setLayoutManager(layoutManager);
         binding.recyclerViewLanguage.setAdapter(mLanguageAdapter);
+        binding.tvCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
     }
 
     private void onChangeLanguageSuccessfully(final Language language) {
@@ -44,5 +53,8 @@ public class ChangeLanguageActivity extends AppCompatActivity {
         LanguageUtils.changeLanguage(language);
         setResult(RESULT_OK, new Intent());
         finish();
+        ((MyApplication) getApplication()).setChangeLanguage(true);
+        Intent refresh = new Intent(this, MainActivity.class);
+        startActivity(refresh);
     }
 }

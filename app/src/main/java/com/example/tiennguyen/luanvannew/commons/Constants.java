@@ -86,4 +86,5 @@ public class Constants {
     public class RequestCode {
         public static final int CHANGE_LANGUAGE = 10000;
     }
+
 }

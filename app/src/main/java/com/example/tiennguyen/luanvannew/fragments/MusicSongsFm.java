@@ -1,7 +1,6 @@
 package com.example.tiennguyen.luanvannew.fragments;
 
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -9,13 +8,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.tiennguyen.luanvannew.R;
 import com.example.tiennguyen.luanvannew.adapters.SongsAdapter;
 import com.example.tiennguyen.luanvannew.commons.Constants;
 import com.example.tiennguyen.luanvannew.commons.GetDataCodeFromZing;
-import com.example.tiennguyen.luanvannew.interfaces.OnLoadMoreListener;
 import com.example.tiennguyen.luanvannew.models.CategoryItem;
 import com.example.tiennguyen.luanvannew.models.PersonItem;
 import com.example.tiennguyen.luanvannew.models.SongItem;
@@ -42,13 +39,12 @@ public class MusicSongsFm extends Fragment {
     private SongsAdapter songsAdapter;
     private ArrayList<SongItem> arrSongs = new ArrayList<>();
 
-
-
     //instance category
     private CategoryItem categoryItem;
 
     //continue load
     private Boolean isRemain = true;
+    private Boolean start = false;
 
     private ArrayList<String> arrPages = new ArrayList<>();
     private Boolean isLoadPages = true;
@@ -89,34 +85,37 @@ public class MusicSongsFm extends Fragment {
         rcSongs.setAdapter(songsAdapter);
         prepareSongs(categoryItem.getLink());
 
-        songsAdapter.setOnLoadMoreListener(new OnLoadMoreListener() {
-            @Override
-            public void onLoadMore() {
-                if (isRemain) {
-                    arrSongs.add(null);
-                    songsAdapter.notifyItemInserted(arrSongs.size() - 1);
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            arrSongs.remove(arrSongs.size() - 1);
-                            songsAdapter.notifyItemRemoved(arrSongs.size());
 
-                            //Generating more data
-                            prepareSongs(arrPages.get(index));
-                            index = index + 1;
-                            if (index == arrPages.size()) isRemain = false;
+//            songsAdapter.setOnLoadMoreListener(new OnLoadMoreListener() {
+//                @Override
+//                public void onLoadMore() {
+//                    if (start) {
+//                        if (isRemain) {
+//                            arrSongs.add(null);
+//                            songsAdapter.notifyItemInserted(arrSongs.size() - 1);
+//                            new Handler().postDelayed(new Runnable() {
+//                                @Override
+//                                public void run() {
+//                                    arrSongs.remove(arrSongs.size() - 1);
+//                                    songsAdapter.notifyItemRemoved(arrSongs.size());
+//                                    //Generating more data
+//                                    prepareSongs(arrPages.get(index));
+//                                    index = index + 1;
+//                                    if (index == arrPages.size()) isRemain = false;
+//
+//                                    //Toast.makeText(getActivity(), "index" + index, Toast.LENGTH_SHORT).show();
+//                                    //prepareSongs();
+//                                    //songsAdapter.notifyDataSetChanged();
+//                                    songsAdapter.setLoaded();
+//                                }
+//                            }, 2000);
+//                        } else {
+//                            Toast.makeText(getActivity(), "Loading data completed", Toast.LENGTH_SHORT).show();
+//                        }
+//                    }
+//                }
+//            });
 
-                            //Toast.makeText(getActivity(), "index" + index, Toast.LENGTH_SHORT).show();
-                            //prepareSongs();
-                            songsAdapter.notifyDataSetChanged();
-                            songsAdapter.setLoaded();
-                        }
-                    }, 5000);
-                } else {
-                    Toast.makeText(getActivity(), "Loading data completed", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
 
         return view;
     }
@@ -166,6 +165,7 @@ public class MusicSongsFm extends Fragment {
                         arrPages.add(href);
                     }
                 }
+                //start = true;
             }
 
             @Override

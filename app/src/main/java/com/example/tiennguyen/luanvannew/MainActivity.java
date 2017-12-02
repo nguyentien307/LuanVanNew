@@ -15,7 +15,7 @@ import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.TimePicker;
+import android.widget.Toast;
 
 import com.example.tiennguyen.luanvannew.commons.Constants;
 import com.example.tiennguyen.luanvannew.databinding.ActivityMainBinding;
@@ -29,14 +29,9 @@ import com.example.tiennguyen.luanvannew.helpers.BottomNavigationViewHelper;
 import com.example.tiennguyen.luanvannew.helpers.CustomTypefaceSpan;
 import com.example.tiennguyen.luanvannew.models.PersonItem;
 import com.example.tiennguyen.luanvannew.models.SongItem;
-import com.example.tiennguyen.luanvannew.services.PlayerService;
-import com.example.tiennguyen.luanvannew.sessions.SessionManagement;
 import com.example.tiennguyen.luanvannew.utils.LanguageUtils;
 
-
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
 
@@ -44,6 +39,8 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     private Fragment fragment;
     private Boolean isPlayerCall = false;
     private SongItem songItem;
+
+    private Boolean isChangeLanguage;
 
     private ActivityMainBinding mBinding;
     @Override
@@ -61,12 +58,23 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     private void setBottomNavigation() {
         bottomNavigation = (BottomNavigationView) findViewById(R.id.bottom_navigation);
         BottomNavigationViewHelper.disableShiftMode(bottomNavigation);
+        isChangeLanguage = ((MyApplication) getApplication()).getChangeLanguage();
 
-        fragment = MusicFm.newInstance(Constants.TAB_HOT);
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.fragment_container, fragment)
-                .commit();
+        if(isChangeLanguage){
+            ((MyApplication) getApplication()).setChangeLanguage(false);
+            fragment = SettingFm.newInstance("new");
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.fragment_container, fragment)
+                    .commit();
+        }
+        else {
+            fragment = MusicFm.newInstance(Constants.TAB_HOT);
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.fragment_container, fragment)
+                    .commit();
+        }
 
         Menu m = bottomNavigation.getMenu();
         for (int i=0;i<m.size();i++) {
@@ -180,12 +188,17 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 }
             }
         }
+
+
         if(requestCode == Constants.RequestCode.CHANGE_LANGUAGE){
             if (resultCode == RESULT_OK) {
-                updateViewByLanguage();
+
+                Toast.makeText(this, "changeed", Toast.LENGTH_SHORT).show();
             }
         }
     }
+
+
 
 
 
@@ -194,8 +207,15 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         fragment = SettingFm.newInstance("new");
         getSupportFragmentManager()
                 .beginTransaction()
-                .setCustomAnimations( R.anim.slide_in_up , R.anim.slide_out_up)
                 .replace(R.id.fragment_container, fragment)
                 .commit();
     }
+
+    private void restartActivity() {
+        Intent intent = getIntent();
+        finish();
+        startActivity(intent);
+        //updateViewByLanguage();
+    }
+
 }

@@ -2,12 +2,7 @@ package com.example.tiennguyen.luanvannew.sessions;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Bundle;
-
-import com.example.tiennguyen.luanvannew.R;
-import com.example.tiennguyen.luanvannew.fragments.LoginFm;
 
 import java.util.HashMap;
 
@@ -192,5 +187,16 @@ public class SessionManagement {
     public void setAutoStopPlayMusicTime(int autoStopPlayMusicTime) {
         editor.putInt(AUTO_STOP_TIME, autoStopPlayMusicTime);
         editor.commit();
+    }
+
+    public void setPlaylist(String playlists) {
+        editor.remove("playlists");
+        editor.commit();
+        editor.putString("playlists", playlists).commit();
+    }
+
+    public String getPlaylist() {
+        String playlists = pref.getString("playlists","");
+        return playlists;
     }
 }

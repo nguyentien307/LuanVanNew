@@ -3,32 +3,26 @@ package com.example.tiennguyen.luanvannew.adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Typeface;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.example.tiennguyen.luanvannew.MainActivity;
 import com.example.tiennguyen.luanvannew.MyApplication;
 import com.example.tiennguyen.luanvannew.R;
 import com.example.tiennguyen.luanvannew.commons.Constants;
+import com.example.tiennguyen.luanvannew.commons.StringUtils;
 import com.example.tiennguyen.luanvannew.dialogs.AlertDialogManagement;
 import com.example.tiennguyen.luanvannew.dialogs.MyAlertDialogFragment;
-import com.example.tiennguyen.luanvannew.fragments.SongInfoFm;
 import com.example.tiennguyen.luanvannew.models.PlaylistItem;
 import com.example.tiennguyen.luanvannew.models.SongItem;
 import com.example.tiennguyen.luanvannew.services.PlayerService;
-import com.example.tiennguyen.luanvannew.commons.StringUtils;
 import com.example.tiennguyen.luanvannew.sessions.SessionManagement;
 
 import java.util.ArrayList;
@@ -134,7 +128,7 @@ public class PlayerAdapter extends RecyclerView.Adapter<PlayerAdapter.PlayerView
             });
             if (session.isLoggedIn()) {
                 ArrayList<PlaylistItem> arrPlaylists = ((MyApplication) activity.getApplication()).getArrPlaylists();
-                MyAlertDialogFragment dialog = MyAlertDialogFragment.newInstance(arrPlaylists);
+                MyAlertDialogFragment dialog = MyAlertDialogFragment.newInstance(arrPlaylists, arrSongs.get(getAdapterPosition()));
                 FragmentManager manager = ((AppCompatActivity) context).getSupportFragmentManager();
                 dialog.show(manager, "fragment_alert");
             }
