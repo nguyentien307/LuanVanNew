@@ -20,10 +20,19 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.tiennguyen.luanvannew.R;
+import com.example.tiennguyen.luanvannew.fragments.PlaylistFm;
 import com.example.tiennguyen.luanvannew.fragments.PlaylistSongsFm;
 import com.example.tiennguyen.luanvannew.models.PlaylistItem;
+import com.example.tiennguyen.luanvannew.sessions.SessionManagement;
+import com.google.gson.Gson;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
+
+import static com.example.tiennguyen.luanvannew.fragments.PlaylistSongsFm.newInstance;
 
 /**
  * Created by TIENNGUYEN on 11/13/2017.
@@ -33,6 +42,7 @@ public class PlaylistsAdapter extends RecyclerView.Adapter<PlaylistsAdapter.View
 
     private Context context;
     private ArrayList<PlaylistItem> arrPlaylists;
+    SessionManagement session;
 
     public PlaylistsAdapter(Context context, ArrayList<PlaylistItem> arrPlaylists) {
         this.context = context;
@@ -58,7 +68,7 @@ public class PlaylistsAdapter extends RecyclerView.Adapter<PlaylistsAdapter.View
 
         @Override
         public void onClick(View v) {
-            PlaylistSongsFm fragment = PlaylistSongsFm.newInstance(arrPlaylists.get(getAdapterPosition()));
+            PlaylistSongsFm fragment = newInstance(arrPlaylists.get(getAdapterPosition()));
             ((AppCompatActivity)context).getSupportFragmentManager()
                     .beginTransaction()
                     .addToBackStack(null)
@@ -103,6 +113,7 @@ public class PlaylistsAdapter extends RecyclerView.Adapter<PlaylistsAdapter.View
     }
 
     private void showPopupMenu(View view, final int position) {
+        session = new SessionManagement(context);
         // inflate menu
         PopupMenu popup = new PopupMenu(context, view);
         MenuInflater inflater = popup.getMenuInflater();
@@ -115,7 +126,33 @@ public class PlaylistsAdapter extends RecyclerView.Adapter<PlaylistsAdapter.View
                         Toast.makeText(context, "Play all", Toast.LENGTH_SHORT).show();
                         return true;
                     case R.id.action_delete:
-                        Toast.makeText(context, "Delete", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(context, "Delete", Toast.LENGTH_SHORT).show();
+                        ArrayList<PlaylistItem> arrItem = new ArrayList<PlaylistItem>();
+                        if(session.getPlaylist() != "") {
+                            String jsonPlaylists = session.getPlaylist();
+                            try {
+                                JSONArray arr = new JSONArray(jsonPlaylists);
+                                for(int i = 0 ; i < arr.length(); i++){
+                                    JSONObject jsonItem = arr.getJSONObject(i);
+                                    PlaylistItem playlist = new PlaylistItem(jsonItem.getString("name"), jsonItem.getString("link"), jsonItem.getInt("img"), jsonItem.getInt("number"), jsonItem.getString("arrSongs"));
+                                    arrItem.add(playlist);
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        arrItem.remove(position);
+                        Gson gson = new Gson();
+                        String jsonPlaylist = gson.toJson(arrItem);
+                        session.setPlaylist(jsonPlaylist);
+
+                        PlaylistFm fragment = PlaylistFm.newInstance("new");
+                        ((AppCompatActivity)context).getSupportFragmentManager()
+                                .beginTransaction()
+                                .addToBackStack(null)
+                                .replace(R.id.fragment_container, fragment)
+                                .commit();
+
                         return true;
                 }
                 return false;

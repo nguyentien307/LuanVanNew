@@ -25,6 +25,7 @@ import com.example.tiennguyen.luanvannew.models.AlbumItem;
 import com.example.tiennguyen.luanvannew.models.PersonItem;
 import com.example.tiennguyen.luanvannew.models.SliderItem;
 import com.example.tiennguyen.luanvannew.models.SongItem;
+import com.example.tiennguyen.luanvannew.services.CheckInternet;
 import com.example.tiennguyen.luanvannew.services.GetPage;
 
 import org.jsoup.nodes.Document;
@@ -240,7 +241,7 @@ public class MusicHotFm extends Fragment implements View.OnClickListener {
 
             @Override
             public void dataDownloadFailed() {
-
+                CheckInternet.goNoInternet(getContext(), R.id.music_content);
             }
         });
         getHomePage.execute(Constants.HOME_PAGE);

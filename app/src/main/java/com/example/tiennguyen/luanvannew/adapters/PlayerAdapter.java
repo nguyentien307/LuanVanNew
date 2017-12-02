@@ -22,6 +22,7 @@ import com.example.tiennguyen.luanvannew.MainActivity;
 import com.example.tiennguyen.luanvannew.MyApplication;
 import com.example.tiennguyen.luanvannew.R;
 import com.example.tiennguyen.luanvannew.commons.Constants;
+import com.example.tiennguyen.luanvannew.commons.StringUtils;
 import com.example.tiennguyen.luanvannew.dialogs.AlertDialogManagement;
 import com.example.tiennguyen.luanvannew.dialogs.MyAlertDialogFragment;
 import com.example.tiennguyen.luanvannew.fragments.SongInfoFm;
@@ -134,7 +135,7 @@ public class PlayerAdapter extends RecyclerView.Adapter<PlayerAdapter.PlayerView
             });
             if (session.isLoggedIn()) {
                 ArrayList<PlaylistItem> arrPlaylists = ((MyApplication) activity.getApplication()).getArrPlaylists();
-                MyAlertDialogFragment dialog = MyAlertDialogFragment.newInstance(arrPlaylists);
+                MyAlertDialogFragment dialog = MyAlertDialogFragment.newInstance(arrPlaylists, arrSongs.get(getAdapterPosition()));
                 FragmentManager manager = ((AppCompatActivity) context).getSupportFragmentManager();
                 dialog.show(manager, "fragment_alert");
             }

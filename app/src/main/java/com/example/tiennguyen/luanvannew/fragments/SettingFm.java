@@ -228,7 +228,6 @@ public class SettingFm extends Fragment implements View.OnClickListener {
                 if (!spinnerArr[position].equals("None"))
                     time = Integer.parseInt(spinnerArr[position].split(" ", 2)[0]);
                 session.setAutoStopPlayMusicTime(time);
-                Toast.makeText(getContext(), "Set auto stop: " + spinnerArr[position], Toast.LENGTH_SHORT).show();
             }
 
             @Override

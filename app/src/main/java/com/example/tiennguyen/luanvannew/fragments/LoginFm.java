@@ -1,6 +1,9 @@
 package com.example.tiennguyen.luanvannew.fragments;
 
+import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -23,6 +26,7 @@ import com.example.tiennguyen.luanvannew.R;
 import com.example.tiennguyen.luanvannew.commons.Constants;
 import com.example.tiennguyen.luanvannew.dialogs.AlertDialogManagement;
 import com.example.tiennguyen.luanvannew.models.PlaylistItem;
+import com.example.tiennguyen.luanvannew.services.CheckInternet;
 import com.example.tiennguyen.luanvannew.sessions.SessionManagement;
 
 import java.util.ArrayList;
@@ -45,6 +49,7 @@ public class LoginFm extends Fragment implements TextWatcher, View.OnKeyListener
     private Button btnLogin;
     private boolean isInvalid = false;
     private RelativeLayout rlLoginLoading;
+    Fragment fragment;
 
     public static LoginFm newInstance(String name) {
         LoginFm contentFragment = new LoginFm();
@@ -161,51 +166,54 @@ public class LoginFm extends Fragment implements TextWatcher, View.OnKeyListener
     private void loginValidateion() {
         final String email = String.valueOf(edEmail.getText());
         final String password = String.valueOf(edPassword.getText());
-        rlLoginLoading.setVisibility(View.VISIBLE);
 
         final Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                rlLoginLoading.setVisibility(View.GONE);
-                // Check if username, password is filled
-                if(email.trim().length() > 0 && password.trim().length() > 0){
-                    // For testing puspose username, password is checked with sample data
-                    // username = test
-                    // password = test
-                    if(email.equals("huathitoquyen0403@gmail.com") && password.equals("1111")){
+        // Check if username, password is filled
+        if (email.trim().length() > 0 && password.trim().length() > 0) {
+            rlLoginLoading.setVisibility(View.VISIBLE);
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    rlLoginLoading.setVisibility(View.GONE);
+                    if (CheckInternet.isConnected(getContext())) {
+                        // For testing puspose username, password is checked with sample data
+                        // username = test
+                        // password = test
+                        if (email.equals("test") && password.equals("1111")) {
 
-                        // Creating user login session
-                        // For testing i am stroing name, email as follow
-                        // Use user real data
-                        session.createLoginSession("huathitoquyen0403@gmail.com", "1111");
+                            // Creating user login session
+                            // For testing i am stroing name, email as follow
+                            // Use user real data
+                            session.createLoginSession("huathitoquyen0403@gmail.com", "1111");
 
-                        preparePlaylist();
-                        Fragment fragment = new Fragment();
-                        switch (res) {
-                            case "Playlist":
-                                fragment = new PlaylistFm();
-                                break;
-                            case "Login":
-                                fragment = new UserFm();
-                                break;
+                            preparePlaylist();
+                            switch (res) {
+                                case "Playlist":
+                                    fragment = new PlaylistFm();
+                                    break;
+                                case "Login":
+                                    fragment = new UserFm();
+                                    break;
+                            }
+                            getActivity().getSupportFragmentManager()
+                                    .beginTransaction()
+                                    .replace(R.id.fragment_container, fragment)
+                                    .commit();
+
+                        } else {
+                            // username / password doesn't match
+                            alert.showAlertDialog(getActivity(), getResources().getString(R.string.login_fail), getResources().getString(R.string.error_message), false);
                         }
-                        getActivity().getSupportFragmentManager()
-                                .beginTransaction()
-                                .replace(R.id.fragment_container, fragment)
-                                .commit();
-
                     } else {
-                        // username / password doesn't match
-                        alert.showAlertDialog(getActivity(), getResources().getString(R.string.login_fail), getResources().getString(R.string.error_message), false);
+                        CheckInternet.goNoInternet(getContext(), R.id.rlLoginContainer);
                     }
-                }else{
-                    // user didn't entered username or password
-                    // Show alert asking him to enter the details
-                    alert.showAlertDialog(getActivity(), getResources().getString(R.string.login_fail), getResources().getString(R.string.warning_message), false);
                 }
-            }
-        }, 2000);
+            }, 2000);
+        } else {
+            // user didn't entered username or password
+            // Show alert asking him to enter the details
+            alert.showAlertDialog(getActivity(), getResources().getString(R.string.login_fail), getResources().getString(R.string.warning_message), false);
+        }
     }
 
     private void preparePlaylist() {

@@ -14,6 +14,7 @@ import com.astuetz.PagerSlidingTabStrip;
 import com.example.tiennguyen.luanvannew.R;
 import com.example.tiennguyen.luanvannew.adapters.PagerAdapter;
 import com.example.tiennguyen.luanvannew.models.PersonItem;
+import com.example.tiennguyen.luanvannew.services.CheckInternet;
 
 /**
  * Created by TIENNGUYEN on 11/14/2017.
@@ -61,37 +62,40 @@ public class ArtistMusicFm extends Fragment implements View.OnClickListener {
         llBackButton.setOnClickListener(this);
         ivBackButton.setOnClickListener(this);
 
+        if (CheckInternet.isConnected(getContext())) {
+            // Get the ViewPager and set it's PagerAdapter so that it can display items
+            ViewPager viewPager = (ViewPager) view.findViewById(R.id.viewpager);
+            viewPager.setAdapter(new PagerAdapter(getChildFragmentManager(), songsLink, albumsLink));
 
-        // Get the ViewPager and set it's PagerAdapter so that it can display items
-        ViewPager viewPager = (ViewPager) view.findViewById(R.id.viewpager);
-        viewPager.setAdapter(new PagerAdapter(getChildFragmentManager(), songsLink, albumsLink));
+            // Give the PagerSlidingTabStrip the ViewPager
+            PagerSlidingTabStrip tabsStrip = (PagerSlidingTabStrip) view.findViewById(R.id.tabs);
+            // Attach the view pager to the tab strip
+            tabsStrip.setViewPager(viewPager);
 
-        // Give the PagerSlidingTabStrip the ViewPager
-        PagerSlidingTabStrip tabsStrip = (PagerSlidingTabStrip) view.findViewById(R.id.tabs);
-        // Attach the view pager to the tab strip
-        tabsStrip.setViewPager(viewPager);
+            tabsStrip.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 
-        tabsStrip.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+                // This method will be invoked when a new page becomes selected.
+                @Override
+                public void onPageSelected(int position) {
+                    //Toast.makeText(getContext(),"Selected page position: " + position, Toast.LENGTH_SHORT).show();
+                }
 
-            // This method will be invoked when a new page becomes selected.
-            @Override
-            public void onPageSelected(int position) {
-                //Toast.makeText(getContext(),"Selected page position: " + position, Toast.LENGTH_SHORT).show();
-            }
+                // This method will be invoked when the current page is scrolled
+                @Override
+                public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                    // Code goes here
+                }
 
-            // This method will be invoked when the current page is scrolled
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                // Code goes here
-            }
-
-            // Called when the scroll state changes:
-            // SCROLL_STATE_IDLE, SCROLL_STATE_DRAGGING, SCROLL_STATE_SETTLING
-            @Override
-            public void onPageScrollStateChanged(int state) {
-                // Code goes here
-            }
-        });
+                // Called when the scroll state changes:
+                // SCROLL_STATE_IDLE, SCROLL_STATE_DRAGGING, SCROLL_STATE_SETTLING
+                @Override
+                public void onPageScrollStateChanged(int state) {
+                    // Code goes here
+                }
+            });
+        } else {
+            CheckInternet.goNoInternet(getContext(), R.id.llArtistMusicContent);
+        }
 
         return view;
     }

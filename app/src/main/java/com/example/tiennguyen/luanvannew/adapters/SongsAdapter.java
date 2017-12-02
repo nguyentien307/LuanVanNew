@@ -22,7 +22,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.example.tiennguyen.luanvannew.MyApplication;
 import com.example.tiennguyen.luanvannew.R;
 import com.example.tiennguyen.luanvannew.activities.PlayerActivity;
 import com.example.tiennguyen.luanvannew.commons.Constants;
@@ -36,6 +35,10 @@ import com.example.tiennguyen.luanvannew.models.PlaylistItem;
 import com.example.tiennguyen.luanvannew.models.SongItem;
 import com.example.tiennguyen.luanvannew.sessions.SessionManagement;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 
 /**
@@ -43,21 +46,17 @@ import java.util.ArrayList;
  */
 
 public class SongsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    ArrayList<SongItem> arrSongs;
-    private Context context;
+    private ArrayList<SongItem> arrSongs;
+    protected Context context;
     private String style;
     private Activity activity;
 
     private final int VIEW_TYPE_ITEM = 0;
     private final int VIEW_TYPE_LOADING = 1;
-    private OnLoadMoreListener mOnLoadMoreListener;
+    private OnLoadMoreListener onLoadMoreListener;
     private boolean isLoading;
     private int visibleThreshold = 5;
     private int lastVisibleItem, totalItemCount;
-
-    public void setOnLoadMoreListener(OnLoadMoreListener mOnLoadMoreListener) {
-        this.mOnLoadMoreListener = mOnLoadMoreListener;
-    }
 
 
     public SongsAdapter(Context context, Activity activity, ArrayList<SongItem> arrSongs, String style, RecyclerView recyclerView){
@@ -65,22 +64,103 @@ public class SongsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         this.context = context;
         this.style = style;
         this.activity = activity;
-
-        final LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                totalItemCount = linearLayoutManager.getItemCount();
-                lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition();
-                if (!isLoading && totalItemCount <= (lastVisibleItem + visibleThreshold)) {
-                    if (mOnLoadMoreListener != null) {
-                        mOnLoadMoreListener.onLoadMore();
+        if(recyclerView.getLayoutManager() instanceof LinearLayoutManager){
+            final LinearLayoutManager linearLayoutManager = (LinearLayoutManager)recyclerView.getLayoutManager();
+            recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                @Override
+                public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                    super.onScrolled(recyclerView, dx, dy);
+                    totalItemCount = linearLayoutManager.getItemCount();
+                    lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition();
+                    if(!isLoading && totalItemCount <= (lastVisibleItem + visibleThreshold)){
+                        if(onLoadMoreListener != null){
+                            onLoadMoreListener.onLoadMore();
+                        }
+                        isLoading = true;
                     }
-                    isLoading = true;
+                }
+            });
+        }
+
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return arrSongs.get(position) == null ? VIEW_TYPE_LOADING : VIEW_TYPE_ITEM;
+    }
+
+    @Override
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+
+        if (viewType == VIEW_TYPE_ITEM) {
+            SongViewHolder viewHolder = null;
+            if(style == Constants.SONGS_LIST_IN_PLAYLIST){
+                View layoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.song_item_playlist, parent, false);
+                viewHolder = new SongViewHolder(layoutView);
+            }else {
+                View layoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.song_item, parent, false);
+                viewHolder = new SongViewHolder(layoutView);
+            }
+            return viewHolder;
+        } else if (viewType == VIEW_TYPE_LOADING) {
+            View layoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_loading, parent, false);
+            LoadingViewHolder viewHolder = new LoadingViewHolder(layoutView);
+            return viewHolder;
+        }
+        return null;
+    }
+
+    @Override
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        if (holder instanceof SongViewHolder) {
+            SongViewHolder songViewHolder = (SongViewHolder) holder;
+            songViewHolder.tvSongName.setText(arrSongs.get(position).getTitle());
+            songViewHolder.tvViews.setText("Views: "+arrSongs.get(position).getViews());
+
+            ArrayList<PersonItem> singers = arrSongs.get(position).getArtist();
+            String singerName = "";
+            for (int singerIndex = 0; singerIndex < singers.size(); singerIndex++) {
+                if (singerIndex == singers.size() - 1) {
+                    singerName += singers.get(singerIndex).getName();
+                } else {
+                    singerName += singers.get(singerIndex).getName() + ", ";
                 }
             }
-        });
+            if (singerName != "") {
+                songViewHolder.tvArtistName.setText(singerName);
+            } else songViewHolder.tvArtistName.setText("khong co");
+
+            if(style == Constants.SONG_CATEGORIES || style == Constants.SONGS_LIST_IN_PLAYLIST) {
+                if (arrSongs.get(position).getLinkImg() != "") {
+                    Glide.with(context)
+                            .load(arrSongs.get(position).getLinkImg())
+                            .centerCrop()
+                            .placeholder(R.drawable.item_up)
+                            .error(R.drawable.item_up)
+                            .into(songViewHolder.ivAvatar);
+                }
+            }
+            else if (style == Constants.ALBUM_CATEGORIES || style.equals(Constants.PLAYER_ACTIVITY)){
+                songViewHolder.tvIndex.setText(position + 1 +"");
+            }
+
+        } else if (holder instanceof LoadingViewHolder) {
+            LoadingViewHolder loadingViewHolder = (LoadingViewHolder) holder;
+            loadingViewHolder.progressBar.setIndeterminate(true);
+        }
+    }
+
+    @Override
+    public int getItemCount() {
+        return  this.arrSongs.size();
+    }
+
+    public void setLoaded() {
+        isLoading = false;
+    }
+
+    public void setOnLoadMoreListener(OnLoadMoreListener onLoadMoreListener){
+        this.onLoadMoreListener = onLoadMoreListener;
     }
 
     private class LoadingViewHolder extends RecyclerView.ViewHolder {
@@ -134,7 +214,7 @@ public class SongsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             switch (v.getId()){
                 case R.id.ll_add:
                 case R.id.iv_add: {
-                    showDialog();
+                    showDialog(getAdapterPosition());
                 }; break;
 
                 case R.id.ll_about:
@@ -184,79 +264,6 @@ public class SongsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     }
 
     @Override
-    public int getItemViewType(int position) {
-        return arrSongs.get(position) == null ? VIEW_TYPE_LOADING : VIEW_TYPE_ITEM;
-    }
-
-    @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view;
-        if (viewType == VIEW_TYPE_ITEM) {
-            if(style == Constants.SONGS_LIST_IN_PLAYLIST){
-                view = LayoutInflater.from(activity).inflate(R.layout.song_item_playlist, parent, false);
-            }else {
-                view = LayoutInflater.from(activity).inflate(R.layout.song_item, parent, false);
-            }
-            return new SongViewHolder(view);
-        } else if (viewType == VIEW_TYPE_LOADING) {
-            view = LayoutInflater.from(activity).inflate(R.layout.item_loading, parent, false);
-            return new LoadingViewHolder(view);
-        }
-        return null;
-    }
-
-    @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        if (holder instanceof SongViewHolder) {
-            SongViewHolder songViewHolder = (SongViewHolder) holder;
-            songViewHolder.tvSongName.setText(arrSongs.get(position).getTitle());
-            songViewHolder.tvViews.setText("Views: "+arrSongs.get(position).getViews());
-
-            ArrayList<PersonItem> singers = arrSongs.get(position).getArtist();
-            String singerName = "";
-            for (int singerIndex = 0; singerIndex < singers.size(); singerIndex++) {
-                if (singerIndex == singers.size() - 1) {
-                    singerName += singers.get(singerIndex).getName();
-                } else {
-                    singerName += singers.get(singerIndex).getName() + ", ";
-                }
-            }
-            if (singerName != "") {
-                songViewHolder.tvArtistName.setText(singerName);
-            } else songViewHolder.tvArtistName.setText("khong co");
-
-            if(style == Constants.SONG_CATEGORIES || style == Constants.SONGS_LIST_IN_PLAYLIST) {
-                if (arrSongs.get(position).getLinkImg() != "") {
-                    Glide.with(context)
-                            .load(arrSongs.get(position).getLinkImg())
-                            .centerCrop()
-                            .placeholder(R.drawable.item_up)
-                            .error(R.drawable.item_up)
-                            .into(songViewHolder.ivAvatar);
-                }
-            }
-            else if (style == Constants.ALBUM_CATEGORIES || style.equals(Constants.PLAYER_ACTIVITY)){
-                songViewHolder.tvIndex.setText(position + 1 +"");
-            }
-
-        } else if (holder instanceof LoadingViewHolder) {
-            LoadingViewHolder loadingViewHolder = (LoadingViewHolder) holder;
-            loadingViewHolder.progressBar.setIndeterminate(true);
-        }
-
-
-    }
-
-    @Override
-    public int getItemCount() {
-        return arrSongs == null ? 0 : arrSongs.size();
-    }
-
-    public void setLoaded() {
-        isLoading = false;
-    }
-
-    @Override
     public void onAttachedToRecyclerView(RecyclerView recyclerView) {
         super.onAttachedToRecyclerView(recyclerView);
     }
@@ -300,7 +307,7 @@ public class SongsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     }
 
-    private void showDialog(){
+    private void showDialog(int position){
         SessionManagement session = new SessionManagement(context, new SessionManagement.HaveNotLoggedIn() {
             @Override
             public void haveNotLoggedIn() {
@@ -314,8 +321,22 @@ public class SongsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             }
         });
         if (session.isLoggedIn()) {
-            ArrayList<PlaylistItem> arrPlaylists = ((MyApplication) activity.getApplication()).getArrPlaylists();
-            MyAlertDialogFragment dialog = MyAlertDialogFragment.newInstance(arrPlaylists);
+            //ArrayList<PlaylistItem> arrPlaylists = ((MyApplication) activity.getApplication()).getArrPlaylists();
+            ArrayList<PlaylistItem> arrPlaylists = new ArrayList<>();
+            if(session.getPlaylist() != "") {
+                String jsonPlaylists = session.getPlaylist();
+                try {
+                    JSONArray arr = new JSONArray(jsonPlaylists);
+                    for(int i = 0 ; i < arr.length(); i++){
+                        JSONObject jsonItem = arr.getJSONObject(i);
+                        PlaylistItem item = new PlaylistItem(jsonItem.getString("name"), jsonItem.getString("link"), jsonItem.getInt("img"), jsonItem.getInt("number"), jsonItem.getString("arrSongs"));
+                        arrPlaylists.add(item);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+            MyAlertDialogFragment dialog = MyAlertDialogFragment.newInstance(arrPlaylists, arrSongs.get(position));
             FragmentManager manager = ((AppCompatActivity) context).getSupportFragmentManager();
             dialog.show(manager, "fragment_alert");
         }

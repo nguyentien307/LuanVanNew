@@ -14,11 +14,19 @@ public class PlaylistItem implements Serializable, Parcelable {
     private String link;
     private int img;
     private int number;
+    private String arrSongs;
 
     public PlaylistItem(String name, String link, int img, int number) {
         this.name = name;
         this.link = link;
         this.img = img;
+        this.number = number;
+    }
+    public PlaylistItem(String name, String link, int img, int number, String arrSongs) {
+        this.name = name;
+        this.img = img;
+        this.link = link;
+        this.arrSongs = arrSongs;
         this.number = number;
     }
 
@@ -70,6 +78,14 @@ public class PlaylistItem implements Serializable, Parcelable {
         }
 
     };
+
+    public String getArrSongs() {
+        return arrSongs;
+    }
+
+    public void setArrSongs(String arrSongs) {
+        this.arrSongs = arrSongs;
+    }
 
     public void readFromParcel(Parcel in) {
         name = in.readString();

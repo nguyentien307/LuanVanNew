@@ -21,6 +21,7 @@ import com.example.tiennguyen.luanvannew.interfaces.OnLoadMoreListener;
 import com.example.tiennguyen.luanvannew.models.CategoryItem;
 import com.example.tiennguyen.luanvannew.models.PersonItem;
 import com.example.tiennguyen.luanvannew.models.SongItem;
+import com.example.tiennguyen.luanvannew.services.CheckInternet;
 import com.example.tiennguyen.luanvannew.services.GetPage;
 
 import org.jsoup.nodes.Document;
@@ -94,52 +95,37 @@ public class MusicSongsFm extends Fragment {
         rcSongs.setAdapter(songsAdapter);
         prepareSongs(categoryItem.getLink());
 
-        songsAdapter.setOnLoadMoreListener(new OnLoadMoreListener() {
-            @Override
-            public void onLoadMore() {
-                if (isRemain) {
-                    arrSongs.add(null);
-                    songsAdapter.notifyItemInserted(arrSongs.size() - 1);
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            arrSongs.remove(arrSongs.size() - 1);
-                            songsAdapter.notifyItemRemoved(arrSongs.size());
-
-                            //Generating more data
-                            prepareMoreSongs(arrPages.get(index));
-                            index = index + 1;
-                            if (index == arrPages.size()) isRemain = false;
-
-                            //Toast.makeText(getActivity(), "index" + index, Toast.LENGTH_SHORT).show();
-                            //prepareSongs();
-                            songsAdapter.notifyDataSetChanged();
-                            songsAdapter.setLoaded();
-                        }
-                    }, 5000);
-                } else {
-                    Toast.makeText(getActivity(), "Loading data completed", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
+//            songsAdapter.setOnLoadMoreListener(new OnLoadMoreListener() {
+//                @Override
+//                public void onLoadMore() {
+//                    if (start) {
+//                        if (isRemain) {
+//                            arrSongs.add(null);
+//                            songsAdapter.notifyItemInserted(arrSongs.size() - 1);
+//                            new Handler().postDelayed(new Runnable() {
+//                                @Override
+//                                public void run() {
+//                                    arrSongs.remove(arrSongs.size() - 1);
+//                                    songsAdapter.notifyItemRemoved(arrSongs.size());
+//                                    //Generating more data
+//                                    prepareSongs(arrPages.get(index));
+//                                    index = index + 1;
+//                                    if (index == arrPages.size()) isRemain = false;
+//
+//                                    //Toast.makeText(getActivity(), "index" + index, Toast.LENGTH_SHORT).show();
+//                                    //prepareSongs();
+//                                    //songsAdapter.notifyDataSetChanged();
+//                                    songsAdapter.setLoaded();
+//                                }
+//                            }, 2000);
+//                        } else {
+//                            Toast.makeText(getActivity(), "Loading data completed", Toast.LENGTH_SHORT).show();
+//                        }
+//                    }
+//                }
+//            });
 
         return view;
-    }
-
-    private void prepareMoreSongs(String href) {
-        GetPage getSongs = new GetPage(getContext());
-        getSongs.setDataDownloadListener(new GetPage.DataDownloadListener() {
-            @Override
-            public void dataDownloadedSuccessfully(Document data) {
-                viewSongList(data);
-            }
-
-            @Override
-            public void dataDownloadFailed () {
-
-            }
-        });
-        getSongs.execute(href);
     }
 
     private void prepareSongs(String href) {
@@ -154,7 +140,7 @@ public class MusicSongsFm extends Fragment {
 
             @Override
             public void dataDownloadFailed () {
-
+                CheckInternet.goNoInternet(getContext(), R.id.music_content);
             }
         });
         getSongs.execute(href);

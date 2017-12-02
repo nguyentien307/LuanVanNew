@@ -17,6 +17,7 @@ import com.example.tiennguyen.luanvannew.commons.Constants;
 import com.example.tiennguyen.luanvannew.models.AlbumItem;
 import com.example.tiennguyen.luanvannew.models.CategoryItem;
 import com.example.tiennguyen.luanvannew.models.PersonItem;
+import com.example.tiennguyen.luanvannew.services.CheckInternet;
 import com.example.tiennguyen.luanvannew.services.GetPage;
 
 import org.jsoup.nodes.Document;
@@ -91,11 +92,11 @@ public class MusicAlbumsFm extends Fragment {
             public void dataDownloadedSuccessfully(Document data) {
                 setLoadingVisible(false);
                 viewAlbumList(data);
-            }
+        }
 
             @Override
             public void dataDownloadFailed() {
-
+                CheckInternet.goNoInternet(getContext(), R.id.music_content);
             }
         });
         getAlbums.execute(categoryItem.getLink());

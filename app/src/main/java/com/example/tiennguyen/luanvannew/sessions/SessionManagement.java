@@ -193,4 +193,15 @@ public class SessionManagement {
         editor.putInt(AUTO_STOP_TIME, autoStopPlayMusicTime);
         editor.commit();
     }
+
+    public void setPlaylist(String playlists) {
+        editor.remove("playlists");
+        editor.commit();
+        editor.putString("playlists", playlists).commit();
+    }
+
+    public String getPlaylist() {
+        String playlists = pref.getString("playlists","");
+        return playlists;
+    }
 }

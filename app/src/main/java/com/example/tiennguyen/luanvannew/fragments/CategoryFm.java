@@ -15,6 +15,7 @@ import com.example.tiennguyen.luanvannew.R;
 import com.example.tiennguyen.luanvannew.adapters.CategoriesAdapter;
 import com.example.tiennguyen.luanvannew.commons.Constants;
 import com.example.tiennguyen.luanvannew.models.CategoryItem;
+import com.example.tiennguyen.luanvannew.services.CheckInternet;
 import com.example.tiennguyen.luanvannew.services.GetPage;
 
 import org.jsoup.nodes.Document;
@@ -73,23 +74,21 @@ public class CategoryFm extends Fragment implements View.OnClickListener {
         rcCategories.setNestedScrollingEnabled(false);
         categoriesLayoutManager = new LinearLayoutManager(getContext());
         rcCategories.setLayoutManager(categoriesLayoutManager);
-
-        if(res == "albums") {
+        if (res == "albums") {
             categoriesAdapter = new CategoriesAdapter(getContext(), getActivity(), arrCategories, Constants.ALBUM_CATEGORIES);
             rcCategories.setAdapter(categoriesAdapter);
             prepareAlbumCategories();
         }
-        if(res == "songs"){
+        if (res == "songs") {
             categoriesAdapter = new CategoriesAdapter(getContext(), getActivity(), arrCategories, Constants.SONG_CATEGORIES);
             rcCategories.setAdapter(categoriesAdapter);
             prepareSongCategories();
         }
-        if(res == "styles"){
+        if (res == "styles") {
             categoriesAdapter = new CategoriesAdapter(getContext(), getActivity(), arrCategories, Constants.SONG_STYLES);
             rcCategories.setAdapter(categoriesAdapter);
             prepareSongStyles();
         }
-
 
         return view;
     }
@@ -115,7 +114,7 @@ public class CategoryFm extends Fragment implements View.OnClickListener {
 
             @Override
             public void dataDownloadFailed() {
-
+                CheckInternet.goNoInternet(getContext(), R.id.rlCategoryContent);
             }
         });
         getSongPage.execute(Constants.SONG_PAGE);
@@ -156,7 +155,7 @@ public class CategoryFm extends Fragment implements View.OnClickListener {
 
             @Override
             public void dataDownloadFailed() {
-
+                CheckInternet.goNoInternet(getContext(), R.id.rlCategoryContent);
             }
         });
         getSongPage.execute(Constants.SONG_PAGE);
@@ -197,7 +196,7 @@ public class CategoryFm extends Fragment implements View.OnClickListener {
 
             @Override
             public void dataDownloadFailed() {
-
+                CheckInternet.goNoInternet(getContext(), R.id.rlCategoryContent);
             }
         });
         getSongPage.execute(Constants.ALBUM_PAGE);
@@ -216,4 +215,6 @@ public class CategoryFm extends Fragment implements View.OnClickListener {
 
         }
     }
+
+
 }

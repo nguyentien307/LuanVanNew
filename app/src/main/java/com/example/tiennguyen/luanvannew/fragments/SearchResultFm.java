@@ -26,6 +26,7 @@ import com.example.tiennguyen.luanvannew.models.AlbumItem;
 import com.example.tiennguyen.luanvannew.models.PersonItem;
 import com.example.tiennguyen.luanvannew.models.SongItem;
 import com.example.tiennguyen.luanvannew.services.BaseURI;
+import com.example.tiennguyen.luanvannew.services.CheckInternet;
 import com.example.tiennguyen.luanvannew.services.GetData;
 import com.example.tiennguyen.luanvannew.services.GetHtmlData;
 import com.example.tiennguyen.luanvannew.services.GetPage;
@@ -88,7 +89,6 @@ public class SearchResultFm extends Fragment implements View.OnFocusChangeListen
 
     private void initView(View view) {
         initialView(view);
-//        showResult();
         showZingResult();
     }
 
@@ -131,6 +131,7 @@ public class SearchResultFm extends Fragment implements View.OnFocusChangeListen
 
             @Override
             public void dataDownloadFailed() {
+                CheckInternet.goNoInternet(getContext(), R.id.clSearchResult);
             }
         });
     }
@@ -223,6 +224,7 @@ public class SearchResultFm extends Fragment implements View.OnFocusChangeListen
 
             @Override
             public void dataDownloadFailed() {
+                CheckInternet.goNoInternet(getContext(), R.id.clSearchResult);
             }
         });
     }

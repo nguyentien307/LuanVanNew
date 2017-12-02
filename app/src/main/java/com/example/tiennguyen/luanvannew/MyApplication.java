@@ -16,7 +16,18 @@ public class MyApplication extends Application {
 
     private Boolean isLogin = false;
 
-    private ArrayList<PlaylistItem> arrPlaylists;
+
+
+    private Boolean isChangeLanguage = false;
+    public Boolean getChangeLanguage() {
+        return isChangeLanguage;
+    }
+
+    public void setChangeLanguage(Boolean changeLanguage) {
+        isChangeLanguage = changeLanguage;
+    }
+
+    private ArrayList<PlaylistItem> arrPlaylists = new ArrayList<>();
 
     private ArrayList<SongItem> arrayPlayer;
 

@@ -21,6 +21,7 @@ import com.example.tiennguyen.luanvannew.commons.GetDataCodeFromZing;
 import com.example.tiennguyen.luanvannew.models.AlbumItem;
 import com.example.tiennguyen.luanvannew.models.PersonItem;
 import com.example.tiennguyen.luanvannew.models.SongItem;
+import com.example.tiennguyen.luanvannew.services.CheckInternet;
 import com.example.tiennguyen.luanvannew.services.GetPage;
 
 import org.jsoup.nodes.Document;
@@ -160,7 +161,7 @@ public class AlbumSongsFm extends Fragment implements View.OnClickListener {
 
             @Override
             public void dataDownloadFailed() {
-
+                CheckInternet.goNoInternet(getContext(), R.id.llAlbumSongContent);
             }
         });
         getSongs.execute(albumItem.getLink());

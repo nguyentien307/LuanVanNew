@@ -39,6 +39,7 @@ import com.example.tiennguyen.luanvannew.dialogs.SearchDialog;
 import com.example.tiennguyen.luanvannew.models.AlbumItem;
 import com.example.tiennguyen.luanvannew.models.PersonItem;
 import com.example.tiennguyen.luanvannew.models.SongItem;
+import com.example.tiennguyen.luanvannew.services.CheckInternet;
 import com.example.tiennguyen.luanvannew.services.GetHtmlData;
 import com.example.tiennguyen.luanvannew.services.GetPage;
 import com.example.tiennguyen.luanvannew.sessions.SessionManagement;
@@ -112,18 +113,13 @@ public class SearchFm extends Fragment implements TextWatcher, View.OnClickListe
     public View onCreateView(LayoutInflater inflater, ViewGroup viewGroup, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fm_search, viewGroup, false);
         setInitial(view);
+        if (!CheckInternet.isConnected(getContext())) {
+            rlTopSong.setVisibility(View.GONE);
+        }
         showLists();
         if (res != "") {
             edSearch.setText(res, TextView.BufferType.NORMAL);
         }
-//        edSearch.postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//                // TODO Auto-generated method stub
-//                InputMethodManager keyboard = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-//                keyboard.showSoftInput(edSearch, res.length());
-//            }
-//        },50);
         return view;
     }
 
@@ -198,13 +194,18 @@ public class SearchFm extends Fragment implements TextWatcher, View.OnClickListe
 
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
-        if (s.toString().equals("")) {
+        if (CheckInternet.isConnected(getContext())) {
+            if (s.toString().equals("")) {
+                scrollView.setVisibility(View.VISIBLE);
+                svSearchingLayout.setVisibility(View.GONE);
+            } else if (count % 2 == 0) {
+                scrollView.setVisibility(View.GONE);
+                svSearchingLayout.setVisibility(View.VISIBLE);
+                showZingResult(String.valueOf(s));
+            }
+        } else {
             scrollView.setVisibility(View.VISIBLE);
             svSearchingLayout.setVisibility(View.GONE);
-        } else if (count % 2 == 0) {
-            scrollView.setVisibility(View.GONE);
-            svSearchingLayout.setVisibility(View.VISIBLE);
-            showZingResult(String.valueOf(s));
         }
     }
 
@@ -274,10 +275,12 @@ public class SearchFm extends Fragment implements TextWatcher, View.OnClickListe
 
     private void saveNewData(String name) {
         boolean isUnique = true;
-        for (int i = 0; i < arrHistory.length; i++) {
-            if (arrHistory[i].equals(name)){
-                isUnique = false;
-                break;
+        if (arrHistory != null) {
+            for (int i = 0; i < arrHistory.length; i++) {
+                if (arrHistory[i].equals(name)) {
+                    isUnique = false;
+                    break;
+                }
             }
         }
         if (isUnique) {
@@ -372,6 +375,7 @@ public class SearchFm extends Fragment implements TextWatcher, View.OnClickListe
 
             @Override
             public void dataDownloadFailed() {
+                CheckInternet.goNoInternet(getContext(), R.id.svHistory);
             }
         });
     }
