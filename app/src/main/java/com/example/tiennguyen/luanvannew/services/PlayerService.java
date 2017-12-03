@@ -224,15 +224,16 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
                     icControlPlayPause.get().setBackgroundResource(R.drawable.ic_action_play);
                 }
             }
-            showNotification();
+            if (session.getPlayInBackground()) {
+                showNotification();
+            }
         } else if (intent.getAction().equals(Constants.ACTION.PREV_ACTION)) {
             setActionPrev();
         } else if (intent.getAction().equals(Constants.ACTION.PLAY_ACTION)) {
             setActionPlay();
         } else if (intent.getAction().equals(Constants.ACTION.NEXT_ACTION)) {
             setActionNext();
-        } else if (intent.getAction().equals(
-                Constants.ACTION.STOPFOREGROUND_ACTION)) {
+        } else if (intent.getAction().equals(Constants.ACTION.STOPFOREGROUND_ACTION)) {
             stopMedia();
             stopForeground(true);
             stopSelf();
@@ -350,7 +351,9 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
             btnPlayCol.get().setImageDrawable(getResources().getDrawable(android.R.drawable.ic_media_pause));
             icControlPlayPause.get().setBackgroundResource(R.drawable.ic_action_pause);
             updateProgressBar();
-            showNotification();
+            if (session.getPlayInBackground()) {
+                showNotification();
+            }
         }
     }
 
@@ -499,7 +502,9 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
                 playSong(songArr.size() - 1);
                 currentSongIndex = songArr.size() - 1;
             }
-            showNotification();
+            if (session.getPlayInBackground()) {
+                showNotification();
+            }
         }
     }
 
@@ -513,7 +518,9 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
                 playSong(0);
                 currentSongIndex = 0;
             }
-            showNotification();
+            if (session.getPlayInBackground()) {
+                showNotification();
+            }
         }
     }
 
@@ -527,7 +534,9 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
                     playMedia();
                 }
             }
-            showNotification();
+            if (session.getPlayInBackground()) {
+                showNotification();
+            }
         }
     }
 
