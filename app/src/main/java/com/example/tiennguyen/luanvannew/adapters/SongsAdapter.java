@@ -251,7 +251,6 @@ public class SongsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
                 case R.id.ll_about:
                 case R.id.iv_about:{
-                    //Toast.makeText(context,"About", Toast.LENGTH_SHORT).show();
                     LinearLayout secondScreen  = (LinearLayout) activity.findViewById(R.id.fragment_container_second);
                     secondScreen.setVisibility(View.VISIBLE);
                     Fragment fragment = SongInfoFm.newInstance(arrSongs.get(getAdapterPosition()));
@@ -260,7 +259,6 @@ public class SongsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 }; break;
 
                 case R.id.iv_delete: {
-                    //Toast.makeText(context,"Delete", Toast.LENGTH_SHORT).show();
                     AlertDialog diaBox = AskOption(getAdapterPosition());
                     diaBox.show();
                 }; break;
@@ -312,11 +310,11 @@ public class SongsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     {
         AlertDialog myQuittingDialogBox =new AlertDialog.Builder(context)
                 //set message, title, and icon
-                .setTitle("Delete")
-                .setMessage(Constants.DELETE_CONFIRM)
+                .setTitle(context.getResources().getString(R.string.action_delete))
+                .setMessage(context.getResources().getString(R.string.delete_playlist_song))
                 .setIcon(R.drawable.ic_delete)
 
-                .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                .setPositiveButton(context.getResources().getString(R.string.action_delete), new DialogInterface.OnClickListener() {
 
                     public void onClick(DialogInterface dialog, int whichButton) {
                         //your deleting code
@@ -328,7 +326,6 @@ public class SongsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                         PlaylistItem playlistItem;
 
                         String jsonPlaylists = session.getPlaylist();
-                        //Toast.makeText(context, jsonPlaylists, Toast.LENGTH_LONG).show();
                         try {
                             JSONArray arr = new JSONArray(jsonPlaylists);
                             for(int i = 0 ; i < arr.length(); i++) {
@@ -401,7 +398,7 @@ public class SongsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
 
 
-                .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+                .setNegativeButton(context.getResources().getString(R.string.action_cancel), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
 
                         dialog.dismiss();
@@ -417,17 +414,16 @@ public class SongsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         SessionManagement session = new SessionManagement(context, new SessionManagement.HaveNotLoggedIn() {
             @Override
             public void haveNotLoggedIn() {
-                AlertDialogManagement alertDialod = new AlertDialogManagement(new AlertDialogManagement.ConfirmLogout() {
+                AlertDialogManagement alertDialog = new AlertDialogManagement(new AlertDialogManagement.ConfirmLogout() {
                     @Override
                     public void confirmLogout() {
 
                     }
                 });
-                alertDialod.showAlertDialog(context, Constants.ADD_PLAYLIST_TITLE, Constants.REQUEST_LOGIN, false);
+                alertDialog.showAlertDialog(context, context.getResources().getString(R.string.add_to_playlist), context.getResources().getString(R.string.request_login), false);
             }
         });
         if (session.isLoggedIn()) {
-            //ArrayList<PlaylistItem> arrPlaylists = ((MyApplication) activity.getApplication()).getArrPlaylists();
             ArrayList<PlaylistItem> arrPlaylists = new ArrayList<>();
             if(session.getPlaylist() != "") {
                 String jsonPlaylists = session.getPlaylist();

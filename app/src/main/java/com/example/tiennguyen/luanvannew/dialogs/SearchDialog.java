@@ -32,7 +32,7 @@ public class SearchDialog {
         Constants = new Constants();
         AlertDialog.Builder searchDialog = customLI.getAlertDialog();
         searchDialog.setView(dialogLayout);
-        searchDialog.setTitle(activity.getResources().getString(R.string.searching_for_songs));
+        searchDialog.setTitle(activity.getResources().getString(R.string.searching_for));
         String title = customLI.getCheckedTitle();
         switch (title) {
             case "albums":
@@ -42,7 +42,7 @@ public class SearchDialog {
                 song.setChecked(true);
                 break;
         }
-        searchDialog.setPositiveButton(Constants.OK, new DialogInterface.OnClickListener() {
+        searchDialog.setPositiveButton(activity.getResources().getString(R.string.action_OK), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 String searchTitle = "";
@@ -54,7 +54,7 @@ public class SearchDialog {
                 customLI.onResult(searchTitle);
             }
         });
-        searchDialog.setNegativeButton(Constants.CANCEL, new DialogInterface.OnClickListener() {
+        searchDialog.setNegativeButton(activity.getResources().getString(R.string.action_cancel), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.cancel();

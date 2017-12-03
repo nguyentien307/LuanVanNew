@@ -150,7 +150,7 @@ public class MusicHotFm extends Fragment implements View.OnClickListener {
 
 
     private void createSlider(){
-        viewPagerAdapter = new ViewPagerAdapter(getContext(), arrSlider);
+        viewPagerAdapter = new ViewPagerAdapter(getActivity(), getContext(), arrSlider);
         viewPager.setAdapter(viewPagerAdapter);
 
         // Auto slider
@@ -241,6 +241,11 @@ public class MusicHotFm extends Fragment implements View.OnClickListener {
 
             @Override
             public void dataDownloadFailed() {
+                Fragment fragment = new NoInternetFm();
+                getActivity().getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.music_content, fragment)
+                        .commit();
                 CheckInternet.goNoInternet(getContext(), R.id.music_content);
             }
         });

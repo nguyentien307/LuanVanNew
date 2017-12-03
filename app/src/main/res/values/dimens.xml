@@ -37,6 +37,19 @@
     <dimen name="text_size_12sp">12sp</dimen>
     <dimen name="text_size_13sp">13sp</dimen>
     <dimen name="text_size_15sp">15sp</dimen>
+    <dimen name="text_size_extra_micro">10sp</dimen>
+    <dimen name="text_size_micro">12sp</dimen>
+    <dimen name="text_size_small">13sp</dimen>
+    <dimen name="text_size_medium">14sp</dimen>
+    <dimen name="text_size_large">18sp</dimen>
+
+    <!-- Nofication bar button -->
+    <dimen name="status_bar_button_width_height">48dp</dimen>
+    <dimen name="status_bar_album_art">64dp</dimen>
+    <dimen name="status_bar_button_info_container_padding_left">11dp</dimen>
+    <dimen name="notification_expanded_height">128.0dip</dimen>
+    <dimen name="play_controls_notification">48.0dip</dimen>
+    <dimen name="notification_padding">8.0dip</dimen>
 
         <!--height-->
     <dimen name="height_25dp">25dp</dimen>
@@ -113,4 +126,6 @@
     <dimen name="switch_width_60dp">60dp</dimen>
     <dimen name="switch_height_23dp">23dp</dimen>
     <dimen name="row_height_40dp">40dp</dimen>
+
+    <dimen name="new_playlist_image_30dp">30dp</dimen>
 </resources>

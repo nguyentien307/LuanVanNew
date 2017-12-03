@@ -1,8 +1,11 @@
 package com.example.tiennguyen.luanvannew.adapters;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.graphics.Rect;
+import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.PopupMenu;
@@ -23,6 +26,7 @@ import com.example.tiennguyen.luanvannew.R;
 import com.example.tiennguyen.luanvannew.fragments.PlaylistFm;
 import com.example.tiennguyen.luanvannew.fragments.PlaylistSongsFm;
 import com.example.tiennguyen.luanvannew.models.PlaylistItem;
+import com.example.tiennguyen.luanvannew.models.SongItem;
 import com.example.tiennguyen.luanvannew.sessions.SessionManagement;
 import com.google.gson.Gson;
 
@@ -75,9 +79,6 @@ public class PlaylistsAdapter extends RecyclerView.Adapter<PlaylistsAdapter.View
         }
     }
 
-
-
-
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView;
@@ -91,7 +92,7 @@ public class PlaylistsAdapter extends RecyclerView.Adapter<PlaylistsAdapter.View
     public void onBindViewHolder(final ViewHolder holder, final int position) {
         PlaylistItem playlistItem = arrPlaylists.get(position);
         holder.tvPlaylistName.setText(playlistItem.getName());
-        holder.tvNumber.setText(playlistItem.getNumber() + " song(s)");
+        holder.tvNumber.setText(playlistItem.getNumber() + " " + context.getResources().getString(R.string.song_s));
         // loading album cover using Glide library
         Glide.with(context).load(playlistItem.getImg())
                 .thumbnail(0.5f)
@@ -113,7 +114,7 @@ public class PlaylistsAdapter extends RecyclerView.Adapter<PlaylistsAdapter.View
     private void showPopupMenu(View view, final int position) {
         session = new SessionManagement(context);
         // inflate menu
-        PopupMenu popup = new PopupMenu(context, view);
+        final PopupMenu popup = new PopupMenu(context, view);
         MenuInflater inflater = popup.getMenuInflater();
         inflater.inflate(R.menu.menu_playlist, popup.getMenu());
         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
@@ -121,10 +122,29 @@ public class PlaylistsAdapter extends RecyclerView.Adapter<PlaylistsAdapter.View
             public boolean onMenuItemClick(MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.action_play_all:
-                        Toast.makeText(context, "Play all", Toast.LENGTH_SHORT).show();
                         return true;
                     case R.id.action_delete:
-                        //Toast.makeText(context, "Delete", Toast.LENGTH_SHORT).show();
+                        AlertDialog diaBox = AskOption(position);
+                        diaBox.show();
+                        return true;
+                }
+                return false;
+            }
+        });
+        popup.show();
+    }
+
+    private AlertDialog AskOption(final int position)
+    {
+        AlertDialog myQuittingDialogBox =new AlertDialog.Builder(context)
+                //set message, title, and icon
+                .setTitle(R.string.action_delete)
+                .setMessage(R.string.delete_a_playlist_message)
+                .setIcon(R.drawable.ic_delete)
+
+                .setPositiveButton(context.getResources().getString(R.string.action_delete), new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int whichButton) {
                         ArrayList<PlaylistItem> arrItem = new ArrayList<PlaylistItem>();
                         if(session.getPlaylist() != "") {
                             String jsonPlaylists = session.getPlaylist();
@@ -151,12 +171,18 @@ public class PlaylistsAdapter extends RecyclerView.Adapter<PlaylistsAdapter.View
                                 .replace(R.id.fragment_container, fragment)
                                 .commit();
 
-                        return true;
-                }
-                return false;
-            }
-        });
-        popup.show();
+                        dialog.dismiss();
+                    }
+
+                })
+                .setNegativeButton(context.getResources().getString(R.string.action_cancel), new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .create();
+        return myQuittingDialogBox;
+
     }
 
     @Override

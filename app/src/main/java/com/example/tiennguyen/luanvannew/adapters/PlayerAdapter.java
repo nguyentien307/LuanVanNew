@@ -114,6 +114,7 @@ public class PlayerAdapter extends RecyclerView.Adapter<PlayerAdapter.PlayerView
                     Intent playerService = new Intent(context, PlayerService.class);
                     playerService.putExtra("songIndex", getAdapterPosition());
                     playerService.putExtra("playNew", true);
+                    playerService.setAction(Constants.ACTION.STARTFOREGROUND_ACTION);
                     context.startService(playerService);
                     break;
             }
@@ -124,13 +125,13 @@ public class PlayerAdapter extends RecyclerView.Adapter<PlayerAdapter.PlayerView
             SessionManagement session = new SessionManagement(context, new SessionManagement.HaveNotLoggedIn() {
                 @Override
                 public void haveNotLoggedIn() {
-                    AlertDialogManagement alertDialod = new AlertDialogManagement(new AlertDialogManagement.ConfirmLogout() {
+                    AlertDialogManagement alertDialog = new AlertDialogManagement(new AlertDialogManagement.ConfirmLogout() {
                         @Override
                         public void confirmLogout() {
 
                         }
                     });
-                    alertDialod.showAlertDialog(context, Constants.ADD_PLAYLIST_TITLE, Constants.REQUEST_LOGIN, false);
+                    alertDialog.showAlertDialog(context, context.getResources().getString(R.string.create_playlist), context.getResources().getString(R.string.request_login), false);
                 }
             });
             if (session.isLoggedIn()) {

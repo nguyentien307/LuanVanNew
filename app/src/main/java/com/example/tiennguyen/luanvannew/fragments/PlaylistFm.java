@@ -184,20 +184,20 @@ public class PlaylistFm extends Fragment implements View.OnClickListener {
 
 
                 AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
-                alert.setTitle("New Playlist");
+                alert.setTitle(getResources().getString(R.string.create_playlist));
                 // this is set the view from XML inside AlertDialog
                 alert.setView(alertLayout);
                 // disallow cancel of AlertDialog on click of back button and outside touch
                 alert.setCancelable(false);
-                alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                alert.setNegativeButton(getResources().getString(R.string.action_cancel), new DialogInterface.OnClickListener() {
 
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Toast.makeText(getContext(), "Cancel clicked", Toast.LENGTH_SHORT).show();
+                        dialog.dismiss();
                     }
                 });
 
-                alert.setPositiveButton("Done", new DialogInterface.OnClickListener() {
+                alert.setPositiveButton(getResources().getString(R.string.action_done), new DialogInterface.OnClickListener() {
 
                     @Override
                     public void onClick(DialogInterface dialog, int which) {

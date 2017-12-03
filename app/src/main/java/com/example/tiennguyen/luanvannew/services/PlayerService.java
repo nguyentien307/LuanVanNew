@@ -22,13 +22,18 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RemoteViews;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.tiennguyen.luanvannew.R;
 import com.example.tiennguyen.luanvannew.activities.PlayerActivity;
+import com.example.tiennguyen.luanvannew.commons.Constants;
+import com.example.tiennguyen.luanvannew.commons.ImageBigmap;
 import com.example.tiennguyen.luanvannew.commons.StringUtils;
+import com.example.tiennguyen.luanvannew.commons.ZingMP3LinkTemplate;
 import com.example.tiennguyen.luanvannew.fragments.PlayerCollapseFm;
 import com.example.tiennguyen.luanvannew.models.SongItem;
 import com.example.tiennguyen.luanvannew.sessions.SessionManagement;
@@ -52,7 +57,8 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
         View.OnClickListener, View.OnTouchListener, MediaPlayer.OnErrorListener, MediaPlayer.OnPreparedListener,
         MediaPlayer.OnBufferingUpdateListener, MediaPlayer.OnSeekCompleteListener, MediaPlayer.OnInfoListener {
 
-    String URL_TEMPLATE = "http://mp3.zing.vn/html5/song/";
+    Notification status;
+    private final String LOG_TAG = "NotificationService";
 
     // Player Music
     private WeakReference<TextView> musicTitle, artistName;
@@ -146,37 +152,7 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
     public int onStartCommand(@Nullable Intent intent, int flags, int startId) {
         initUI();
         songArr = PlayerActivity.songArr;
-        int songIndex = intent.getIntExtra("songIndex", 0);
-        boolean playNew = intent.getBooleanExtra("playNew", false);
-        interactivePlayerViewWeakReference.get().setMax(100);
-        interactivePlayerViewWeakReference.get().setProgress(0);
-        Log.v(TAG, String.valueOf(songIndex));
-        if (songIndex != currentSongIndex || playNew) {
-            playSong(songIndex);
-//            initNotification(songIndex);
-            currentSongIndex = songIndex;
-        } else if (currentSongIndex != -1) {
-            musicTitle.get().setText(StringUtils.newText(songArr.get(currentSongIndex).getTitle(), titleLength));
-            artistName.get().setText(StringUtils.newText(StringUtils.getArtists(songArr.get(currentSongIndex).getArtist()), artistLength));
 
-            tvTitleCol.get().setText(StringUtils.newText(songArr.get(currentSongIndex).getTitle(), titleLength));
-            tvArtistCol.get().setText(StringUtils.getArtists(songArr.get(currentSongIndex).getArtist()));
-            Glide.with(getBaseContext()).load(songArr.get(currentSongIndex).getLinkImg())
-                    .thumbnail(0.5f)
-                    .crossFade()
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .centerCrop()
-                    .placeholder(R.drawable.item_up)
-                    .error(R.drawable.item_up)
-                    .into(imgTitleCol.get());
-            interactivePlayerViewWeakReference.get().setCoverURL(songArr.get(currentSongIndex).getLinkImg());
-            if (mp.isPlaying()) {
-                icControlPlayPause.get().setBackgroundResource(R.drawable.ic_action_pause);
-            }
-            else {
-                icControlPlayPause.get().setBackgroundResource(R.drawable.ic_action_play);
-            }
-        }
 
         //Nếu có cuộc gọi đến, tạm dừng máy nge nhạc, và resume khi ngắt kết nối cuộc gọi.
         // Get the telephony manager
@@ -210,7 +186,57 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
         telephonyManager.listen(phoneStateListener, PhoneStateListener.LISTEN_CALL_STATE);
 
         super.onStart(intent, startId);
+        controlPlayerNotification(intent);
         return START_STICKY;
+    }
+
+    private void controlPlayerNotification(Intent intent) {
+        if (intent.getAction().equals(Constants.ACTION.STARTFOREGROUND_ACTION)) {
+            int songIndex = intent.getIntExtra("songIndex", 0);
+            boolean playNew = intent.getBooleanExtra("playNew", false);
+            interactivePlayerViewWeakReference.get().setMax(100);
+            interactivePlayerViewWeakReference.get().setProgress(0);
+            if (songIndex != currentSongIndex || playNew) {
+                playSong(songIndex);
+//            initNotification(songIndex);
+                currentSongIndex = songIndex;
+            } else if (currentSongIndex != -1) {
+                musicTitle.get().setText(StringUtils.newText(songArr.get(currentSongIndex).getTitle(), titleLength));
+                artistName.get().setText(StringUtils.newText(StringUtils.getArtists(songArr.get(currentSongIndex).getArtist()), artistLength));
+
+                tvTitleCol.get().setText(StringUtils.newText(songArr.get(currentSongIndex).getTitle(), titleLength));
+                tvArtistCol.get().setText(StringUtils.getArtists(songArr.get(currentSongIndex).getArtist()));
+                Glide.with(getBaseContext()).load(songArr.get(currentSongIndex).getLinkImg())
+                        .thumbnail(0.5f)
+                        .crossFade()
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .centerCrop()
+                        .placeholder(R.drawable.item_up)
+                        .error(R.drawable.item_up)
+                        .into(imgTitleCol.get());
+                interactivePlayerViewWeakReference.get().setCoverURL(songArr.get(currentSongIndex).getLinkImg());
+                if (mp.isPlaying()) {
+                    btnPlayCol.get().setImageDrawable(getResources().getDrawable(android.R.drawable.ic_media_pause));
+                    icControlPlayPause.get().setBackgroundResource(R.drawable.ic_action_pause);
+                }
+                else {
+                    btnPlayCol.get().setImageDrawable(getResources().getDrawable(android.R.drawable.ic_media_play));
+                    icControlPlayPause.get().setBackgroundResource(R.drawable.ic_action_play);
+                }
+            }
+            showNotification();
+        } else if (intent.getAction().equals(Constants.ACTION.PREV_ACTION)) {
+            setActionPrev();
+        } else if (intent.getAction().equals(Constants.ACTION.PLAY_ACTION)) {
+            setActionPlay();
+        } else if (intent.getAction().equals(Constants.ACTION.NEXT_ACTION)) {
+            setActionNext();
+        } else if (intent.getAction().equals(
+                Constants.ACTION.STOPFOREGROUND_ACTION)) {
+            stopMedia();
+            stopForeground(true);
+            stopSelf();
+        }
     }
 
     private void initUI() {
@@ -280,7 +306,7 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
         mHandler.removeCallbacks(mUpdateTimeTask);
         try {
             mp.reset();
-            mp.setDataSource(URL_TEMPLATE + songArr.get(songIndex).getLink());
+            mp.setDataSource(ZingMP3LinkTemplate.URL_TEMPLATE + songArr.get(songIndex).getLink());
             //gửi tin nhắn đến MainActivity để hiển thị đồng bộ
 //                sendBufferingBroadcast();
             musicTitle.get().setText(StringUtils.newText(songArr.get(songIndex).getTitle(), titleLength));
@@ -297,6 +323,7 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
                     .error(R.drawable.item_up)
                     .into(imgTitleCol.get());
 
+            btnPlayCol.get().setImageDrawable(getResources().getDrawable(android.R.drawable.ic_media_pause));
             icControlPlayPause.get().setBackgroundResource(R.drawable.ic_action_pause);
             interactivePlayerViewWeakReference.get().setCoverURL(songArr.get(songIndex).getLinkImg());
             mp.prepare();
@@ -323,6 +350,7 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
             btnPlayCol.get().setImageDrawable(getResources().getDrawable(android.R.drawable.ic_media_pause));
             icControlPlayPause.get().setBackgroundResource(R.drawable.ic_action_pause);
             updateProgressBar();
+            showNotification();
         }
     }
 
@@ -341,6 +369,8 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
     public void stopMedia() {
         if (mp.isPlaying()) {
             mp.stop();
+            btnPlayCol.get().setImageDrawable(getResources().getDrawable(android.R.drawable.ic_media_play));
+            icControlPlayPause.get().setBackgroundResource(R.drawable.ic_action_play);
         }
     }
 
@@ -370,45 +400,6 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
         }
     };
 
-//    @Override
-//    public void onStartTrackingTouch(SeekBar seekBar) {
-//        //xóa tin nhắn xử lý cập nhật progress bar
-//        mHandler.removeCallbacks(mUpdateTimeTask);
-//    }
-//
-//    @Override
-//    public void onStopTrackingTouch(SeekBar seekBar) {
-//        mHandler.removeCallbacks(mUpdateTimeTask);
-//        int totalDuration = mp.getDuration();
-//        int currentPosition = utils.progressToTimer(seekBar.getProgress(), totalDuration);
-//        //Thực hiện về trước sau theo số giây
-//        mp.seekTo(currentPosition);
-//        //Cập nhật lại thời gian ProgressBar
-//        updateProgressBar();
-//    }
-
-    // --------------------Push Notification
-    // Set up the notification ID
-    public static final int NOTIFICATION_ID = 1;
-    private NotificationManager mNotificationManager;
-    private void initNotification(int songIndex) {
-        String ns = Context.NOTIFICATION_SERVICE;
-        mNotificationManager = (NotificationManager) getSystemService(ns);
-        int icon = R.drawable.ic_action_play;
-        CharSequence tickerText = "Audio Book";
-        long when = System.currentTimeMillis();
-        Notification notification = new Notification(icon, tickerText, when);
-        notification.flags = Notification.FLAG_ONGOING_EVENT;
-        Context context = getApplicationContext();
-        CharSequence songName = songArr.get(songIndex).getTitle();
-
-        Intent notificationIntent = new Intent(this, PlayerActivity.class);
-        PendingIntent contentIntent = PendingIntent.getActivity(context, 0,
-                notificationIntent, 0);
-//        notification.setLatestEventInfo(context, songName, null, contentIntent);
-        mNotificationManager.notify(NOTIFICATION_ID, notification);
-    }
-
     @Override
     public void onCompletion(MediaPlayer mp) {
         if (isRepeat) {
@@ -434,44 +425,17 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
             case R.id.control:
             case R.id.imgPlayCol:
             case R.id.llPlayCol:
-                if (currentSongIndex != -1) {
-                    if (mp.isPlaying()) {
-                        pauseMedia();
-                    } else {
-                        // Resume song
-                        if (mp != null) {
-                            playMedia();
-                        }
-                    }
-                }
+                setActionPlay();
                 break;
             case R.id.imgNext:
             case R.id.imgNextCol:
             case R.id.llNextCol:
-                if (currentSongIndex != -1) {
-                    if (currentSongIndex < (songArr.size() - 1)) {
-                        playSong(currentSongIndex + 1);
-                        currentSongIndex = currentSongIndex + 1;
-                    } else {
-                        // play first song
-                        playSong(0);
-                        currentSongIndex = 0;
-                    }
-                }
+                setActionNext();
                 break;
             case R.id.imgPrevious:
             case R.id.imgPreCol:
             case R.id.llPreCol:
-                if (currentSongIndex != -1) {
-                    if (currentSongIndex > 0) {
-                        playSong(currentSongIndex - 1);
-                        currentSongIndex = currentSongIndex - 1;
-                    } else {
-                        // play last song
-                        playSong(songArr.size() - 1);
-                        currentSongIndex = songArr.size() - 1;
-                    }
-                }
+                setActionPrev();
                 break;
             case R.id.btnShuffle:
             case R.id.llShuffle:
@@ -525,6 +489,48 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
         }
     }
 
+    private void setActionPrev() {
+        if (currentSongIndex != -1) {
+            if (currentSongIndex > 0) {
+                playSong(currentSongIndex - 1);
+                currentSongIndex = currentSongIndex - 1;
+            } else {
+                // play last song
+                playSong(songArr.size() - 1);
+                currentSongIndex = songArr.size() - 1;
+            }
+            showNotification();
+        }
+    }
+
+    private void setActionNext() {
+        if (currentSongIndex != -1) {
+            if (currentSongIndex < (songArr.size() - 1)) {
+                playSong(currentSongIndex + 1);
+                currentSongIndex = currentSongIndex + 1;
+            } else {
+                // play first song
+                playSong(0);
+                currentSongIndex = 0;
+            }
+            showNotification();
+        }
+    }
+
+    private void setActionPlay() {
+        if (currentSongIndex != -1) {
+            if (mp.isPlaying()) {
+                pauseMedia();
+            } else {
+                // Resume song
+                if (mp != null) {
+                    playMedia();
+                }
+            }
+            showNotification();
+        }
+    }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -575,5 +581,85 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
     @Override
     public boolean onInfo(MediaPlayer mp, int what, int extra) {
         return false;
+    }
+
+    private void showNotification() {
+        // Using RemoteViews to bind custom layouts into Notification
+        RemoteViews views = new RemoteViews(getPackageName(),
+                R.layout.status_bar);
+        RemoteViews bigViews = new RemoteViews(getPackageName(),
+                R.layout.status_bar_expanded);
+
+        views.setImageViewBitmap(R.id.status_bar_album_art,
+                ImageBigmap.getDefaultAlbumArt(songArr.get(currentSongIndex).getLinkImg()));
+        bigViews.setImageViewBitmap(R.id.status_bar_album_art,
+                ImageBigmap.getDefaultAlbumArt(songArr.get(currentSongIndex).getLinkImg()));
+
+        Intent notificationIntent = new Intent(this, PlayerActivity.class);
+        notificationIntent.setAction(Constants.ACTION.MAIN_ACTION);
+        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
+                notificationIntent, 0);
+
+        Intent previousIntent = new Intent(this, PlayerService.class);
+        previousIntent.setAction(Constants.ACTION.PREV_ACTION);
+        PendingIntent ppreviousIntent = PendingIntent.getService(this, 0,
+                previousIntent, 0);
+
+        Intent playIntent = new Intent(this, PlayerService.class);
+        playIntent.setAction(Constants.ACTION.PLAY_ACTION);
+        PendingIntent pplayIntent = PendingIntent.getService(this, 0,
+                playIntent, 0);
+
+        Intent nextIntent = new Intent(this, PlayerService.class);
+        nextIntent.setAction(Constants.ACTION.NEXT_ACTION);
+        PendingIntent pnextIntent = PendingIntent.getService(this, 0,
+                nextIntent, 0);
+
+        Intent closeIntent = new Intent(this, PlayerService.class);
+        closeIntent.setAction(Constants.ACTION.STOPFOREGROUND_ACTION);
+        PendingIntent pcloseIntent = PendingIntent.getService(this, 0,
+                closeIntent, 0);
+
+        views.setOnClickPendingIntent(R.id.status_bar_play, pplayIntent);
+        bigViews.setOnClickPendingIntent(R.id.status_bar_play, pplayIntent);
+
+        views.setOnClickPendingIntent(R.id.status_bar_next, pnextIntent);
+        bigViews.setOnClickPendingIntent(R.id.status_bar_next, pnextIntent);
+
+        views.setOnClickPendingIntent(R.id.status_bar_prev, ppreviousIntent);
+        bigViews.setOnClickPendingIntent(R.id.status_bar_prev, ppreviousIntent);
+
+        views.setOnClickPendingIntent(R.id.status_bar_collapse, pcloseIntent);
+        bigViews.setOnClickPendingIntent(R.id.status_bar_collapse, pcloseIntent);
+
+        if (mp.isPlaying()) {
+            views.setImageViewResource(R.id.status_bar_play,
+                    R.drawable.apollo_holo_dark_pause);
+            bigViews.setImageViewResource(R.id.status_bar_play,
+                    R.drawable.apollo_holo_dark_pause);
+        } else {
+            views.setImageViewResource(R.id.status_bar_play,
+                    R.drawable.apollo_holo_dark_play);
+            bigViews.setImageViewResource(R.id.status_bar_play,
+                    R.drawable.apollo_holo_dark_play);
+        }
+
+        views.setTextViewText(R.id.status_bar_track_name, StringUtils.newText((String) tvTitleCol.get().getText(), 10));
+        bigViews.setTextViewText(R.id.status_bar_track_name, StringUtils.newText((String) tvTitleCol.get().getText(), 15));
+
+        views.setTextViewText(R.id.status_bar_artist_name, StringUtils.newText((String) tvArtistCol.get().getText(), 10));
+        bigViews.setTextViewText(R.id.status_bar_artist_name, StringUtils.newText((String) tvArtistCol.get().getText(), 15));
+
+        bigViews.setTextViewText(R.id.status_bar_album_name, StringUtils.newText((String) tvTitleCol.get().getText(), 15));
+
+        status = new Notification.Builder(this).build();
+        status.contentView = views;
+        status.bigContentView = bigViews;
+        status.flags = Notification.FLAG_ONGOING_EVENT;
+        status.icon = R.drawable.ic_launcher;
+        status.contentIntent = pendingIntent;
+        startForeground(Constants.NOTIFICATION_ID.FOREGROUND_SERVICE, status);
     }
 }

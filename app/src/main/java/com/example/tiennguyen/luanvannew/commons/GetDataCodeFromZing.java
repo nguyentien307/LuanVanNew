@@ -30,9 +30,13 @@ public class GetDataCodeFromZing {
         gethtmlData.setDataDownloadListener(new GetPage.DataDownloadListener() {
             @Override
             public void dataDownloadedSuccessfully(Document data) {
-                Element item = data.select("div.item-song").get(0);
-                String key = item.attr("data-code");
-                String img = item.select("img").attr("src");
+                Elements item = data.select("div.item-song");
+                String key = "ZGcGykHNhSmpAAZtHTDnZmTkWLFFdEhGz";
+                String img = "https://zmp3-photo.zadn.vn/thumb/94_94/covers/6/e/6e7b90d96728c9ce1b4c2a104d622784_1507799020.jpg";
+                if (item.size() > 0) {
+                    key = item.get(0).attr("data-code");
+                    img = item.get(0).select("img").attr("src");
+                }
                 keyCodeFromZing.keyCodeFromZing(key, img);
             }
 

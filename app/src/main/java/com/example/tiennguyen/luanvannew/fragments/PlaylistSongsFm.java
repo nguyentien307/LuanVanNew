@@ -1,8 +1,10 @@
 package com.example.tiennguyen.luanvannew.fragments;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -18,6 +20,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.tiennguyen.luanvannew.R;
+import com.example.tiennguyen.luanvannew.activities.PlayerActivity;
 import com.example.tiennguyen.luanvannew.adapters.SongsAdapter;
 import com.example.tiennguyen.luanvannew.commons.Constants;
 import com.example.tiennguyen.luanvannew.models.PersonItem;
@@ -144,11 +147,8 @@ public class PlaylistSongsFm extends Fragment implements View.OnClickListener {
             playlistItem = new PlaylistItem(jsonItem.getString("name"), jsonItem.getString("link"), jsonItem.getInt("img"), jsonItem.getInt("number"), jsonItem.getString("arrSongs"));
             //JSONObject item = new JSONObject(newPlaylists.get(position).getArrSongs());
             String a = playlistItem.getArrSongs();
-            int songIndex = 0;
-            int songLength = 0;
             if (!a.equals("")) {
                 JSONArray songs = new JSONArray(a);
-                songLength = songs.length();
                 for (int j = 0; j < songs.length(); j++) {
                     JSONObject song = songs.getJSONObject(j);
                     String title = song.getString("title");
@@ -179,7 +179,6 @@ public class PlaylistSongsFm extends Fragment implements View.OnClickListener {
                     SongItem item = new SongItem(title, views, link, arrSingers, arrComposers, linkLyric, linkImg);
                     arrSongs.add(item);
                 }
-                //arrSongs.clear();
                 songsAdapter.notifyDataSetChanged();
             }
 
@@ -201,26 +200,45 @@ public class PlaylistSongsFm extends Fragment implements View.OnClickListener {
             };break;
 
             case R.id.iv_delete:{
-                //Toast.makeText(getContext(), "delete", Toast.LENGTH_SHORT).show();
                 AlertDialog diaBox = AskOption();
                 diaBox.show();
             };break;
             case R.id.iv_play:{
-                Toast.makeText(getContext(), "play", Toast.LENGTH_SHORT).show();
+                playSong();
             }; break;
 
         }
+    }
+
+    private void playSong() {
+        LinearLayout llPlayerCol = (LinearLayout) getActivity().findViewById(R.id.llPlayerCollapse);
+        llPlayerCol.setVisibility(View.VISIBLE);
+        PlayerCollapseFm playerCollapseFm = PlayerCollapseFm.newInstance(arrSongs.get(0));
+        FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
+        ft.add(R.id.llPlayerCollapse, playerCollapseFm).commit();
+
+        Bundle bundle = new Bundle();
+        bundle.putParcelableArrayList("arrSong", arrSongs);
+        for (int i = 0; i < arrSongs.size(); i++) {
+            bundle.putParcelableArrayList("arrArtist" + i, arrSongs.get(i).getArtist());
+            bundle.putParcelableArrayList("arrComposer" + i, arrSongs.get(i).getComposer());
+        }
+        bundle.putInt("index", 0);
+        bundle.putString("type", Constants.ALBUM_CATEGORIES);
+        Intent intent = new Intent(getActivity(), PlayerActivity.class);
+        intent.putExtra("data", bundle);
+        startActivityForResult(intent, com.example.tiennguyen.luanvannew.commons.Constants.REQUEST_CODE);
     }
 
     private AlertDialog AskOption()
     {
         AlertDialog myQuittingDialogBox =new AlertDialog.Builder(getContext())
                 //set message, title, and icon
-                .setTitle("Delete")
-                .setMessage("Do you want to Delete")
+                .setTitle(R.string.action_delete_all)
+                .setMessage(R.string.delete_playlist_message)
                 .setIcon(R.drawable.ic_delete)
 
-                .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                .setPositiveButton(getResources().getString(R.string.action_delete), new DialogInterface.OnClickListener() {
 
                     public void onClick(DialogInterface dialog, int whichButton) {
                         //your deleting code
@@ -261,14 +279,9 @@ public class PlaylistSongsFm extends Fragment implements View.OnClickListener {
                     }
 
                 })
-
-
-
-                .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+                .setNegativeButton(getResources().getString(R.string.action_cancel), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-
                         dialog.dismiss();
-
                     }
                 })
                 .create();

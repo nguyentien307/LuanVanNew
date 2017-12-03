@@ -167,7 +167,7 @@
             android:layout_marginLeft="@dimen/margin_20dp"
             android:layout_marginTop="15dp"
             android:fontFamily="cursive"
-            android:text="Latest Added"
+            android:text="@string/play_list_song"
             android:textColor="@color/lightgray"
             android:textSize="16sp" />
 

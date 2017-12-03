@@ -2,6 +2,7 @@ package com.example.tiennguyen.luanvannew.activities;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
@@ -114,6 +115,7 @@ public class PlayerActivity extends AppCompatActivity implements OnActionClicked
         if (!type.equals(Constants.PLAYER_COLLAPSE)) {
             playerService.putExtra("playNew", true);
         }
+        playerService.setAction(Constants.ACTION.STARTFOREGROUND_ACTION);
         startService(playerService);
     }
 
@@ -124,8 +126,18 @@ public class PlayerActivity extends AppCompatActivity implements OnActionClicked
                 songArr.add(songItem);
             } else {
                 songArr = ((MyApplication) getApplication()).getArrayPlayer();
-                songArr.add(songItem);
-                index = songArr.size() - 1;
+                int i = 0;
+                for (i = 0; i < songArr.size(); i++) {
+                    if (songArr.get(i).getTitle().equals(songItem.getTitle())) {
+                        break;
+                    }
+                }
+                if (i < songArr.size()) {
+                    index = i;
+                } else {
+                    songArr.add(songItem);
+                    index = songArr.size() - 1;
+                }
             }
             ((MyApplication) getApplication()).setAlbumOrCategory(false);
         } else if (type.equals(CONSTANTS.PLAYER_COLLAPSE)) {

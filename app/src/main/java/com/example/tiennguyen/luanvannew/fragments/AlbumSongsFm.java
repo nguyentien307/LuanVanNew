@@ -1,7 +1,10 @@
 package com.example.tiennguyen.luanvannew.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -15,6 +18,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.tiennguyen.luanvannew.R;
+import com.example.tiennguyen.luanvannew.activities.PlayerActivity;
 import com.example.tiennguyen.luanvannew.adapters.SongsAdapter;
 import com.example.tiennguyen.luanvannew.commons.Constants;
 import com.example.tiennguyen.luanvannew.commons.GetDataCodeFromZing;
@@ -183,9 +187,29 @@ public class AlbumSongsFm extends Fragment implements View.OnClickListener {
                 Toast.makeText(getContext(), "add", Toast.LENGTH_SHORT).show();
             }; break;
             case R.id.iv_play:{
-                Toast.makeText(getContext(), "play", Toast.LENGTH_SHORT).show();
+                playSong();
             }; break;
 
         }
+    }
+
+    private void playSong() {
+        LinearLayout llPlayerCol = (LinearLayout) getActivity().findViewById(R.id.llPlayerCollapse);
+        llPlayerCol.setVisibility(View.VISIBLE);
+        PlayerCollapseFm playerCollapseFm = PlayerCollapseFm.newInstance(arrSongs.get(0));
+        FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
+        ft.add(R.id.llPlayerCollapse, playerCollapseFm).commit();
+
+        Bundle bundle = new Bundle();
+        bundle.putParcelableArrayList("arrSong", arrSongs);
+        for (int i = 0; i < arrSongs.size(); i++) {
+            bundle.putParcelableArrayList("arrArtist" + i, arrSongs.get(i).getArtist());
+            bundle.putParcelableArrayList("arrComposer" + i, arrSongs.get(i).getComposer());
+        }
+        bundle.putInt("index", 0);
+        bundle.putString("type", Constants.ALBUM_CATEGORIES);
+        Intent intent = new Intent(getActivity(), PlayerActivity.class);
+        intent.putExtra("data", bundle);
+        startActivityForResult(intent, com.example.tiennguyen.luanvannew.commons.Constants.REQUEST_CODE);
     }
 }

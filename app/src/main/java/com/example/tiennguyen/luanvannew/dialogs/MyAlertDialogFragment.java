@@ -1,25 +1,31 @@
 package com.example.tiennguyen.luanvannew.dialogs;
 
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.example.tiennguyen.luanvannew.MyApplication;
 import com.example.tiennguyen.luanvannew.R;
 import com.example.tiennguyen.luanvannew.adapters.PlaylistsNameAdapter;
 import com.example.tiennguyen.luanvannew.commons.Constants;
+import com.example.tiennguyen.luanvannew.fragments.PlaylistFm;
 import com.example.tiennguyen.luanvannew.models.PlaylistItem;
 import com.example.tiennguyen.luanvannew.models.SongItem;
 import com.example.tiennguyen.luanvannew.sessions.SessionManagement;
+import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -49,14 +55,12 @@ public class MyAlertDialogFragment extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        //arrPlaylists = getArguments().getParcelableArrayList(TITLE);
         songItem = (SongItem) getArguments().getSerializable("songItem");
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.add_playlist_box, null);
-        LinearLayout btnCancel = (LinearLayout) view.findViewById(R.id.btn_cancel);
-
+        LinearLayout btnNewPlaylist = (LinearLayout) view.findViewById(R.id.btnNewPlaylist);
 
         RecyclerView rcPlaylists = (RecyclerView) view.findViewById(R.id.rc_playlists);
         //recycler
@@ -76,16 +80,13 @@ public class MyAlertDialogFragment extends DialogFragment {
 
         setCancelable(true);
         builder.setView(view);
-        builder.setTitle(Constants.ADD_PLAYLIST_TITLE);
+        builder.setTitle(getResources().getString(R.string.add_to_playlist));
         final Dialog dialog = builder.create();
 
-//        dialog.getWindow().setBackgroundDrawable(
-//                new ColorDrawable(Color.rgb(60, 50, 50)));
-//        dialog.getWindow().setTitleColor(Color.rgb(255, 255, 255));
-        btnCancel.setOnClickListener(new View.OnClickListener() {
+        btnNewPlaylist.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dialog.dismiss();
+                addNewPlaylist();
             }
         });
 
@@ -93,47 +94,82 @@ public class MyAlertDialogFragment extends DialogFragment {
 
     }
 
+    private void addNewPlaylist() {
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        View alertLayout = inflater.inflate(R.layout.create_playlist_box, null);
+        final EditText etName = (EditText) alertLayout.findViewById(R.id.et_name);
+
+
+        AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
+        alert.setTitle(getResources().getString(R.string.create_playlist));
+        // this is set the view from XML inside AlertDialog
+        alert.setView(alertLayout);
+        // disallow cancel of AlertDialog on click of back button and outside touch
+        alert.setCancelable(false);
+        alert.setNegativeButton(getResources().getString(R.string.action_cancel), new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        alert.setPositiveButton(getResources().getString(R.string.action_done), new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String name = etName.getText().toString();
+
+                ArrayList<String> arrName = new ArrayList<String>();
+                Boolean isValid = true;
+
+                if(session.getPlaylist() != "") {
+                    String jsonPlaylists = session.getPlaylist();
+                    try {
+                        JSONArray arr = new JSONArray(jsonPlaylists);
+                        for(int i = 0 ; i < arr.length(); i++){
+                            JSONObject jsonItem = arr.getJSONObject(i);
+                            String title = jsonItem.getString("name");
+                            arrName.add(title);
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                if(arrName.size()!=0){
+                    for(int i = 0; i < arrName.size(); i++){
+                        if(name.contentEquals(arrName.get(i))) {
+                            isValid = false;
+                            break;
+                        }
+                    }
+                }
+
+                if(!isValid){
+                    Toast.makeText(getContext(), name + getResources().getString(R.string.exist_message), Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    PlaylistItem item = new PlaylistItem(name,"", R.drawable.hot_slider1, 0, "");
+                    arrPlaylists.add(item);
+                    Gson gson = new Gson();
+                    String jsonPlaylist = gson.toJson(arrPlaylists);
+                    session.setPlaylist(jsonPlaylist);
+                    playlistsAdapter.notifyDataSetChanged();
+                }
+            }
+        });
+        AlertDialog dialog = alert.create();
+        dialog.show();
+    }
+
     private void preparePlaylists() {
         if(session.getPlaylist() != "") {
             String jsonPlaylists = session.getPlaylist();
-            //Toast.makeText(getContext(), jsonPlaylists, Toast.LENGTH_SHORT).show();
             try {
                 JSONArray arr = new JSONArray(jsonPlaylists);
                 for(int i = 0 ; i < arr.length(); i++){
                     JSONObject jsonItem = arr.getJSONObject(i);
-//                    //JSONArray songs = jsonItem.getJSONArray("arrSongs");
-//                    JSONArray songs = new JSONArray(jsonItem.getString("arrSongs"));
-//                    ArrayList<SongItem> arrSongs = new ArrayList<>();
-//                    for(int j = 0; j < songs.length(); j ++){
-//                        JSONObject song = songs.getJSONObject(j);
-//                        String title = song.getString("title");
-//                        int views = song.getInt("views");
-//                        String link = song.getString("link");
-//                        String linkLyric = song.getString("linkLyric");
-//                        String linkImg = song.getString("linkImg");
-//                        JSONArray singers = song.getJSONArray("artist");
-//                        JSONArray composers = song.getJSONArray("composer");
-//                        final ArrayList<PersonItem> arrSingers = new ArrayList<PersonItem>();
-//                        final ArrayList<PersonItem> arrComposers = new ArrayList<PersonItem>();
-//                        for (int index = 0 ; index < singers.length(); index++){
-//                            JSONObject singer = singers.getJSONObject(index);
-//                            String singerHref = singer.getString("link");
-//                            String singerName = singer.getString("name");
-//                            int view = singer.getInt("views");
-//                            PersonItem singerItem = new PersonItem(singerName, singerHref, view);
-//                            arrSingers.add(singerItem);
-//                        }
-//                        for (int index = 0 ; index < composers.length(); index++){
-//                            JSONObject composer = composers.getJSONObject(index);
-//                            String composerHref = composer.getString("link");
-//                            String composerName = composer.getString("name");
-//                            int view = composer.getInt("views");
-//                            PersonItem composerItem = new PersonItem(composerName, composerHref, view);
-//                            arrComposers.add(composerItem);
-//                        }
-//                        SongItem item = new SongItem(title, views, link, arrSingers, arrComposers, linkLyric, linkImg );
-//                        arrSongs.add(item);
-//                    }
                     PlaylistItem item = new PlaylistItem(jsonItem.getString("name"), jsonItem.getString("link"), jsonItem.getInt("img"), jsonItem.getInt("number"), jsonItem.getString("arrSongs"));
                     arrPlaylists.add(item);
                 }
