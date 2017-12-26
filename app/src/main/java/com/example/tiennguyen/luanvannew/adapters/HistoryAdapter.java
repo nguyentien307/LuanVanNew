@@ -111,7 +111,11 @@ public class HistoryAdapter extends Adapter<HistoryAdapter.HistoryViewHolder> {
                             .commit();
                 }
             });
-            alertDialogClearHistory.showConfirmClearDialog(ctx, arrSongs.get(position), Constants.CLEAR_MESSAGE, position);
+            alertDialogClearHistory.showConfirmClearDialog(
+                    ctx,
+                    arrSongs.get(position),
+                    ctx.getResources().getString(R.string.clear_message),
+                    position);
         }
 
         private void saveData(String data, final int mode) {

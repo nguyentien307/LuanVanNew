@@ -24,6 +24,9 @@ import com.example.tiennguyen.luanvannew.dialogs.AlertDialogManagement;
 import com.example.tiennguyen.luanvannew.models.PlaylistItem;
 import com.example.tiennguyen.luanvannew.sessions.SessionManagement;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 
 /**
@@ -91,6 +94,16 @@ public class UserFm extends Fragment implements View.OnClickListener {
     }
 
     private void viewUserProfile() {
+        try {
+            JSONObject userInfo = new JSONObject(Constants.USER_PROFILE_JSON);
+            tvName.setText(userInfo.getString("name"));
+            tvEmail.setText(userInfo.getString("email"));
+            tvPhoneNumber.setText(userInfo.getString("phone"));
+            tvLevel.setText(userInfo.getString("memberlevel"));
+            tvNickChat.setText(userInfo.getString("nickchat"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
     }
 

@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,10 +18,12 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.example.tiennguyen.luanvannew.MyApplication;
 import com.example.tiennguyen.luanvannew.R;
 import com.example.tiennguyen.luanvannew.adapters.AlbumsAdapter;
 import com.example.tiennguyen.luanvannew.adapters.PlaylistsAdapter;
 import com.example.tiennguyen.luanvannew.models.PlaylistItem;
+import com.example.tiennguyen.luanvannew.services.CheckInternet;
 import com.example.tiennguyen.luanvannew.sessions.SessionManagement;
 import com.google.gson.Gson;
 
@@ -77,32 +80,35 @@ public class PlaylistFm extends Fragment implements View.OnClickListener {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup viewGroup, Bundle savedInstanceState) {
-        View view;
+        View view = inflater.inflate(R.layout.fm_playlist, viewGroup, false);;
         session = new SessionManagement(getContext());
-        if(isLogin){
-
-            view = inflater.inflate(R.layout.fm_playlist_login, viewGroup, false);
-            ivAdd = (ImageView) view.findViewById(R.id.iv_add);
-            llAddPlaylist = (LinearLayout) view.findViewById(R.id.llAddPlaylist);
+        if (CheckInternet.isConnected(getContext())) {
+            if (isLogin) {
+                view = inflater.inflate(R.layout.fm_playlist_login, viewGroup, false);
+                ivAdd = (ImageView) view.findViewById(R.id.iv_add);
+                llAddPlaylist = (LinearLayout) view.findViewById(R.id.llAddPlaylist);
 //            ivAdd.setOnClickListener(this);
-            llAddPlaylist.setOnClickListener(this);
+                llAddPlaylist.setOnClickListener(this);
 
-            //recycler
-            rcPlaylists = (RecyclerView) view.findViewById(R.id.rc_playlists);
-            playlistsAdapter = new PlaylistsAdapter(getContext(), arrPlaylists);
-            layoutManager = new GridLayoutManager(getContext(), 2);
-            rcPlaylists.setLayoutManager(layoutManager);
-            rcPlaylists.addItemDecoration(new AlbumsAdapter.GridSpacingItemDecoration(2, playlistsAdapter.dpToPx(10), true));
-            rcPlaylists.setItemAnimator(new DefaultItemAnimator());
-            rcPlaylists.setNestedScrollingEnabled(false);
-            rcPlaylists.setAdapter(playlistsAdapter);
+                //recycler
+                rcPlaylists = (RecyclerView) view.findViewById(R.id.rc_playlists);
+                playlistsAdapter = new PlaylistsAdapter(getContext(), arrPlaylists);
+                layoutManager = new GridLayoutManager(getContext(), 2);
+                rcPlaylists.setLayoutManager(layoutManager);
+                rcPlaylists.addItemDecoration(new AlbumsAdapter.GridSpacingItemDecoration(2, playlistsAdapter.dpToPx(10), true));
+                rcPlaylists.setItemAnimator(new DefaultItemAnimator());
+                rcPlaylists.setNestedScrollingEnabled(false);
+                rcPlaylists.setAdapter(playlistsAdapter);
 
-            preparePlaylists();
+                preparePlaylists();
 
-        }else {
-            view = inflater.inflate(R.layout.fm_playlist, viewGroup, false);
-            Button btnLogin = (Button) view.findViewById(R.id.btn_login);
-            btnLogin.setOnClickListener(this);
+            } else {
+                view = inflater.inflate(R.layout.fm_playlist, viewGroup, false);
+                Button btnLogin = (Button) view.findViewById(R.id.btn_login);
+                btnLogin.setOnClickListener(this);
+            }
+        } else {
+            CheckInternet.goNoInternet(getContext(), R.id.rlPlaylistContent);
         }
         return view;
     }
@@ -178,20 +184,20 @@ public class PlaylistFm extends Fragment implements View.OnClickListener {
 
 
                 AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
-                alert.setTitle("New Playlist");
+                alert.setTitle(getResources().getString(R.string.create_playlist));
                 // this is set the view from XML inside AlertDialog
                 alert.setView(alertLayout);
                 // disallow cancel of AlertDialog on click of back button and outside touch
                 alert.setCancelable(false);
-                alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                alert.setNegativeButton(getResources().getString(R.string.action_cancel), new DialogInterface.OnClickListener() {
 
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Toast.makeText(getContext(), "Cancel clicked", Toast.LENGTH_SHORT).show();
+                        dialog.dismiss();
                     }
                 });
 
-                alert.setPositiveButton("Done", new DialogInterface.OnClickListener() {
+                alert.setPositiveButton(getResources().getString(R.string.action_done), new DialogInterface.OnClickListener() {
 
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -224,7 +230,7 @@ public class PlaylistFm extends Fragment implements View.OnClickListener {
                         }
 
                         if(!isValid){
-                            Toast.makeText(getContext(), name + " already defined", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(), name + " " + getResources().getString(R.string.exist_message), Toast.LENGTH_SHORT).show();
                         }
                         else {
                             PlaylistItem item = new PlaylistItem(name,"", R.drawable.hot_slider1, 0, "");

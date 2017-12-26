@@ -37,7 +37,7 @@ public class AlertDialogManagement {
             alertDialog.setIcon((status) ? R.drawable.success : R.drawable.fail);
 
         // Setting OK Button
-        alertDialog.setButton("OK", new DialogInterface.OnClickListener() {
+        alertDialog.setButton(context.getResources().getString(R.string.action_OK), new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
             }
         });
@@ -55,13 +55,13 @@ public class AlertDialogManagement {
         // Setting Dialog Message
         alertDialog.setMessage(message);
 
-        alertDialog.setPositiveButton("Cancel", new DialogInterface.OnClickListener() {
+        alertDialog.setPositiveButton(context.getResources().getString(R.string.action_cancel), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
             }
         });
 
-        alertDialog.setNegativeButton("OK", new DialogInterface.OnClickListener() {
+        alertDialog.setNegativeButton(context.getResources().getString(R.string.action_OK), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 confirmLogout.confirmLogout();

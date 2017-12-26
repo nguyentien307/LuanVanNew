@@ -1,7 +1,11 @@
 package com.example.tiennguyen.luanvannew.fragments;
 
+import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -12,6 +16,8 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,9 +26,12 @@ import com.example.tiennguyen.luanvannew.R;
 import com.example.tiennguyen.luanvannew.commons.Constants;
 import com.example.tiennguyen.luanvannew.dialogs.AlertDialogManagement;
 import com.example.tiennguyen.luanvannew.models.PlaylistItem;
+import com.example.tiennguyen.luanvannew.services.CheckInternet;
 import com.example.tiennguyen.luanvannew.sessions.SessionManagement;
 
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Created by TIENNGUYEN on 11/11/2017.
@@ -39,6 +48,8 @@ public class LoginFm extends Fragment implements TextWatcher, View.OnKeyListener
     private TextView tvEmailInvalid, tvPasswordInvalid;
     private Button btnLogin;
     private boolean isInvalid = false;
+    private RelativeLayout rlLoginLoading;
+    Fragment fragment;
 
     public static LoginFm newInstance(String name) {
         LoginFm contentFragment = new LoginFm();
@@ -75,6 +86,8 @@ public class LoginFm extends Fragment implements TextWatcher, View.OnKeyListener
         tvEmailInvalid = (TextView) view.findViewById(R.id.tvEmailInvalid);
         tvPasswordInvalid = (TextView) view.findViewById(R.id.tvPasswordInvalid);
         btnLogin = (Button) view.findViewById(R.id.btnLogin);
+        rlLoginLoading = (RelativeLayout) view.findViewById(R.id.rlLoginLoading);
+        rlLoginLoading.setVisibility(View.GONE);
 
         edEmail.addTextChangedListener(this);
         edEmail.setOnKeyListener(this);
@@ -89,7 +102,7 @@ public class LoginFm extends Fragment implements TextWatcher, View.OnKeyListener
 
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
-        checkEmailType(s);
+//        checkEmailType(s);
     }
 
     @Override
@@ -151,41 +164,52 @@ public class LoginFm extends Fragment implements TextWatcher, View.OnKeyListener
     }
 
     private void loginValidateion() {
-        String email = String.valueOf(edEmail.getText());
-        String password = String.valueOf(edPassword.getText());
+        final String email = String.valueOf(edEmail.getText());
+        final String password = String.valueOf(edPassword.getText());
 
+        final Handler handler = new Handler();
         // Check if username, password is filled
-        if(email.trim().length() > 0 && password.trim().length() > 0){
-            // For testing puspose username, password is checked with sample data
-            // username = test
-            // password = test
-            if(email.equals("123@gmail.com") && password.equals("1111")){
+        if (email.trim().length() > 0 && password.trim().length() > 0) {
+            rlLoginLoading.setVisibility(View.VISIBLE);
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    rlLoginLoading.setVisibility(View.GONE);
+                    if (CheckInternet.isConnected(getContext())) {
+                        // For testing puspose username, password is checked with sample data
+                        // username = test
+                        // password = test
+                        if (email.equals("test") && password.equals("1111")) {
 
-                // Creating user login session
-                // For testing i am stroing name, email as follow
-                // Use user real data
-                session.createLoginSession("a@gmail.com", "1111");
+                            // Creating user login session
+                            // For testing i am stroing name, email as follow
+                            // Use user real data
+                            session.createLoginSession("huathitoquyen0403@gmail.com", "1111");
 
-                Fragment fragment = new Fragment();
-                switch (res) {
-                    case "Playlist":
-                        fragment = new PlaylistFm();
-                        break;
-                    case "Login":
-                        fragment = new UserFm();
-                        break;
+                            preparePlaylist();
+                            switch (res) {
+                                case "Playlist":
+                                    fragment = new PlaylistFm();
+                                    break;
+                                case "Login":
+                                    fragment = new UserFm();
+                                    break;
+                            }
+                            getActivity().getSupportFragmentManager()
+                                    .beginTransaction()
+                                    .replace(R.id.fragment_container, fragment)
+                                    .commit();
+
+                        } else {
+                            // username / password doesn't match
+                            alert.showAlertDialog(getActivity(), getResources().getString(R.string.login_fail), getResources().getString(R.string.error_message), false);
+                        }
+                    } else {
+                        CheckInternet.goNoInternet(getContext(), R.id.rlLoginContainer);
+                    }
                 }
-                preparePlaylist();
-                getActivity().getSupportFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.fragment_container, fragment)
-                        .commit();
-
-            } else {
-                // username / password doesn't match
-                alert.showAlertDialog(getActivity(), getResources().getString(R.string.login_fail), getResources().getString(R.string.error_message), false);
-            }
-        }else{
+            }, 2000);
+        } else {
             // user didn't entered username or password
             // Show alert asking him to enter the details
             alert.showAlertDialog(getActivity(), getResources().getString(R.string.login_fail), getResources().getString(R.string.warning_message), false);

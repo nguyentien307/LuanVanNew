@@ -25,6 +25,7 @@ import com.example.tiennguyen.luanvannew.models.AlbumItem;
 import com.example.tiennguyen.luanvannew.models.PersonItem;
 import com.example.tiennguyen.luanvannew.models.SliderItem;
 import com.example.tiennguyen.luanvannew.models.SongItem;
+import com.example.tiennguyen.luanvannew.services.CheckInternet;
 import com.example.tiennguyen.luanvannew.services.GetPage;
 
 import org.jsoup.nodes.Document;
@@ -73,6 +74,10 @@ public class MusicHotFm extends Fragment implements View.OnClickListener {
     //fragment
     private String res = "";
 
+    //Loading
+    private LinearLayout llMusicHot;
+    private RelativeLayout rlMusicHotLoading;
+
     public static MusicHotFm newInstance(String name) {
         MusicHotFm contentFragment = new MusicHotFm();
         Bundle bundle = new Bundle();
@@ -93,11 +98,13 @@ public class MusicHotFm extends Fragment implements View.OnClickListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup viewGroup, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fm_music_hot, viewGroup, false);
 
+        //Loading
+        llMusicHot = (LinearLayout) view.findViewById(R.id.llMusicHot);
+        rlMusicHotLoading = (RelativeLayout) view.findViewById(R.id.rlMusicHotLoading);
 
         viewPager = (ViewPager) view.findViewById(R.id.view_pager);
         sliderDotspanel = (LinearLayout) view.findViewById(R.id.ll_slider_dots);
         createArraySlider();
-
 
         //rcalbum
         rcAlbums = (RecyclerView) view.findViewById(R.id.rc_albums);
@@ -137,15 +144,13 @@ public class MusicHotFm extends Fragment implements View.OnClickListener {
         tvSongsViewAll.setOnClickListener(this);
         ivSongsViewAll.setOnClickListener(this);
 
-
-
         return view;
     }
 
 
 
     private void createSlider(){
-        viewPagerAdapter = new ViewPagerAdapter(getContext(), arrSlider);
+        viewPagerAdapter = new ViewPagerAdapter(getActivity(), getContext(), arrSlider);
         viewPager.setAdapter(viewPagerAdapter);
 
         // Auto slider
@@ -217,84 +222,101 @@ public class MusicHotFm extends Fragment implements View.OnClickListener {
 //        arrSlider.add("http://www.abc.net.au/radionational/image/7982806-3x2-700x467.jpg");
 //        arrSlider.add("http://www.real.com/resources/wp-content/uploads/2013/08/youtube-music-playlist-762x294-1431640159.jpg");
 
+        setLoadingVisible(true);
         GetPage getHomePage = new GetPage(getContext());
         getHomePage.setDataDownloadListener(new GetPage.DataDownloadListener() {
             @Override
             public void dataDownloadedSuccessfully(Document data) {
+                setLoadingVisible(false);
 
                 //create slider
-                Elements aElements = data.select("#marquee_imgid_musicHubMarquee li");
-                for (int i = 0; i < aElements.size(); i++) {
-                    Element element = aElements.get(i).select("div a").first();
-                    String href = element.attr("href");
-                    String title = element.attr("title");
-                    String img = element.select("img").attr("src");
-                    SliderItem item = new SliderItem(img, title, href);
-                    arrSlider.add(item);
-                }
-                createSlider();
-
+                viewSliderList(data);
 
                 //prepare albums
-                Elements albElements = data.select("div.list_album").first().select("ul li");
-                for (Element albItem:albElements){
-                    String img = albItem.select(".avatar img").attr("src");
-                    Element info = albItem.select("div.info_album").first();
-                    String albHref = info.select("h3 a").attr("href");
-                    String title = info.select("h3 a").text();
-                    ArrayList<PersonItem> arrSingers = new ArrayList<PersonItem>();
-                    Elements singers = info.select("h4 a");
-                    for(Element singer:singers){
-                        String singerHref = singer.attr("href");
-                        String singerName = singer.text();
-                        PersonItem singerItem = new PersonItem(singerName, singerHref, 192);
-                        arrSingers.add(singerItem);
-                    }
-
-                    AlbumItem albumItem = new AlbumItem(title, albHref, img, 300, arrSingers);
-                    arrAlbums.add(albumItem);
-                }
-                albumsAdapter.notifyDataSetChanged();
-
+                viewAlbumList(data);
 
                 //prepare Songs
-                Elements songs = data.select("div.list_chart_music ul li");
-                for (Element song:songs){
-                    Element info = song.select("div.info_data").first();
-                    final String songHref = info.select("h3 a").attr("href");
-                    final String title = info.select("h3 a").text();
-                    final ArrayList<PersonItem> arrSingers = new ArrayList<PersonItem>();
-                    Elements singers = info.select("h4 a");
-                    for(Element singer:singers){
-                        String singerHref = singer.attr("href");
-                        String singerName = singer.text();
-                        PersonItem singerItem = new PersonItem(singerName, singerHref, 192);
-                        arrSingers.add(singerItem);
-                    }
-                    final ArrayList<PersonItem> arrComposers = new ArrayList<PersonItem>();
-                    PersonItem composer = new PersonItem("NHAC SĨ", "", 200);
-                    arrComposers.add(composer);
-
-                    GetDataCodeFromZing getDataCodeFromZing = new GetDataCodeFromZing(new GetDataCodeFromZing.KeyCodeFromZing() {
-                        @Override
-                        public void keyCodeFromZing(String key, String imgLink) {
-                            SongItem item = new SongItem(title, 200, key, arrSingers, arrComposers, "", imgLink);
-                            arrSongs.add(item);
-                            songsAdapter.notifyDataSetChanged();
-                        }
-                    });
-                    getDataCodeFromZing.getKeyFromZing(getContext(), title);
-                }
+                viewSongList(data);
             }
 
             @Override
             public void dataDownloadFailed() {
-
+                Fragment fragment = new NoInternetFm();
+                getActivity().getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.music_content, fragment)
+                        .commit();
+                CheckInternet.goNoInternet(getContext(), R.id.music_content);
             }
         });
         getHomePage.execute(Constants.HOME_PAGE);
 
 
+    }
+
+    private void viewAlbumList(Document data) {
+        Elements albElements = data.select("div.list_album").first().select("ul li");
+        for (Element albItem:albElements){
+            String img = albItem.select(".avatar img").attr("src");
+            Element info = albItem.select("div.info_album").first();
+            String albHref = info.select("h3 a").attr("href");
+            String title = info.select("h3 a").text();
+            ArrayList<PersonItem> arrSingers = new ArrayList<>();
+            Elements singers = info.select("h4 a");
+            for(Element singer:singers){
+                String singerHref = singer.attr("href");
+                String singerName = singer.text();
+                PersonItem singerItem = new PersonItem(singerName, singerHref, 192);
+                arrSingers.add(singerItem);
+            }
+
+            AlbumItem albumItem = new AlbumItem(title, albHref, img, 300, arrSingers);
+            arrAlbums.add(albumItem);
+        }
+        albumsAdapter.notifyDataSetChanged();
+    }
+
+    private void viewSongList(Document data) {
+        Elements songs = data.select("div.list_chart_music ul li");
+        for (Element song:songs){
+            Element info = song.select("div.info_data").first();
+            final String songHref = info.select("h3 a").attr("href");
+            final String title = info.select("h3 a").text();
+            final ArrayList<PersonItem> arrSingers = new ArrayList<PersonItem>();
+            Elements singers = info.select("h4 a");
+            for(Element singer:singers){
+                String singerHref = singer.attr("href");
+                String singerName = singer.text();
+                PersonItem singerItem = new PersonItem(singerName, singerHref, 192);
+                arrSingers.add(singerItem);
+            }
+            final ArrayList<PersonItem> arrComposers = new ArrayList<>();
+            PersonItem composer = new PersonItem("NHAC SĨ", "", 200);
+            arrComposers.add(composer);
+
+            GetDataCodeFromZing getDataCodeFromZing = new GetDataCodeFromZing(new GetDataCodeFromZing.KeyCodeFromZing() {
+                @Override
+                public void keyCodeFromZing(String key, String imgLink) {
+                    SongItem item = new SongItem(title, 200, key, arrSingers, arrComposers, "", imgLink);
+                    arrSongs.add(item);
+                    songsAdapter.notifyDataSetChanged();
+                }
+            });
+            getDataCodeFromZing.getKeyFromZing(getContext(), title);
+        }
+    }
+
+    private void viewSliderList(Document data) {
+        Elements aElements = data.select("#marquee_imgid_musicHubMarquee li");
+        for (int i = 0; i < aElements.size(); i++) {
+            Element element = aElements.get(i).select("div a").first();
+            String href = element.attr("href");
+            String title = element.attr("title");
+            String img = element.select("img").attr("src");
+            SliderItem item = new SliderItem(img, title, href);
+            arrSlider.add(item);
+        }
+        createSlider();
     }
 
 
@@ -329,5 +351,15 @@ public class MusicHotFm extends Fragment implements View.OnClickListener {
                 .setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_left, R.anim.slide_out_left, R.anim.slide_in_left)
                 .replace(idLayout, fragment)
                 .commit();
+    }
+
+    public void setLoadingVisible(boolean b) {
+        if (b) {
+            rlMusicHotLoading.setVisibility(View.VISIBLE);
+            llMusicHot.setVisibility(View.GONE);
+        } else {
+            rlMusicHotLoading.setVisibility(View.GONE);
+            llMusicHot.setVisibility(View.VISIBLE);
+        }
     }
 }

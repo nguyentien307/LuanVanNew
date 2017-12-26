@@ -1,7 +1,11 @@
 package com.example.tiennguyen.luanvannew.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -15,9 +19,19 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.tiennguyen.luanvannew.R;
+import com.example.tiennguyen.luanvannew.activities.PlayerActivity;
 import com.example.tiennguyen.luanvannew.adapters.InformationsAdapter;
+import com.example.tiennguyen.luanvannew.commons.Constants;
+import com.example.tiennguyen.luanvannew.dialogs.AlertDialogManagement;
+import com.example.tiennguyen.luanvannew.dialogs.MyAlertDialogFragment;
 import com.example.tiennguyen.luanvannew.models.PersonItem;
+import com.example.tiennguyen.luanvannew.models.PlaylistItem;
 import com.example.tiennguyen.luanvannew.models.SongItem;
+import com.example.tiennguyen.luanvannew.sessions.SessionManagement;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -65,7 +79,7 @@ public class SongInfoFm extends Fragment implements View.OnClickListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup viewGroup, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fm_song_info, viewGroup, false);
         tvHeaderTitle = (TextView) view.findViewById(R.id.tv_header_title);
-        tvHeaderTitle.setText("Song Information");
+        tvHeaderTitle.setText(getResources().getString(R.string.song_info_title));
         llBackButton = (LinearLayout) view.findViewById(R.id.ll_btn_back);
         ivBackButton = (ImageView) view.findViewById(R.id.iv_btn_back);
         llBackButton.setOnClickListener(this);
@@ -90,10 +104,10 @@ public class SongInfoFm extends Fragment implements View.OnClickListener {
 
         titleSingers = view.findViewById(R.id.title_singers);
         tvSingersTitle = (TextView) titleSingers.findViewById(R.id.tv_title_name);
-        tvSingersTitle.setText("Artists");
+        tvSingersTitle.setText(getResources().getString(R.string.artists_title));
         titleComposers = view.findViewById(R.id.title_composers);
         tvComposersTilte = (TextView) titleComposers.findViewById(R.id.tv_title_name);
-        tvComposersTilte.setText("Composers");
+        tvComposersTilte.setText(getResources().getString(R.string.composers_title));
 
         //recycler view
         rcSingers = (RecyclerView) view.findViewById(R.id.rc_singers);
@@ -145,12 +159,68 @@ public class SongInfoFm extends Fragment implements View.OnClickListener {
             }; break;
 
             case R.id.iv_add:{
-                Toast.makeText(getContext(), "add", Toast.LENGTH_SHORT).show();
+                showDialog();
             }; break;
             case R.id.iv_play:{
-                Toast.makeText(getContext(), "play", Toast.LENGTH_SHORT).show();
+                playSong();
             }; break;
-
         }
+    }
+
+    private void showDialog(){
+        SessionManagement session = new SessionManagement(getContext(), new SessionManagement.HaveNotLoggedIn() {
+            @Override
+            public void haveNotLoggedIn() {
+                AlertDialogManagement alertDialog = new AlertDialogManagement(new AlertDialogManagement.ConfirmLogout() {
+                    @Override
+                    public void confirmLogout() {
+
+                    }
+                });
+                alertDialog.showAlertDialog(getContext(), getResources().getString(R.string.add_to_playlist), getResources().getString(R.string.request_login), false);
+            }
+        });
+        if (session.isLoggedIn()) {
+            ArrayList<PlaylistItem> arrPlaylists = new ArrayList<>();
+            if(session.getPlaylist() != "") {
+                String jsonPlaylists = session.getPlaylist();
+                try {
+                    JSONArray arr = new JSONArray(jsonPlaylists);
+                    for(int i = 0 ; i < arr.length(); i++){
+                        JSONObject jsonItem = arr.getJSONObject(i);
+                        PlaylistItem item = new PlaylistItem(jsonItem.getString("name"), jsonItem.getString("link"), jsonItem.getInt("img"), jsonItem.getInt("number"), jsonItem.getString("arrSongs"));
+                        arrPlaylists.add(item);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+            MyAlertDialogFragment dialog = MyAlertDialogFragment.newInstance(arrPlaylists, songItem);
+            FragmentManager manager = getActivity().getSupportFragmentManager();
+            dialog.show(manager, "fragment_alert");
+        }
+        else {
+            session.checkLogin();
+        }
+    }
+
+    private void playSong() {
+        LinearLayout llPlayerCol = (LinearLayout) getActivity().findViewById(R.id.llPlayerCollapse);
+        llPlayerCol.setVisibility(View.VISIBLE);
+        PlayerCollapseFm playerCollapseFm = PlayerCollapseFm.newInstance(songItem);
+        FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
+        ft.add(R.id.llPlayerCollapse, playerCollapseFm).commit();
+
+        ArrayList<SongItem> arrSongs = new ArrayList<>();
+        arrSongs.add(songItem);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("songItem", songItem);
+        bundle.putParcelableArrayList("arrSong", arrSongs);
+        bundle.putParcelableArrayList("arrArtist", songItem.getArtist());
+        bundle.putParcelableArrayList("arrComposer", songItem.getComposer());
+        bundle.putString("type", Constants.SONG_CATEGORIES);
+        Intent intent = new Intent(getActivity(), PlayerActivity.class);
+        intent.putExtra("data", bundle);
+        startActivityForResult(intent, com.example.tiennguyen.luanvannew.commons.Constants.REQUEST_CODE);
     }
 }

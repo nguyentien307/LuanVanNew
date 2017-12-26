@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -15,11 +17,13 @@ import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.example.tiennguyen.luanvannew.commons.Constants;
 import com.example.tiennguyen.luanvannew.databinding.ActivityMainBinding;
 import com.example.tiennguyen.luanvannew.fragments.MusicFm;
+import com.example.tiennguyen.luanvannew.fragments.PlayerCollapseFm;
 import com.example.tiennguyen.luanvannew.fragments.PlaylistFm;
 import com.example.tiennguyen.luanvannew.fragments.SearchFm;
 import com.example.tiennguyen.luanvannew.fragments.SettingFm;
@@ -29,9 +33,14 @@ import com.example.tiennguyen.luanvannew.helpers.BottomNavigationViewHelper;
 import com.example.tiennguyen.luanvannew.helpers.CustomTypefaceSpan;
 import com.example.tiennguyen.luanvannew.models.PersonItem;
 import com.example.tiennguyen.luanvannew.models.SongItem;
+import com.example.tiennguyen.luanvannew.services.PlayerService;
+import com.example.tiennguyen.luanvannew.sessions.SessionManagement;
 import com.example.tiennguyen.luanvannew.utils.LanguageUtils;
 
+
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
 
@@ -52,7 +61,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
 //        setContentView(R.layout.activity_main);
         setBottomNavigation();
-
     }
 
     private void setBottomNavigation() {
@@ -188,8 +196,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 }
             }
         }
-
-
         if(requestCode == Constants.RequestCode.CHANGE_LANGUAGE){
             if (resultCode == RESULT_OK) {
 
@@ -197,8 +203,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             }
         }
     }
-
-
 
 
 

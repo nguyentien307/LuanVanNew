@@ -9,21 +9,24 @@
         android:id="@+id/rc_playlists"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:scrollbars="vertical"
-        android:clipToPadding="false">
-    </android.support.v7.widget.RecyclerView>
+        android:clipToPadding="false"
+        android:scrollbars="vertical"></android.support.v7.widget.RecyclerView>
 
     <LinearLayout
-        android:id="@+id/btn_cancel"
+        android:id="@+id/btnNewPlaylist"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:padding="@dimen/dimen_8dp"
-        android:background="@color/lightBlue">
+        android:gravity="center_vertical"
+        android:padding="@dimen/dimen_8dp">
+        <ImageView
+            android:layout_width="@dimen/new_playlist_image_30dp"
+            android:layout_height="@dimen/new_playlist_image_30dp"
+            android:src="@drawable/add_icon"
+            android:layout_marginRight="@dimen/margin_8dp"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Huy"
+            android:text="@string/create_playlist"
             android:textSize="16sp"/>
     </LinearLayout>
 

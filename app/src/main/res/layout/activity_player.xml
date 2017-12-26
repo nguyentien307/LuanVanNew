@@ -86,7 +86,7 @@
                 android:id="@+id/imgVolumn"
                 android:layout_width="@dimen/player_ic_player_image_size_20dp"
                 android:layout_height="@dimen/player_ic_player_image_size_20dp"
-                android:src="@drawable/ic_volumn"/>
+                android:src="@drawable/ic_volumn_icon" />
         </LinearLayout>
 
     </RelativeLayout>
@@ -129,19 +129,29 @@
         <LinearLayout
             android:id="@+id/llControlVolumn"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/volumn_height_60dp"
-            android:layout_centerInParent="true"
-            android:background="#383333"
-            android:layout_marginLeft="@dimen/margin_16dp"
-            android:layout_marginRight="@dimen/margin_16dp">
+            android:layout_height="@dimen/volumn_height_70dp"
+            android:background="@drawable/ic_volumn_bg"
+            android:layout_marginLeft="@dimen/margin_8dp"
+            android:layout_marginRight="@dimen/margin_8dp"
+            android:layout_marginTop="@dimen/margin_40dp">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:layout_marginLeft="@dimen/margin_14dp">
+
+                <ImageView
+                    android:layout_width="@dimen/icon_control_player_image_size_20dp"
+                    android:layout_height="@dimen/icon_control_player_image_size_20dp"
+                    android:src="@drawable/ic_volumn_uncheck"/>
+            </LinearLayout>
 
             <SeekBar
                 android:id="@+id/sbVolumn"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_margin="@dimen/margin_8dp"
-                android:pointerIcon="all_scroll"
-                android:progressBackgroundTint="#1462f1"/>
+                android:layout_margin="19dp"/>
 
         </LinearLayout>
 
@@ -167,7 +177,7 @@
             android:layout_marginLeft="@dimen/margin_20dp"
             android:layout_marginTop="15dp"
             android:fontFamily="cursive"
-            android:text="Latest Added"
+            android:text="@string/play_list_song"
             android:textColor="@color/lightgray"
             android:textSize="16sp" />
 

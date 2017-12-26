@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
@@ -25,17 +27,22 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.example.tiennguyen.luanvannew.R;
+import com.example.tiennguyen.luanvannew.adapters.AlbumsAdapter;
 import com.example.tiennguyen.luanvannew.adapters.HistoryAdapter;
 import com.example.tiennguyen.luanvannew.adapters.SongsAdapter;
 import com.example.tiennguyen.luanvannew.commons.Constants;
+import com.example.tiennguyen.luanvannew.commons.GetDataCodeFromZing;
 import com.example.tiennguyen.luanvannew.commons.StringUtils;
 import com.example.tiennguyen.luanvannew.commons.WriteData;
 import com.example.tiennguyen.luanvannew.commons.ZingMP3LinkTemplate;
 import com.example.tiennguyen.luanvannew.dialogs.AlertDialogClearHistory;
 import com.example.tiennguyen.luanvannew.dialogs.SearchDialog;
+import com.example.tiennguyen.luanvannew.models.AlbumItem;
 import com.example.tiennguyen.luanvannew.models.PersonItem;
 import com.example.tiennguyen.luanvannew.models.SongItem;
+import com.example.tiennguyen.luanvannew.services.CheckInternet;
 import com.example.tiennguyen.luanvannew.services.GetHtmlData;
+import com.example.tiennguyen.luanvannew.services.GetPage;
 import com.example.tiennguyen.luanvannew.sessions.SessionManagement;
 
 import org.json.JSONArray;
@@ -43,6 +50,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.FileNotFoundException;
@@ -75,15 +83,19 @@ public class SearchFm extends Fragment implements TextWatcher, View.OnClickListe
 
     private ScrollView scrollView;
     // Searching
-    private LinearLayout llSearchingLayout;
+    private ScrollView svSearchingLayout;
     private ProgressBar pbSeachingLoading;
     private LinearLayout llSearching;
     private RecyclerView rcSearchingList;
 
-    public static SearchFm newInstance(String name) {
+    private AlbumsAdapter albumsAdapter;
+    private RecyclerView.LayoutManager layoutManager;
+
+    public static SearchFm newInstance(String name, String title) {
         SearchFm contentFragment = new SearchFm();
         Bundle bundle = new Bundle();
         bundle.putString("name", name);
+        bundle.putString("title", title);
         contentFragment.setArguments(bundle);
 
         return contentFragment;
@@ -92,26 +104,24 @@ public class SearchFm extends Fragment implements TextWatcher, View.OnClickListe
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments()!= null)
+        searchTitle = getResources().getString(R.string.songs_title);
+        if (getArguments()!= null) {
             res = getArguments().getString("name");
+            searchTitle = getArguments().getString("title");
+        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup viewGroup, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fm_search, viewGroup, false);
         setInitial(view);
+        if (!CheckInternet.isConnected(getContext())) {
+            rlTopSong.setVisibility(View.GONE);
+        }
         showLists();
         if (res != "") {
             edSearch.setText(res, TextView.BufferType.NORMAL);
         }
-//        edSearch.postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//                // TODO Auto-generated method stub
-//                InputMethodManager keyboard = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-//                keyboard.showSoftInput(edSearch, res.length());
-//            }
-//        },50);
         return view;
     }
 
@@ -132,14 +142,14 @@ public class SearchFm extends Fragment implements TextWatcher, View.OnClickListe
         scrollView = (ScrollView) view.findViewById(R.id.svHistory);
 
         //searching
-        llSearchingLayout = (LinearLayout) view.findViewById(R.id.llSearchingLayout);
+        svSearchingLayout = (ScrollView) view.findViewById(R.id.svSearchingLayout);
         pbSeachingLoading = (ProgressBar) view.findViewById(R.id.pbSearchingLoading);
         llSearching = (LinearLayout) view.findViewById(R.id.llSearching);
         rcSearchingList = (RecyclerView) view.findViewById(R.id.rcSearchingList);
         rcSearchingList.setHasFixedSize(true);
         LinearLayoutManager llm2 = new LinearLayoutManager(getContext());
         rcSearchingList.setLayoutManager(llm2);
-        llSearchingLayout.setVisibility(View.GONE);
+        svSearchingLayout.setVisibility(View.GONE);
 
         edSearch.addTextChangedListener(this);
         edSearch.setOnEditorActionListener(this);
@@ -186,33 +196,23 @@ public class SearchFm extends Fragment implements TextWatcher, View.OnClickListe
 
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
-//        ArrayList<String> newString = new ArrayList<>();
-//        for (int i = 0; i < arrayListHistory.size(); i++) {
-//            if (arrayListHistory.get(i).contains(s)) {
-//                newString.add(arrayListHistory.get(i));
-//            }
-//        }
-//        historyAdapter = new HistoryAdapter(newString, getContext(), getActivity());
-//        rcHistory.setAdapter(historyAdapter);
-//        historyAdapter.notifyDataSetChanged();
-//        if(newString.size() == 0) {
-//            tvHisResult.setVisibility(View.VISIBLE);
-//            tvHisResult.setText(Constants.NO_KEY);
-//        } else {
-//            tvHisResult.setVisibility(View.GONE);
-//        }
+        if (CheckInternet.isConnected(getContext())) {
+            if (s.toString().equals("")) {
+                scrollView.setVisibility(View.VISIBLE);
+                svSearchingLayout.setVisibility(View.GONE);
+            } else if (count % 2 == 0) {
+                scrollView.setVisibility(View.GONE);
+                svSearchingLayout.setVisibility(View.VISIBLE);
+                showZingResult(String.valueOf(s));
+            }
+        } else {
+            scrollView.setVisibility(View.VISIBLE);
+            svSearchingLayout.setVisibility(View.GONE);
+        }
     }
 
     @Override
     public void afterTextChanged(Editable s) {
-        if (s.toString().equals("")) {
-            scrollView.setVisibility(View.VISIBLE);
-            llSearchingLayout.setVisibility(View.GONE);
-        } else {
-            scrollView.setVisibility(View.GONE);
-            llSearchingLayout.setVisibility(View.VISIBLE);
-            showZingResult(String.valueOf(s));
-        }
     }
 
     @Override
@@ -234,7 +234,7 @@ public class SearchFm extends Fragment implements TextWatcher, View.OnClickListe
                     @Override
                     public void onResult(String title) {
                         searchTitle = title;
-                        edSearch.setHint(getResources().getString(R.string.searching_for) + searchTitle);
+                        edSearch.setHint(getResources().getString(R.string.searching_for) + " " + searchTitle);
                     }
 
                     @Override
@@ -252,7 +252,11 @@ public class SearchFm extends Fragment implements TextWatcher, View.OnClickListe
                         showHistory();
                     }
                 });
-                alertDialogClearHistory.showConfirmClearDialog(getContext(), Constants.CLEAR_ALL, Constants.CLEAR_MESSAGE, -1);
+                alertDialogClearHistory.showConfirmClearDialog(
+                        getContext(),
+                        getResources().getString(R.string.clear_all),
+                        getResources().getString(R.string.clear_all_message),
+                        -1);
         }
     }
 
@@ -265,7 +269,7 @@ public class SearchFm extends Fragment implements TextWatcher, View.OnClickListe
             if (!name.equals("")) {
                 saveNewData(name);
                 SearchResultFm fragment = new SearchResultFm();
-                fragment = fragment.newInstance(name);
+                fragment = fragment.newInstance(name, searchTitle);
                 getActivity().getSupportFragmentManager()
                         .beginTransaction()
                         .replace(R.id.fragment_container, fragment)
@@ -277,10 +281,12 @@ public class SearchFm extends Fragment implements TextWatcher, View.OnClickListe
 
     private void saveNewData(String name) {
         boolean isUnique = true;
-        for (int i = 0; i < arrHistory.length; i++) {
-            if (arrHistory[i].equals(name)){
-                isUnique = false;
-                break;
+        if (arrHistory != null) {
+            for (int i = 0; i < arrHistory.length; i++) {
+                if (arrHistory[i].equals(name)) {
+                    isUnique = false;
+                    break;
+                }
             }
         }
         if (isUnique) {
@@ -307,38 +313,51 @@ public class SearchFm extends Fragment implements TextWatcher, View.OnClickListe
     }
 
     private void prepareSongs() {
-        JSONObject data = null;
-        try {
-            data = new JSONObject(Constants.SONG_DATA);
-
-            JSONArray songList = data.getJSONArray("list");
-            for(int songIndex = 0; songIndex < 4; songIndex++){
-                JSONObject song = songList.getJSONObject(songIndex);
-                String title = song.getString("title");
-                String img = song.getString("img");
-                String href = song.getString("href");
-                JSONArray singersJSON = song.getJSONArray("singers");
-                ArrayList<PersonItem> arrSinger = new ArrayList<>();
-                ArrayList<PersonItem> arrComposer = new ArrayList<>();
-                for (int singerIndex = 0; singerIndex < singersJSON.length(); singerIndex++ ){
-                    JSONObject singer = singersJSON.getJSONObject(singerIndex);
-                    String singerName = singer.getString("singerName");
-                    String singerHref = singer.getString("singerHref");
-                    PersonItem singerItem = new PersonItem(singerName, singerHref, 200);
-                    arrSinger.add(singerItem);
-                }
-                PersonItem composer = new PersonItem("Trịnh Công Sơn", "", 200);
-                PersonItem composer1 = new PersonItem("Vũ Cát Tường", "", 200);
-                arrComposer.add(composer);
-                arrComposer.add(composer1);
-                SongItem songItem = new SongItem(title,200, href, arrSinger, arrComposer, "", img);
-                arrSongs.add(songItem);
-
+        GetPage getSongs = new GetPage(getContext());
+        getSongs.setDataDownloadListener(new GetPage.DataDownloadListener() {
+            @Override
+            public void dataDownloadedSuccessfully(Document data) {
+                viewSongList(data);
             }
 
-            songsAdapter.notifyDataSetChanged();
-        } catch (JSONException e) {
-            e.printStackTrace();
+            @Override
+            public void dataDownloadFailed () {
+                CheckInternet.goNoInternet(getContext(), R.id.music_content);
+            }
+        });
+        getSongs.execute(Constants.HOME_PAGE);
+    }
+
+    private void viewSongList(Document data) {
+        Elements songs = data.select("div.list_chart_music ul li");
+        int i = 4;
+        for (Element song:songs){
+            if (i > 0) {
+                i--;
+                Element info = song.select("div.info_data").first();
+                final String title = info.select("h3 a").text();
+                final ArrayList<PersonItem> arrSingers = new ArrayList<PersonItem>();
+                Elements singers = info.select("h4 a");
+                for (Element singer : singers) {
+                    String singerHref = singer.attr("href");
+                    String singerName = singer.text();
+                    PersonItem singerItem = new PersonItem(singerName, singerHref, 192);
+                    arrSingers.add(singerItem);
+                }
+                final ArrayList<PersonItem> arrComposers = new ArrayList<>();
+                PersonItem composer = new PersonItem("NHAC SĨ", "", 200);
+                arrComposers.add(composer);
+
+                GetDataCodeFromZing getDataCodeFromZing = new GetDataCodeFromZing(new GetDataCodeFromZing.KeyCodeFromZing() {
+                    @Override
+                    public void keyCodeFromZing(String key, String imgLink) {
+                        SongItem item = new SongItem(title, 200, key, arrSingers, arrComposers, "", imgLink);
+                        arrSongs.add(item);
+                        songsAdapter.notifyDataSetChanged();
+                    }
+                });
+                getDataCodeFromZing.getKeyFromZing(getContext(), title);
+            }
         }
     }
 
@@ -356,25 +375,58 @@ public class SearchFm extends Fragment implements TextWatcher, View.OnClickListe
         setLoading(true);
         StringUtils convertedToUnsigned = new StringUtils();
         String name = convertedToUnsigned.convertedToUnsigned(data);
-        GetHtmlData gethtmlData = new GetHtmlData(getContext());
-        gethtmlData.execute(ZingMP3LinkTemplate.SEARCH_URL + name);
-        gethtmlData.setDataDownloadListener(new GetHtmlData.DataDownloadListener() {
+        GetPage gethtmlData = new GetPage(getContext());
+        String title = searchTitle.equals("albums") ? "playlist" : "bai-hat";
+        ZingMP3LinkTemplate zingMP3LinkTemplate = new ZingMP3LinkTemplate();
+        String url = zingMP3LinkTemplate.getSearchUrl(name, title);
+        gethtmlData.execute(url);
+        gethtmlData.setDataDownloadListener(new GetPage.DataDownloadListener() {
 
             @Override
-            public void dataDownloadedSuccessfully(String data) {
+            public void dataDownloadedSuccessfully(Document data) {
                 setLoading(false);
-                displayZingList(data, false);
+                if (searchTitle.equals("albums")) {
+                    displayAlbumList(data);
+                } else {
+                    displayZingList(data);
+                }
             }
 
             @Override
             public void dataDownloadFailed() {
+                CheckInternet.goNoInternet(getContext(), R.id.svHistory);
             }
         });
     }
 
-    private void displayZingList(String data, boolean b) {
+    private void displayAlbumList(Document document) {
+        ArrayList<AlbumItem> arrList = new ArrayList<>();
+        Elements div = document.select("div.title-album");
+        for (int i = 0; i < div.size(); i++) {
+            String img = div.get(i).select("img").attr("src");
+            String title = div.get(i).select("h2").select("a").text();
+            Elements arrArtists = div.get(i).select("h3").select("a");
+            ArrayList<PersonItem> arrArtist = new ArrayList<>();
+            for (int j = 0; j < arrArtists.size(); j++) {
+                arrArtist.add(new PersonItem(arrArtists.get(j).text(), "", 157523));
+            }
+            arrList.add(new AlbumItem(title, "", img, 101022, arrArtist));
+        }
+        setAlbumAdapter(arrList);
+    }
+
+    private void setAlbumAdapter(ArrayList<AlbumItem> arrList) {
+        albumsAdapter = new AlbumsAdapter(getContext(), arrList, Constants.VERTICAL_ALBUMS_LIST);
+        layoutManager = new GridLayoutManager(getContext(), 2);
+        rcSearchingList.setLayoutManager(layoutManager);
+        rcSearchingList.addItemDecoration(new AlbumsAdapter.GridSpacingItemDecoration(2, albumsAdapter.dpToPx(10), true));
+        rcSearchingList.setItemAnimator(new DefaultItemAnimator());
+        rcSearchingList.setNestedScrollingEnabled(false);
+        rcSearchingList.setAdapter(albumsAdapter);
+    }
+
+    private void displayZingList(Document document) {
         ArrayList<SongItem> arrList = new ArrayList<>();
-        Document document = Jsoup.parse(data);
         String totalResult = document.select("div.sta-result").select("span").text();
         Elements div = document.select("div.item-song");
         for (int i = 0; i < div.size(); i++) {

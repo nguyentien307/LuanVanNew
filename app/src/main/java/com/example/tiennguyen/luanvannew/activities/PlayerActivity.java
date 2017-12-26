@@ -1,7 +1,9 @@
 package com.example.tiennguyen.luanvannew.activities;
 
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
@@ -25,6 +27,7 @@ import com.example.tiennguyen.luanvannew.MyApplication;
 import com.example.tiennguyen.luanvannew.R;
 import com.example.tiennguyen.luanvannew.adapters.PlayerAdapter;
 import com.example.tiennguyen.luanvannew.commons.Constants;
+import com.example.tiennguyen.luanvannew.commons.StringUtils;
 import com.example.tiennguyen.luanvannew.models.PersonItem;
 import com.example.tiennguyen.luanvannew.models.SongItem;
 import com.example.tiennguyen.luanvannew.services.PlayerService;
@@ -53,17 +56,16 @@ public class PlayerActivity extends AppCompatActivity implements OnActionClicked
     public static ImageView icNextward, icBackward;
     public static InteractivePlayerView interactivePlayerView;
 
-    private RecyclerView rcPlayerList;
+    public static RecyclerView rcPlayerList;
     private LinearLayoutManager llm;
     private SongItem songItem;
-    private int index;
+    public static int index;
     private String type = "";
     private ArrayList<SongItem> arrayListSong = new ArrayList<>();
     ArrayList<PersonItem> arrArtist = new ArrayList<>();
 
     private LinearLayout llTimerChecked;
     private ImageView imgTimer;
-    private Calendar calendar;
     private SessionManagement session;
 
     ImageView img_bg;
@@ -79,11 +81,16 @@ public class PlayerActivity extends AppCompatActivity implements OnActionClicked
     private boolean isOpenControlVolumn = false;
     private Timer timer;
 
+    public static Context context;
+    public static Activity activity;
+
     Intent playerService;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_player);
+        context = this;
+        activity = this;
         Intent intent = getIntent();
         Bundle bundle = intent.getBundleExtra("data");
         if (bundle != null) {
@@ -114,6 +121,7 @@ public class PlayerActivity extends AppCompatActivity implements OnActionClicked
         if (!type.equals(Constants.PLAYER_COLLAPSE)) {
             playerService.putExtra("playNew", true);
         }
+        playerService.setAction(Constants.ACTION.STARTFOREGROUND_ACTION);
         startService(playerService);
     }
 
@@ -124,8 +132,18 @@ public class PlayerActivity extends AppCompatActivity implements OnActionClicked
                 songArr.add(songItem);
             } else {
                 songArr = ((MyApplication) getApplication()).getArrayPlayer();
-                songArr.add(songItem);
-                index = songArr.size() - 1;
+                int i = 0;
+                for (i = 0; i < songArr.size(); i++) {
+                    if (StringUtils.convertedToUnsigned(songArr.get(i).getTitle()).equals(StringUtils.convertedToUnsigned(songItem.getTitle()))) {
+                        break;
+                    }
+                }
+                if (i < songArr.size()) {
+                    index = i;
+                } else {
+                    songArr.add(songItem);
+                    index = songArr.size() - 1;
+                }
             }
             ((MyApplication) getApplication()).setAlbumOrCategory(false);
         } else if (type.equals(CONSTANTS.PLAYER_COLLAPSE)) {
@@ -135,9 +153,9 @@ public class PlayerActivity extends AppCompatActivity implements OnActionClicked
             ((MyApplication) getApplication()).setAlbumOrCategory(true);
         }
         ((MyApplication) getApplication()).setArrayPlayer(songArr);
-        PlayerAdapter adapter = new PlayerAdapter(songArr, this, this);
-        rcPlayerList.setAdapter(adapter);
-        rcPlayerList.scrollToPosition(index);
+//        PlayerAdapter adapter = new PlayerAdapter(songArr, this, this);
+//        rcPlayerList.setAdapter(adapter);
+//        rcPlayerList.scrollToPosition(index);
     }
 
     private void initViews() {
@@ -166,7 +184,11 @@ public class PlayerActivity extends AppCompatActivity implements OnActionClicked
         session = new SessionManagement(getBaseContext());
         llTimerChecked = (LinearLayout) findViewById(R.id.llTimerChecked);
         imgTimer = (ImageView) findViewById(R.id.imgTimerChecked);
-        timer = new Timer();
+        if (session.isCheckAlarm()) {
+            imgTimer.setImageResource(R.drawable.timer_checked);
+        } else {
+            imgTimer.setImageResource(R.drawable.timer_unchecked);
+        }
 
         llTimerChecked.setOnClickListener(this);
 
@@ -199,23 +221,26 @@ public class PlayerActivity extends AppCompatActivity implements OnActionClicked
                 finish();
                 break;
             case R.id.llTimerChecked:
+                timer = new Timer();
                 if (!session.isCheckAlarm()) {
                     imgTimer.setImageResource(R.drawable.timer_checked);
                     session.setCheckAlarm(true);
-                    timer.schedule(new TimerTask() {
-                        @Override
-                        public void run() {
-                            session.setCheckAlarm(false);
-                            Intent intent = new Intent(PlayerActivity.this, MainActivity.class);
-                            startActivity(intent);
+                    if (session.getAutoStopPlayMusicTime() > 0) {
+                        timer.schedule(new TimerTask() {
+                            @Override
+                            public void run() {
+                                session.setCheckAlarm(false);
+                                Intent intent = new Intent(PlayerActivity.this, MainActivity.class);
+                                startActivity(intent);
 
-                            // Tao su kien ket thuc app
-                            Intent startMain = new Intent(Intent.ACTION_MAIN);
-                            startMain.addCategory(Intent.CATEGORY_HOME);
-                            startActivity(startMain);
-                            stopService(playerService);
-                        }
-                    }, 5000);
+                                // Tao su kien ket thuc app
+                                Intent startMain = new Intent(Intent.ACTION_MAIN);
+                                startMain.addCategory(Intent.CATEGORY_HOME);
+                                startActivity(startMain);
+                                stopService(playerService);
+                            }
+                        }, session.getAutoStopPlayMusicTime() * 60 * 1000);
+                    }
                 } else {
                     imgTimer.setImageResource(R.drawable.timer_unchecked);
                     session.setCheckAlarm(false);
@@ -250,24 +275,20 @@ public class PlayerActivity extends AppCompatActivity implements OnActionClicked
             volumeSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener()
             {
                 @Override
-                public void onStopTrackingTouch(SeekBar arg0)
-                {
+                public void onStopTrackingTouch(SeekBar arg0) {
                 }
 
                 @Override
-                public void onStartTrackingTouch(SeekBar arg0)
-                {
+                public void onStartTrackingTouch(SeekBar arg0) {
                 }
 
                 @Override
-                public void onProgressChanged(SeekBar arg0, int progress, boolean arg2)
-                {
+                public void onProgressChanged(SeekBar arg0, int progress, boolean arg2) {
                     audioManager.setStreamVolume(AudioManager.STREAM_MUSIC,
                             progress, 0);
                 }
             });
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -340,4 +361,14 @@ public class PlayerActivity extends AppCompatActivity implements OnActionClicked
 //        }
 //        super.onPause();
 //    }
+
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (!session.getPlayInBackground()) {
+            playerService = new Intent(this, PlayerService.class);
+            startService(playerService);
+        }
+    }
 }

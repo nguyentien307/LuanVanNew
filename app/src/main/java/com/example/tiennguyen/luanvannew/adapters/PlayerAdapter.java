@@ -3,16 +3,22 @@ package com.example.tiennguyen.luanvannew.adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.example.tiennguyen.luanvannew.MainActivity;
 import com.example.tiennguyen.luanvannew.MyApplication;
 import com.example.tiennguyen.luanvannew.R;
@@ -20,9 +26,11 @@ import com.example.tiennguyen.luanvannew.commons.Constants;
 import com.example.tiennguyen.luanvannew.commons.StringUtils;
 import com.example.tiennguyen.luanvannew.dialogs.AlertDialogManagement;
 import com.example.tiennguyen.luanvannew.dialogs.MyAlertDialogFragment;
+import com.example.tiennguyen.luanvannew.fragments.SongInfoFm;
 import com.example.tiennguyen.luanvannew.models.PlaylistItem;
 import com.example.tiennguyen.luanvannew.models.SongItem;
 import com.example.tiennguyen.luanvannew.services.PlayerService;
+import com.example.tiennguyen.luanvannew.commons.StringUtils;
 import com.example.tiennguyen.luanvannew.sessions.SessionManagement;
 
 import java.util.ArrayList;
@@ -35,11 +43,13 @@ public class PlayerAdapter extends RecyclerView.Adapter<PlayerAdapter.PlayerView
     ArrayList<SongItem> arrSongs;
     Context context;
     Activity activity;
+    int index;
 
-    public PlayerAdapter(ArrayList<SongItem> arrSongs, Context context, Activity activity){
+    public PlayerAdapter(ArrayList<SongItem> arrSongs, Context context, Activity activity, int index){
         this.arrSongs = arrSongs;
         this.context = context;
         this.activity = activity;
+        this.index = index;
     }
 
     @Override
@@ -56,6 +66,10 @@ public class PlayerAdapter extends RecyclerView.Adapter<PlayerAdapter.PlayerView
         holder.tvSongName.setText(arrSongs.get(position).getTitle());
         holder.tvArtistName.setText(StringUtils.getArtists(arrSongs.get(position).getArtist()));
         holder.tvIndex.setText(position + 1 +"");
+        if (position == index) {
+            holder.tvIndex.setVisibility(View.GONE);
+            holder.imgPlaying.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
@@ -71,7 +85,8 @@ public class PlayerAdapter extends RecyclerView.Adapter<PlayerAdapter.PlayerView
     public class PlayerViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public TextView tvSongName, tvArtistName, tvIndex;
         public LinearLayout llAdd, llAbout;
-        public LinearLayout llIndex;
+        public ImageView imgPlaying;
+        public RelativeLayout llIndex;
 
         PlayerViewHolder(View itemView) {
             super(itemView);
@@ -80,6 +95,7 @@ public class PlayerAdapter extends RecyclerView.Adapter<PlayerAdapter.PlayerView
             llAbout = (LinearLayout) itemView.findViewById(R.id.ll_about);
             llAdd = (LinearLayout) itemView.findViewById(R.id.ll_add);
             tvIndex = (TextView) itemView.findViewById(R.id.tv_index);
+            imgPlaying = (ImageView) itemView.findViewById(R.id.img_playing);
 
             llAdd.setOnClickListener(this);
             llAbout.setOnClickListener(this);
@@ -107,6 +123,7 @@ public class PlayerAdapter extends RecyclerView.Adapter<PlayerAdapter.PlayerView
                     Intent playerService = new Intent(context, PlayerService.class);
                     playerService.putExtra("songIndex", getAdapterPosition());
                     playerService.putExtra("playNew", true);
+                    playerService.setAction(Constants.ACTION.STARTFOREGROUND_ACTION);
                     context.startService(playerService);
                     break;
             }
@@ -117,13 +134,13 @@ public class PlayerAdapter extends RecyclerView.Adapter<PlayerAdapter.PlayerView
             SessionManagement session = new SessionManagement(context, new SessionManagement.HaveNotLoggedIn() {
                 @Override
                 public void haveNotLoggedIn() {
-                    AlertDialogManagement alertDialod = new AlertDialogManagement(new AlertDialogManagement.ConfirmLogout() {
+                    AlertDialogManagement alertDialog = new AlertDialogManagement(new AlertDialogManagement.ConfirmLogout() {
                         @Override
                         public void confirmLogout() {
 
                         }
                     });
-                    alertDialod.showAlertDialog(context, Constants.ADD_PLAYLIST_TITLE, Constants.REQUEST_LOGIN, false);
+                    alertDialog.showAlertDialog(context, context.getResources().getString(R.string.create_playlist), context.getResources().getString(R.string.request_login), false);
                 }
             });
             if (session.isLoggedIn()) {

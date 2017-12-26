@@ -13,42 +13,45 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="Playlist"
+            android:text="@string/my_playlist"
             android:textColor="@color/lightBlue"/>
     </RelativeLayout>
-    <LinearLayout
-        android:layout_below="@+id/header_bar"
+    <RelativeLayout
+        android:id="@+id/rlPlaylistContent"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center">
-        <RelativeLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-            <TextView
+        android:layout_below="@+id/header_bar">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center">
+            <RelativeLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/white"
-                android:textSize="14sp"
-                android:id="@+id/msg"
-                android:text="You need to login first"
-                android:layout_centerHorizontal="true"/>
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:textSize="14sp"
+                    android:id="@+id/msg"
+                    android:text="You need to login first"
+                    android:layout_centerHorizontal="true"/>
 
-            <Button
-                android:id="@+id/btn_login"
-                android:layout_below="@+id/msg"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="@dimen/dimen_10dp"
-                android:layout_width="100dp"
-                android:layout_height="40dp"
-                android:paddingTop="5dp"
-                android:textSize="15sp"
-                android:text="Login"
-                android:background="@drawable/login_button"
-                android:textColor="@drawable/login_text_color"
-                />
-
-
-        </RelativeLayout>
-    </LinearLayout>
+                <Button
+                    android:id="@+id/btn_login"
+                    android:layout_below="@+id/msg"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="@dimen/dimen_10dp"
+                    android:layout_width="100dp"
+                    android:layout_height="40dp"
+                    android:paddingTop="5dp"
+                    android:textSize="15sp"
+                    android:text="Login"
+                    android:background="@drawable/login_button"
+                    android:textColor="@drawable/login_text_color"
+                    />
+            </RelativeLayout>
+        </LinearLayout>
+    </RelativeLayout>
 
 </RelativeLayout>

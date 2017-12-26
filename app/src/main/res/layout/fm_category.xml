@@ -6,13 +6,19 @@
     android:layout_height="match_parent">
     <include layout="@layout/header_category_style"/>
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/rc_categories"
+    <RelativeLayout
+        android:id="@+id/rlCategoryContent"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scrollbars="vertical"
-        android:clipToPadding="false"
-        >
-    </android.support.v7.widget.RecyclerView>
+        android:layout_height="match_parent">
 
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rc_categories"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="vertical"
+            android:clipToPadding="false"
+            >
+        </android.support.v7.widget.RecyclerView>
+
+    </RelativeLayout>
 </LinearLayout>

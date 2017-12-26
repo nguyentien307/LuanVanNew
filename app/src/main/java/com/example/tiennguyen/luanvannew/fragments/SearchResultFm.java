@@ -2,6 +2,9 @@ package com.example.tiennguyen.luanvannew.fragments;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -13,15 +16,20 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.tiennguyen.luanvannew.R;
+import com.example.tiennguyen.luanvannew.adapters.AlbumsAdapter;
 import com.example.tiennguyen.luanvannew.adapters.SongsAdapter;
 import com.example.tiennguyen.luanvannew.commons.Constants;
 import com.example.tiennguyen.luanvannew.commons.StringUtils;
 import com.example.tiennguyen.luanvannew.commons.ZingMP3LinkTemplate;
+import com.example.tiennguyen.luanvannew.dialogs.SearchDialog;
+import com.example.tiennguyen.luanvannew.models.AlbumItem;
 import com.example.tiennguyen.luanvannew.models.PersonItem;
 import com.example.tiennguyen.luanvannew.models.SongItem;
 import com.example.tiennguyen.luanvannew.services.BaseURI;
+import com.example.tiennguyen.luanvannew.services.CheckInternet;
 import com.example.tiennguyen.luanvannew.services.GetData;
 import com.example.tiennguyen.luanvannew.services.GetHtmlData;
+import com.example.tiennguyen.luanvannew.services.GetPage;
 import com.example.tiennguyen.luanvannew.services.XMLDomParser;
 
 import org.json.JSONArray;
@@ -33,7 +41,7 @@ import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
 
-public class SearchResultFm extends Fragment implements View.OnFocusChangeListener {
+public class SearchResultFm extends Fragment implements View.OnFocusChangeListener, View.OnClickListener {
     private EditText edSearchView;
     private ProgressBar pbSearchLoading;
     private LinearLayout llSearchResult;
@@ -47,12 +55,17 @@ public class SearchResultFm extends Fragment implements View.OnFocusChangeListen
     private int startSearchIndex = 0;
     private boolean isLoading = false;
 
-    private Constants CONSTANTS;
+    private LinearLayout llSearchCategories;
+    private String searchTitle = "";
 
-    public static SearchResultFm newInstance(String name) {
+    private AlbumsAdapter albumsAdapter;
+    private RecyclerView.LayoutManager layoutManager;
+
+    public static SearchResultFm newInstance(String name, String title) {
         SearchResultFm contentFragment = new SearchResultFm();
         Bundle bundle = new Bundle();
         bundle.putString("name", name);
+        bundle.putString("title", title);
         contentFragment.setArguments(bundle);
 
         return contentFragment;
@@ -61,8 +74,10 @@ public class SearchResultFm extends Fragment implements View.OnFocusChangeListen
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments()!= null)
+        if (getArguments()!= null) {
             data = getArguments().getString("name");
+            searchTitle = getArguments().getString("title");
+        }
     }
 
     @Override
@@ -74,7 +89,6 @@ public class SearchResultFm extends Fragment implements View.OnFocusChangeListen
 
     private void initView(View view) {
         initialView(view);
-//        showResult();
         showZingResult();
     }
 
@@ -89,7 +103,10 @@ public class SearchResultFm extends Fragment implements View.OnFocusChangeListen
 
         edSearchView = (EditText) view.findViewById(R.id.edSearch);
 
+        llSearchCategories = (LinearLayout) view.findViewById(R.id.llSearchCategories);
+
         edSearchView.setOnFocusChangeListener(this);
+        llSearchCategories.setOnClickListener(this);
 //        flSearchProperty = (FrameLayout) findViewById(R.id.fl_search_property);
 
     }
@@ -114,37 +131,10 @@ public class SearchResultFm extends Fragment implements View.OnFocusChangeListen
 
             @Override
             public void dataDownloadFailed() {
+                CheckInternet.goNoInternet(getContext(), R.id.clSearchResult);
             }
         });
     }
-
-//    public void customLoadMoreDataFromApi(int offset) {
-//        ArrayList<SongItem> moreItems = getMoreData();
-//        songArr.addAll(moreItems);
-//
-//        int curSize = songAdapter.getItemCount();
-//        songAdapter.notifyItemRangeInserted(curSize, songArr.size() - 1);
-//    }
-//
-//    public ArrayList<SongItem> getMoreData() {
-//        ArrayList<SongItem> footerSongArray = new ArrayList<>();
-//        BaseURI baseURI = new BaseURI();
-//        GetData getData = new GetData(getContext());
-//        getData.execute(baseURI.getSearchedSong(data, "song", startSearchIndex, startSearchIndex + 10));
-//        startSearchIndex += 10;
-//        getData.setDataDownloadListener(new GetData.DataDownloadListener() {
-//
-//            @Override
-//            public void dataDownloadedSuccessfully(JSONObject data) {
-//
-//            }
-//
-//            @Override
-//            public void dataDownloadFailed() {
-//            }
-//        });
-//        return footerSongArray;
-//    }
 
     private ArrayList<SongItem> displayList(JSONObject data, boolean isMore) {
         songArr = new ArrayList<>();
@@ -183,8 +173,8 @@ public class SearchResultFm extends Fragment implements View.OnFocusChangeListen
 
     private void setAdapter(ArrayList<SongItem> searchingArray, String numFound) {
         tvSongNum.setText(getResources()
-                .getString(R.string.title_search_result_1) + " " + numFound + " " + getResources().getString(R.string.title_search_result_2) + "'" + data + "'");
-        songsAdapter = new SongsAdapter(getContext(), getActivity(), songArr, CONSTANTS.SONG_CATEGORIES, rcSearchResult);
+                .getString(R.string.title_search_result_1) + " " + numFound + " " + getResources().getString(R.string.title_search_result_2) + " '" + data + "'");
+        songsAdapter = new SongsAdapter(getContext(), getActivity(), songArr, Constants.SONG_CATEGORIES, rcSearchResult);
         rcSearchResult.setAdapter(songsAdapter);
 
         songsAdapter.notifyItemRangeInserted(songsAdapter.getItemCount(), searchingArray.size() - 1);
@@ -203,7 +193,7 @@ public class SearchResultFm extends Fragment implements View.OnFocusChangeListen
     @Override
     public void onFocusChange(View v, boolean hasFocus) {
         SearchFm fragment = new SearchFm();
-        fragment = fragment.newInstance(String.valueOf(edSearchView.getText()));
+        fragment = fragment.newInstance(String.valueOf(edSearchView.getText()), searchTitle);
         getActivity().getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.fragment_container, fragment)
@@ -215,25 +205,61 @@ public class SearchResultFm extends Fragment implements View.OnFocusChangeListen
         edSearchView.setText(data, TextView.BufferType.SPANNABLE);
         StringUtils convertedToUnsigned = new StringUtils();
         String name = convertedToUnsigned.convertedToUnsigned(data);
-        GetHtmlData gethtmlData = new GetHtmlData(getContext());
-        gethtmlData.execute(ZingMP3LinkTemplate.SEARCH_URL + name);
-        gethtmlData.setDataDownloadListener(new GetHtmlData.DataDownloadListener() {
+        GetPage gethtmlData = new GetPage(getContext());
+        String title = searchTitle.equals("albums") ? "playlist" : "bai-hat";
+        ZingMP3LinkTemplate zingMP3LinkTemplate = new ZingMP3LinkTemplate();
+        String url = zingMP3LinkTemplate.getSearchUrl(name, title);
+        gethtmlData.execute(url);
+        gethtmlData.setDataDownloadListener(new GetPage.DataDownloadListener() {
 
             @Override
-            public void dataDownloadedSuccessfully(String data) {
+            public void dataDownloadedSuccessfully(Document data) {
                 setLoading(false);
-                displayZingList(data, false);
+                if (searchTitle.equals("albums")) {
+                    displayAlbumList(data);
+                } else {
+                    displayZingList(data, false);
+                }
             }
 
             @Override
             public void dataDownloadFailed() {
+                CheckInternet.goNoInternet(getContext(), R.id.clSearchResult);
             }
         });
     }
 
-    private void displayZingList(String data, boolean b) {
+    private void displayAlbumList(Document document) {
+        ArrayList<AlbumItem> arrList = new ArrayList<>();
+        String totalResult = document.select("div.sta-result").select("span").text();
+        Elements div = document.select("div.title-album");
+        for (int i = 0; i < div.size(); i++) {
+            String img = div.get(i).select("img").attr("src");
+            String title = div.get(i).select("h2").select("a").text();
+            Elements arrArtists = div.get(i).select("h3").select("a");
+            ArrayList<PersonItem> arrArtist = new ArrayList<>();
+            for (int j = 0; j < arrArtists.size(); j++) {
+                arrArtist.add(new PersonItem(arrArtists.get(j).text(), "", 157523));
+            }
+            arrList.add(new AlbumItem(title, "", img, 101022, arrArtist));
+        }
+        setAlbumAdapter(arrList, totalResult);
+    }
+
+    private void setAlbumAdapter(ArrayList<AlbumItem> arrList, String total) {
+        tvSongNum.setText(getResources()
+                .getString(R.string.title_search_result_1) + " " + total + " " + getResources().getString(R.string.title_search_result_2) + " '" + data + "'");
+        albumsAdapter = new AlbumsAdapter(getContext(), arrList, Constants.VERTICAL_ALBUMS_LIST);
+        layoutManager = new GridLayoutManager(getContext(), 2);
+        rcSearchResult.setLayoutManager(layoutManager);
+        rcSearchResult.addItemDecoration(new AlbumsAdapter.GridSpacingItemDecoration(2, albumsAdapter.dpToPx(10), true));
+        rcSearchResult.setItemAnimator(new DefaultItemAnimator());
+        rcSearchResult.setNestedScrollingEnabled(false);
+        rcSearchResult.setAdapter(albumsAdapter);
+    }
+
+    private void displayZingList(Document document, boolean b) {
         ArrayList<SongItem> arrList = new ArrayList<>();
-        Document document = Jsoup.parse(data);
         String totalResult = document.select("div.sta-result").select("span").text();
         Elements div = document.select("div.item-song");
         for (int i = 0; i < div.size(); i++) {
@@ -253,9 +279,43 @@ public class SearchResultFm extends Fragment implements View.OnFocusChangeListen
 
     private void setZingAdapter(String totalResult, ArrayList<SongItem> arrList) {
         tvSongNum.setText(getResources()
-                .getString(R.string.title_search_result_1) + " " + totalResult + " " + getResources().getString(R.string.title_search_result_2) + "'" + data + "'");
-        songsAdapter = new SongsAdapter(getContext(), getActivity(), arrList, CONSTANTS.SONG_CATEGORIES, rcSearchResult);
+                .getString(R.string.title_search_result_1) + " " + totalResult + " " + getResources().getString(R.string.title_search_result_2) + " '" + data + "'");
+        songsAdapter = new SongsAdapter(getContext(), getActivity(), arrList, Constants.SONG_CATEGORIES, rcSearchResult);
         rcSearchResult.setAdapter(songsAdapter);
 //        songsAdapter.notifyItemRangeInserted(songsAdapter.getItemCount(), arrList.size() - 1);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.llSearchCategories:
+                SearchDialog searchDialog = new SearchDialog(new SearchDialog.CustomLayoutInflater() {
+                    @Override
+                    public LayoutInflater getLayoutInflater() {
+                        return getActivity().getLayoutInflater();
+                    }
+
+                    @Override
+                    public AlertDialog.Builder getAlertDialog() {
+                        AlertDialog.Builder searchTitleDialog = new AlertDialog.Builder(getActivity());
+                        return searchTitleDialog;
+                    }
+
+                    @Override
+                    public void onResult(String title) {
+                        searchTitle = title;
+                        edSearchView.setHint(getResources().getString(R.string.searching_for) + " " + searchTitle);
+                    }
+
+                    @Override
+                    public String getCheckedTitle() {
+                        return searchTitle;
+                    }
+                });
+                searchDialog.displaySearchDialog(getActivity());
+                break;
+            default:
+                break;
+        }
     }
 }

@@ -32,7 +32,7 @@ public class AlertDialogClearHistory {
         alertDialog.setMessage(message);
 
         // Setting OK Button
-        alertDialog.setButton("OK", new DialogInterface.OnClickListener() {
+        alertDialog.setButton(context.getResources().getString(R.string.action_OK), new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
             }
         });
@@ -50,13 +50,13 @@ public class AlertDialogClearHistory {
         // Setting Dialog Message
         alertDialog.setMessage(message);
 
-        alertDialog.setPositiveButton("Cancel", new DialogInterface.OnClickListener() {
+        alertDialog.setPositiveButton(context.getResources().getString(R.string.action_cancel), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
             }
         });
 
-        alertDialog.setNegativeButton("OK", new DialogInterface.OnClickListener() {
+        alertDialog.setNegativeButton(context.getResources().getString(R.string.action_OK), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 confirmClear.confirmClear(position);
