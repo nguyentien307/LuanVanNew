@@ -1,9 +1,7 @@
 package com.example.tiennguyen.luanvannew.fragments;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -11,7 +9,6 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
-import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -41,14 +38,9 @@ import com.example.tiennguyen.luanvannew.models.AlbumItem;
 import com.example.tiennguyen.luanvannew.models.PersonItem;
 import com.example.tiennguyen.luanvannew.models.SongItem;
 import com.example.tiennguyen.luanvannew.services.CheckInternet;
-import com.example.tiennguyen.luanvannew.services.GetHtmlData;
 import com.example.tiennguyen.luanvannew.services.GetPage;
 import com.example.tiennguyen.luanvannew.sessions.SessionManagement;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -322,7 +314,7 @@ public class SearchFm extends Fragment implements TextWatcher, View.OnClickListe
 
             @Override
             public void dataDownloadFailed () {
-                CheckInternet.goNoInternet(getContext(), R.id.music_content);
+//                CheckInternet.goNoInternet(getContext(), R.id.music_content);
             }
         });
         getSongs.execute(Constants.HOME_PAGE);

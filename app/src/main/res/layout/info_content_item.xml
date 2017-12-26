@@ -85,7 +85,7 @@
                 <RelativeLayout
                     android:id="@+id/row"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="80dp">
                     <ImageView
                         android:id="@+id/iv_avatar"
                         android:layout_width="@dimen/dimen_60dp"

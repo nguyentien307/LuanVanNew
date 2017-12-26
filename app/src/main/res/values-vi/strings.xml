@@ -89,4 +89,5 @@
     <string name="request_login">Bạn vẫn chưa đăng nhập.</string>
     <string name="play_list_song">Danh sách phát nhạc</string>
     <string name="languages">Ngôn ngữ</string>
+    <string name="updating">Đang cập nhật</string>
 </resources>

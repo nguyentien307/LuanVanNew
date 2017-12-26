@@ -1,14 +1,11 @@
 package com.example.tiennguyen.luanvannew.services;
 
-import android.app.Activity;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
 
-import com.example.tiennguyen.luanvannew.R;
 import com.example.tiennguyen.luanvannew.fragments.NoInternetFm;
 
 /**

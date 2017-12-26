@@ -25,6 +25,7 @@ import com.bumptech.glide.Glide;
 import com.example.tiennguyen.luanvannew.R;
 import com.example.tiennguyen.luanvannew.activities.PlayerActivity;
 import com.example.tiennguyen.luanvannew.commons.Constants;
+import com.example.tiennguyen.luanvannew.commons.StringUtils;
 import com.example.tiennguyen.luanvannew.dialogs.AlertDialogManagement;
 import com.example.tiennguyen.luanvannew.dialogs.MyAlertDialogFragment;
 import com.example.tiennguyen.luanvannew.fragments.PlayerCollapseFm;
@@ -150,17 +151,18 @@ public class SongsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             songViewHolder.tvViews.setText("Views: "+arrSongs.get(position).getViews());
 
             ArrayList<PersonItem> singers = arrSongs.get(position).getArtist();
-            String singerName = "";
-            for (int singerIndex = 0; singerIndex < singers.size(); singerIndex++) {
-                if (singerIndex == singers.size() - 1) {
-                    singerName += singers.get(singerIndex).getName();
-                } else {
-                    singerName += singers.get(singerIndex).getName() + ", ";
-                }
-            }
+//            String singerName = "";
+//            for (int singerIndex = 0; singerIndex < singers.size(); singerIndex++) {
+//                if (singerIndex == singers.size() - 1) {
+//                    singerName += singers.get(singerIndex).getName();
+//                } else {
+//                    singerName += singers.get(singerIndex).getName() + ", ";
+//                }
+//            }
+            String singerName = StringUtils.getArtists(singers);
             if (singerName != "") {
                 songViewHolder.tvArtistName.setText(singerName);
-            } else songViewHolder.tvArtistName.setText("khong co");
+            } else songViewHolder.tvArtistName.setText(context.getResources().getString(R.string.updating));
 
             if(style == Constants.SONG_CATEGORIES || style == Constants.SONGS_LIST_IN_PLAYLIST) {
                 if (arrSongs.get(position).getLinkImg() != "") {

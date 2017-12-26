@@ -32,9 +32,9 @@ public class StringUtils {
             listArtist.add(artist.get(i).getName());
         }
         artistsString = TextUtils.join(", ", listArtist);
-        if (artistsString == "") {
-            artistsString = "Đang cập nhật";
-        }
+//        if (artistsString == "") {
+//            artistsString = "Đang cập nhật";
+//        }
         return artistsString;
     }
 

@@ -50,6 +50,7 @@
     <string name="top_song_view">Top songs</string>
     <string name="title_search_result_1">Have</string>
     <string name="title_search_result_2">results is founded for</string>
+    <string name="updating">Updating</string>
 
     <!--Setting-->
     <string name="title_setting">Settings</string>

@@ -241,11 +241,6 @@ public class MusicHotFm extends Fragment implements View.OnClickListener {
 
             @Override
             public void dataDownloadFailed() {
-                Fragment fragment = new NoInternetFm();
-                getActivity().getSupportFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.music_content, fragment)
-                        .commit();
                 CheckInternet.goNoInternet(getContext(), R.id.music_content);
             }
         });

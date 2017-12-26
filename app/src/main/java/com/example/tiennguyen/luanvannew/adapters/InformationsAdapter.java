@@ -89,7 +89,8 @@ public class InformationsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         public void onClick(View v) {
             if (v.getId() == R.id.tv_link){
                 itemChildClick.onClick(v, getAdapterPosition(), false);
-            }else {
+            }
+            else {
                 itemClickListener.onClick(v, getAdapterPosition(), false);
             }
         }
@@ -198,6 +199,9 @@ public class InformationsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     viewHolder.tvName.setText(basicInfo);
                     //viewHolder.tvViews.setText("Views: "+ item.getViews());
 
+                    if (detailInfo.equals("")) {
+                        detailInfo = context.getResources().getString(R.string.updating);
+                    }
                     viewHolder.tvDetail.setText(detailInfo);
 
 
@@ -213,6 +217,7 @@ public class InformationsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     viewHolder.setItemClickListener(new ItemClickListener() {
                         @Override
                         public void onClick(View view, int position, boolean isLongClick) {
+                            viewHolder.expandableLayout.toggle();
                         }
                     });
                 }
@@ -224,10 +229,6 @@ public class InformationsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             });
             getArtist.execute(item.getLink());
         }
-        else {
-
-        }
-
 
     }
 
