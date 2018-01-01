@@ -8,7 +8,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +17,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.example.tiennguyen.luanvannew.MyApplication;
 import com.example.tiennguyen.luanvannew.R;
 import com.example.tiennguyen.luanvannew.adapters.AlbumsAdapter;
 import com.example.tiennguyen.luanvannew.adapters.PlaylistsAdapter;
@@ -202,47 +200,47 @@ public class PlaylistFm extends Fragment implements View.OnClickListener {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         String name = etName.getText().toString();
+                        if (!name.equals("")) {
+                            ArrayList<String> arrName = new ArrayList<String>();
+                            Boolean isValid = true;
 
-                        ArrayList<String> arrName = new ArrayList<String>();
-                        Boolean isValid = true;
-
-                        if(session.getPlaylist() != "") {
-                            String jsonPlaylists = session.getPlaylist();
-                            try {
-                                JSONArray arr = new JSONArray(jsonPlaylists);
-                                for(int i = 0 ; i < arr.length(); i++){
-                                    JSONObject jsonItem = arr.getJSONObject(i);
-                                    String title = jsonItem.getString("name");
-                                    arrName.add(title);
-                                }
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }
-
-                        if(arrName.size()!=0){
-                            for(int i = 0; i < arrName.size(); i++){
-                                if(name.contentEquals(arrName.get(i))) {
-                                    isValid = false;
-                                    break;
+                            if (session.getPlaylist() != "") {
+                                String jsonPlaylists = session.getPlaylist();
+                                try {
+                                    JSONArray arr = new JSONArray(jsonPlaylists);
+                                    for (int i = 0; i < arr.length(); i++) {
+                                        JSONObject jsonItem = arr.getJSONObject(i);
+                                        String title = jsonItem.getString("name");
+                                        arrName.add(title);
+                                    }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
                                 }
                             }
-                        }
 
-                        if(!isValid){
-                            Toast.makeText(getContext(), name + " " + getResources().getString(R.string.exist_message), Toast.LENGTH_SHORT).show();
-                        }
-                        else {
-                            PlaylistItem item = new PlaylistItem(name,"", R.drawable.hot_slider1, 0, "");
-                            arrPlaylists.add(item);
-                            Gson gson = new Gson();
-                            String jsonPlaylist = gson.toJson(arrPlaylists);
-                            session.setPlaylist(jsonPlaylist);
-                            PlaylistFm fragment = PlaylistFm.newInstance("new");
-                            ((AppCompatActivity) getContext()).getSupportFragmentManager()
-                                    .beginTransaction()
-                                    .replace(R.id.fragment_container, fragment)
-                                    .commit();
+                            if (arrName.size() != 0) {
+                                for (int i = 0; i < arrName.size(); i++) {
+                                    if (name.contentEquals(arrName.get(i))) {
+                                        isValid = false;
+                                        break;
+                                    }
+                                }
+                            }
+
+                            if (!isValid) {
+                                Toast.makeText(getContext(), name + " " + getResources().getString(R.string.exist_message), Toast.LENGTH_SHORT).show();
+                            } else {
+                                PlaylistItem item = new PlaylistItem(name, "", R.drawable.hot_slider1, 0, "");
+                                arrPlaylists.add(item);
+                                Gson gson = new Gson();
+                                String jsonPlaylist = gson.toJson(arrPlaylists);
+                                session.setPlaylist(jsonPlaylist);
+                                PlaylistFm fragment = PlaylistFm.newInstance("new");
+                                ((AppCompatActivity) getContext()).getSupportFragmentManager()
+                                        .beginTransaction()
+                                        .replace(R.id.fragment_container, fragment)
+                                        .commit();
+                            }
                         }
                     }
                 });

@@ -85,6 +85,7 @@ public class CategoryFm extends Fragment implements View.OnClickListener {
             prepareSongCategories();
         }
         if (res == "styles") {
+            tvHeaderTitle.setText(R.string.style_header_title);
             categoriesAdapter = new CategoriesAdapter(getContext(), getActivity(), arrCategories, Constants.SONG_STYLES);
             rcCategories.setAdapter(categoriesAdapter);
             prepareSongStyles();

@@ -1,14 +1,11 @@
 package com.example.tiennguyen.luanvannew.activities;
 
 import android.app.Activity;
-import android.app.AlarmManager;
-import android.app.PendingIntent;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -25,7 +22,6 @@ import android.widget.TextView;
 import com.example.tiennguyen.luanvannew.MainActivity;
 import com.example.tiennguyen.luanvannew.MyApplication;
 import com.example.tiennguyen.luanvannew.R;
-import com.example.tiennguyen.luanvannew.adapters.PlayerAdapter;
 import com.example.tiennguyen.luanvannew.commons.Constants;
 import com.example.tiennguyen.luanvannew.commons.StringUtils;
 import com.example.tiennguyen.luanvannew.models.PersonItem;
@@ -34,7 +30,6 @@ import com.example.tiennguyen.luanvannew.services.PlayerService;
 import com.example.tiennguyen.luanvannew.sessions.SessionManagement;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -236,6 +231,7 @@ public class PlayerActivity extends AppCompatActivity implements OnActionClicked
                                 // Tao su kien ket thuc app
                                 Intent startMain = new Intent(Intent.ACTION_MAIN);
                                 startMain.addCategory(Intent.CATEGORY_HOME);
+                                //stopService(playerService);
                                 startActivity(startMain);
                                 stopService(playerService);
                             }

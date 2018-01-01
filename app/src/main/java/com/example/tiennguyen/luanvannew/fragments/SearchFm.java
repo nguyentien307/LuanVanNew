@@ -192,7 +192,7 @@ public class SearchFm extends Fragment implements TextWatcher, View.OnClickListe
             if (s.toString().equals("")) {
                 scrollView.setVisibility(View.VISIBLE);
                 svSearchingLayout.setVisibility(View.GONE);
-            } else if (count % 2 == 0) {
+            } else if (count > 0) {
                 scrollView.setVisibility(View.GONE);
                 svSearchingLayout.setVisibility(View.VISIBLE);
                 showZingResult(String.valueOf(s));
@@ -378,7 +378,9 @@ public class SearchFm extends Fragment implements TextWatcher, View.OnClickListe
             public void dataDownloadedSuccessfully(Document data) {
                 setLoading(false);
                 if (searchTitle.equals("albums")) {
-                    displayAlbumList(data);
+//                    displayAlbumList(data);
+                    scrollView.setVisibility(View.VISIBLE);
+                    svSearchingLayout.setVisibility(View.GONE);
                 } else {
                     displayZingList(data);
                 }

@@ -28,14 +28,11 @@ import com.example.tiennguyen.luanvannew.models.SongItem;
 import com.example.tiennguyen.luanvannew.services.BaseURI;
 import com.example.tiennguyen.luanvannew.services.CheckInternet;
 import com.example.tiennguyen.luanvannew.services.GetData;
-import com.example.tiennguyen.luanvannew.services.GetHtmlData;
 import com.example.tiennguyen.luanvannew.services.GetPage;
-import com.example.tiennguyen.luanvannew.services.XMLDomParser;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
@@ -235,11 +232,15 @@ public class SearchResultFm extends Fragment implements View.OnFocusChangeListen
         Elements div = document.select("div.title-album");
         for (int i = 0; i < div.size(); i++) {
             String img = div.get(i).select("img").attr("src");
-            String title = div.get(i).select("h2").select("a").text();
-            Elements arrArtists = div.get(i).select("h3").select("a");
+            String title = div.get(i).select(".ellipsis").select("a").text();
             ArrayList<PersonItem> arrArtist = new ArrayList<>();
-            for (int j = 0; j < arrArtists.size(); j++) {
-                arrArtist.add(new PersonItem(arrArtists.get(j).text(), "", 157523));
+            if (div.get(i).select(".inline").first() != null) {
+                Elements arrArtists = div.get(i).select("h3").select("a");
+                for (int j = 0; j < arrArtists.size(); j++) {
+                    arrArtist.add(new PersonItem(arrArtists.get(j).text(), "", 157523));
+                }
+            }else {
+                arrArtist.add(new PersonItem(getContext().getResources().getString(R.string.updating), "", 0));
             }
             arrList.add(new AlbumItem(title, "", img, 101022, arrArtist));
         }

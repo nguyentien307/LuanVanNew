@@ -2,13 +2,9 @@ package com.example.tiennguyen.luanvannew.dialogs;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -17,11 +13,8 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.example.tiennguyen.luanvannew.MyApplication;
 import com.example.tiennguyen.luanvannew.R;
 import com.example.tiennguyen.luanvannew.adapters.PlaylistsNameAdapter;
-import com.example.tiennguyen.luanvannew.commons.Constants;
-import com.example.tiennguyen.luanvannew.fragments.PlaylistFm;
 import com.example.tiennguyen.luanvannew.models.PlaylistItem;
 import com.example.tiennguyen.luanvannew.models.SongItem;
 import com.example.tiennguyen.luanvannew.sessions.SessionManagement;
@@ -120,42 +113,43 @@ public class MyAlertDialogFragment extends DialogFragment {
             public void onClick(DialogInterface dialog, int which) {
                 String name = etName.getText().toString();
 
-                ArrayList<String> arrName = new ArrayList<String>();
-                Boolean isValid = true;
+                if (!name.equals("")) {
+                    ArrayList<String> arrName = new ArrayList<String>();
+                    Boolean isValid = true;
 
-                if(session.getPlaylist() != "") {
-                    String jsonPlaylists = session.getPlaylist();
-                    try {
-                        JSONArray arr = new JSONArray(jsonPlaylists);
-                        for(int i = 0 ; i < arr.length(); i++){
-                            JSONObject jsonItem = arr.getJSONObject(i);
-                            String title = jsonItem.getString("name");
-                            arrName.add(title);
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                if(arrName.size()!=0){
-                    for(int i = 0; i < arrName.size(); i++){
-                        if(name.contentEquals(arrName.get(i))) {
-                            isValid = false;
-                            break;
+                    if (session.getPlaylist() != "") {
+                        String jsonPlaylists = session.getPlaylist();
+                        try {
+                            JSONArray arr = new JSONArray(jsonPlaylists);
+                            for (int i = 0; i < arr.length(); i++) {
+                                JSONObject jsonItem = arr.getJSONObject(i);
+                                String title = jsonItem.getString("name");
+                                arrName.add(title);
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
                         }
                     }
-                }
 
-                if(!isValid){
-                    Toast.makeText(getContext(), name + " " + getResources().getString(R.string.exist_message), Toast.LENGTH_SHORT).show();
-                }
-                else {
-                    PlaylistItem item = new PlaylistItem(name,"", R.drawable.hot_slider1, 0, "");
-                    arrPlaylists.add(item);
-                    Gson gson = new Gson();
-                    String jsonPlaylist = gson.toJson(arrPlaylists);
-                    session.setPlaylist(jsonPlaylist);
-                    playlistsAdapter.notifyDataSetChanged();
+                    if (arrName.size() != 0) {
+                        for (int i = 0; i < arrName.size(); i++) {
+                            if (name.contentEquals(arrName.get(i))) {
+                                isValid = false;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (!isValid) {
+                        Toast.makeText(getContext(), name + " " + getResources().getString(R.string.exist_message), Toast.LENGTH_SHORT).show();
+                    } else {
+                        PlaylistItem item = new PlaylistItem(name, "", R.drawable.hot_slider1, 0, "");
+                        arrPlaylists.add(item);
+                        Gson gson = new Gson();
+                        String jsonPlaylist = gson.toJson(arrPlaylists);
+                        session.setPlaylist(jsonPlaylist);
+                        playlistsAdapter.notifyDataSetChanged();
+                    }
                 }
             }
         });

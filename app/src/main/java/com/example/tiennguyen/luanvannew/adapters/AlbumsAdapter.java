@@ -21,6 +21,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.tiennguyen.luanvannew.R;
 import com.example.tiennguyen.luanvannew.commons.Constants;
+import com.example.tiennguyen.luanvannew.commons.StringUtils;
 import com.example.tiennguyen.luanvannew.fragments.AlbumSongsFm;
 import com.example.tiennguyen.luanvannew.models.AlbumItem;
 import com.example.tiennguyen.luanvannew.models.PersonItem;
@@ -98,23 +99,25 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.ViewHolder
             itemView = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.album_item_horizontal, parent, false);
         }
+
+        context = parent.getContext();
         return new ViewHolder(itemView);
     }
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
         AlbumItem albumItem = arrAlbums.get(position);
-        holder.tvAlbumName.setText(albumItem.getName());
+        holder.tvAlbumName.setText(StringUtils.newText(albumItem.getName(), 35));
         ArrayList<PersonItem> singers =  albumItem.getSingers();
-        String singerName = "";
-        for (int singerIndex = 0; singerIndex < singers.size(); singerIndex++) {
-            if (singerIndex == singers.size() - 1) {
-                singerName += singers.get(singerIndex).getName();
-            } else {
-                singerName += singers.get(singerIndex).getName() + ", ";
-            }
-        }
-        holder.tvArtistName.setText(singerName);
+//        String singerName = "";
+//        for (int singerIndex = 0; singerIndex < singers.size(); singerIndex++) {
+//            if (singerIndex == singers.size() - 1) {
+//                singerName += singers.get(singerIndex).getName();
+//            } else {
+//                singerName += singers.get(singerIndex).getName() + ", ";
+//            }
+//        }
+        holder.tvArtistName.setText(StringUtils.newText(StringUtils.getArtists(singers), 35));
 
         holder.tvViews.setText("Views: "+albumItem.getViews());
 

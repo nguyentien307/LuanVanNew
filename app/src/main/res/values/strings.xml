@@ -61,7 +61,7 @@
     <string name="play_in_background">Play in background</string>
     <string name="Continue_to_play_plug_headphone">Continue to play when headphone is attached</string>
     <string name="Continue_to_play_remove_headphone">Continue to play when headphone is removed</string>
-    <string name="Auto_stop_play">Auto stop play music</string>
+    <string name="Auto_stop_play">Auto stop playing music</string>
     <string name="save_seach_history">Save search history</string>
 
     <!--login-->
