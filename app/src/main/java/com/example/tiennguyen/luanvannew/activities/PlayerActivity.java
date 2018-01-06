@@ -18,6 +18,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.tiennguyen.luanvannew.MainActivity;
 import com.example.tiennguyen.luanvannew.MyApplication;
@@ -236,6 +237,11 @@ public class PlayerActivity extends AppCompatActivity implements OnActionClicked
                                 stopService(playerService);
                             }
                         }, session.getAutoStopPlayMusicTime() * 60 * 1000);
+                    } else {
+                        Toast.makeText(context, context.getResources().getString(R.string.not_set_timer), Toast.LENGTH_SHORT).show();
+                        imgTimer.setImageResource(R.drawable.timer_unchecked);
+                        session.setCheckAlarm(false);
+                        timer.cancel();
                     }
                 } else {
                     imgTimer.setImageResource(R.drawable.timer_unchecked);

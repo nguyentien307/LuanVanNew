@@ -103,7 +103,7 @@
     <dimen name="image_login_size_30dp">30dp</dimen>
     <dimen name="login_text_sỉze">12sp</dimen>
     <dimen name="margin_top">20dp</dimen>
-    <dimen name="btn_margin_top_30dp">30dp</dimen>
+    <dimen name="btn_margin_top_30dp">50dp</dimen>
     <dimen name="margin_left">15dp</dimen>
     <dimen name="invalid_text_size">10sp</dimen>
     <dimen name="sign_in_with_text_size">11sp</dimen>
@@ -128,4 +128,5 @@
     <dimen name="row_height_40dp">40dp</dimen>
 
     <dimen name="new_playlist_image_30dp">30dp</dimen>
+    <dimen name="width_70dp">70dp</dimen>
 </resources>

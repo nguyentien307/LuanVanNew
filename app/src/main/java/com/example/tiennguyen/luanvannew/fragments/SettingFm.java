@@ -1,13 +1,16 @@
 package com.example.tiennguyen.luanvannew.fragments;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.Button;
 import android.widget.RadioGroup;
@@ -17,11 +20,14 @@ import android.widget.Toast;
 
 import com.example.tiennguyen.luanvannew.MyApplication;
 import com.example.tiennguyen.luanvannew.R;
+import com.example.tiennguyen.luanvannew.dialogs.SearchDialog;
+import com.example.tiennguyen.luanvannew.dialogs.TimerDialog;
 import com.example.tiennguyen.luanvannew.sessions.SessionManagement;
 import com.example.tiennguyen.luanvannew.changelanguage.ChangeLanguageActivity;
 import com.example.tiennguyen.luanvannew.commons.Constants;
 
 import java.util.ArrayList;
+import java.util.Timer;
 
 /**
  * Created by TIENNGUYEN on 11/11/2017.
@@ -203,38 +209,81 @@ public class SettingFm extends Fragment implements View.OnClickListener {
     }
 
     private void setAutoStopTime(View view) {
-        final Spinner spinner = (Spinner) view.findViewById(R.id.spinner);
-
-        final String[] spinnerArr = getResources().getStringArray(R.array.spiner);
-        ArrayAdapter<String> spinerAdapter = new ArrayAdapter<String>(getContext(), R.layout.spiner_layout,
-                spinnerArr);
-        spinerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(spinerAdapter);
-        int id;
+        LinearLayout llTimer = (LinearLayout) view.findViewById(R.id.llTimer);
+        final TextView tvTimer = (TextView) view.findViewById(R.id.tvTimer);
         int autoStopTime = session.getAutoStopPlayMusicTime();
-        for (id = 0; id < spinnerArr.length; id++) {
-            if (autoStopTime == -1) {
-                break;
-            } else if (spinnerArr[id].equals(autoStopTime + " min")) {
-                break;
-            }
+        if (autoStopTime > 0) {
+            tvTimer.setText(autoStopTime + "'");
+        } else {
+            tvTimer.setText("None");
         }
-        spinner.setSelection(id);
-
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        llTimer.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                int time = -1;
-                if (!spinnerArr[position].equals("None"))
-                    time = Integer.parseInt(spinnerArr[position].split(" ", 2)[0]);
-                session.setAutoStopPlayMusicTime(time);
-            }
+            public void onClick(View view) {
+                TimerDialog timerDialog = new TimerDialog(new TimerDialog.CustomLayoutInflater() {
+                    @Override
+                    public LayoutInflater getLayoutInflater() {
+                        return getActivity().getLayoutInflater();
+                    }
 
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                return;
+                    @Override
+                    public AlertDialog.Builder getAlertDialog() {
+                        AlertDialog.Builder timerTitleDialog = new AlertDialog.Builder(getActivity());
+                        return timerTitleDialog;
+                    }
+
+                    @Override
+                    public void onResult(String title) {
+                        if (!title.equals("None")) {
+                            tvTimer.setText(title);
+                            int time = Integer.parseInt(title.split("'", 2)[0]);
+                            session.setAutoStopPlayMusicTime(time);
+                        } else {
+                            tvTimer.setText(title);
+                            session.setAutoStopPlayMusicTime(-1);
+                        }
+                    }
+
+                    @Override
+                    public String getCheckedTitle() {
+                        return tvTimer.getText().toString();
+                    }
+                });
+                timerDialog.displayTimerDialog(getActivity());
             }
         });
+//        final Spinner spinner = (Spinner) view.findViewById(R.id.spinner);
+//
+//        final String[] spinnerArr = getResources().getStringArray(R.array.spiner);
+//        ArrayAdapter<String> spinerAdapter = new ArrayAdapter<String>(getContext(), R.layout.spiner_layout,
+//                spinnerArr);
+//        spinerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+//        spinner.setAdapter(spinerAdapter);
+//        int id;
+//        int autoStopTime = session.getAutoStopPlayMusicTime();
+//        for (id = 0; id < spinnerArr.length; id++) {
+//            if (autoStopTime == -1) {
+//                break;
+//            } else if (spinnerArr[id].equals(autoStopTime + " min")) {
+//                break;
+//            }
+//        }
+//        spinner.setSelection(id);
+//
+//        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//            @Override
+//            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+//                int time = -1;
+//                if (!spinnerArr[position].equals("None"))
+//                    time = Integer.parseInt(spinnerArr[position].split(" ", 2)[0]);
+//                session.setAutoStopPlayMusicTime(time);
+//            }
+//
+//            @Override
+//            public void onNothingSelected(AdapterView<?> parent) {
+//                return;
+//            }
+//        });
     }
 
     public void openLanguageScreen() {

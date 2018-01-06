@@ -90,4 +90,8 @@
     <string name="play_list_song">Danh sách phát nhạc</string>
     <string name="languages">Ngôn ngữ</string>
     <string name="updating">Đang cập nhật</string>
+    <string name="language_title">Thay đổi ngôn ngữ</string>
+    <string name="not_set_timer">Bạn chưa cài đặt thời gian dừng phát nhạc tự động.</string>
+    <string name="new_value">Giá trị khác (phút):</string>
+    <string name="timer">Thời gian</string>
 </resources>

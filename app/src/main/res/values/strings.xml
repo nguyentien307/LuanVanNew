@@ -63,6 +63,10 @@
     <string name="Continue_to_play_remove_headphone">Continue to play when headphone is removed</string>
     <string name="Auto_stop_play">Auto stop playing music</string>
     <string name="save_seach_history">Save search history</string>
+    <string name="language_title">Change language</string>
+    <string name="timer">Timer</string>
+    <string name="new_value">Other value (minutes):</string>
+    <string name="not_higher_200">&lt;= 200</string>
 
     <!--login-->
     <string name="title_login">Login</string>
@@ -129,4 +133,5 @@
     <string name="add_to_playlist">Add to playlist</string>
     <string name="play_list_song">Song play list</string>
     <string name="languages">Languages</string>
+    <string name="not_set_timer">You haven\'t set auto stop playing music\'s timer.</string>
 </resources>

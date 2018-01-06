@@ -17,7 +17,6 @@ import com.example.tiennguyen.luanvannew.R;
 public class SearchDialog {
 
     private CustomLayoutInflater customLI;
-    private Constants Constants;
 
     public SearchDialog(CustomLayoutInflater customLI) {
         this.customLI = customLI;
@@ -29,7 +28,6 @@ public class SearchDialog {
         final RadioButton song = (RadioButton) dialogLayout.findViewById(R.id.rbSongs);
         final RadioButton album = (RadioButton) dialogLayout.findViewById(R.id.rbALbums);
 
-        Constants = new Constants();
         AlertDialog.Builder searchDialog = customLI.getAlertDialog();
         searchDialog.setView(dialogLayout);
         searchDialog.setTitle(activity.getResources().getString(R.string.searching_for));

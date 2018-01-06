@@ -12,8 +12,8 @@
             android:layout_height="match_parent"
             android:id="@+id/ll_category_button"
             android:gravity="center"
-            android:paddingStart="@dimen/dimen_8dp"
-            android:paddingEnd="@dimen/dimen_8dp"
+            android:paddingStart="@dimen/dimen_4dp"
+            android:paddingEnd="@dimen/dimen_4dp"
             android:layout_toStartOf="@+id/tab_title">
             <TextView
                 android:id="@+id/tvCategoriesButton"
